@@ -48,27 +48,27 @@
 
     /* ── SIDEBAR GRIS ── */
     .sidebar { background:#f0ede8; border-right:1px solid #dddad5; padding:0; display:flex; flex-direction:column; height:100%; overflow-y:auto; overscroll-behavior:contain; transition:background .3s,border-color .3s; }
-    body.dark .sidebar { background:#1e1e1e; border-right-color:#2e2e2e; }
+    body.dark .sidebar { background:#2c2c2c; border-right-color:#3a3a3a; }
     .wordmark { padding:20px 24px 16px; border-bottom:1px solid #dddad5; }
     body.dark .wordmark { border-bottom-color:#2e2e2e; }
     .wordmark-badge { display:inline-flex; align-items:center; gap:5px; font-size:.58rem; font-weight:700; letter-spacing:.14em; text-transform:uppercase; color:var(--accent); background:var(--accent-bg); border:1px solid rgba(30,77,140,.2); border-radius:10px; padding:2px 8px; margin-top:6px; }
     nav { padding:8px 0; flex:1; }
     .nav-section { font-size:.58rem; font-weight:700; letter-spacing:.14em; text-transform:uppercase; color:#b4ac9e; padding:14px 20px 4px; }
-    body.dark .nav-section { color:#545454; }
+    body.dark .nav-section { color:#686868; }
     .nav-item { display:flex; align-items:center; gap:10px; padding:8px 20px; width:100%; font-size:.78rem; font-weight:400; letter-spacing:.04em; color:#6b6560; cursor:pointer; transition:color .2s,background .2s; border:none; border-left:2px solid transparent; background:transparent; text-align:left; font-family:'DM Sans',sans-serif; }
-    body.dark .nav-item { color:#787878; }
+    body.dark .nav-item { color:#9a9a9a; }
     .nav-item:hover { color:#1a1a14; background:rgba(0,0,0,.05); }
     body.dark .nav-item:hover { color:#e0e0e0; background:rgba(255,255,255,.06); }
     .nav-item.active { color:var(--accent); border-left-color:var(--accent); background:var(--accent-bg); font-weight:500; }
     body.dark .nav-item.active { color:#6aaee8; border-left-color:#6aaee8; background:rgba(74,128,196,.12); }
     .nav-icon { width:14px; height:14px; flex-shrink:0; }
     .sidebar-footer { padding:14px 24px 20px; border-top:1px solid #dddad5; }
-    body.dark .sidebar-footer { border-top-color:#2e2e2e; }
+    body.dark .sidebar-footer { border-top-color:#3a3a3a; }
     .user-email { font-size:.7rem; color:#8a8070; margin-bottom:12px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-    body.dark .user-email { color:#545454; }
+    body.dark .user-email { color:#787878; }
     .theme-toggle { display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; }
     .theme-label { font-size:.68rem; letter-spacing:.08em; text-transform:uppercase; color:#8a8070; }
-    body.dark .theme-label { color:#545454; }
+    body.dark .theme-label { color:#787878; }
     .switch { position:relative; width:36px; height:20px; flex-shrink:0; }
     .switch input { opacity:0; width:0; height:0; }
     .slider { position:absolute; inset:0; background:#ccc9c3; border-radius:20px; cursor:pointer; transition:background .3s; }
@@ -77,7 +77,7 @@
     input:checked + .slider { background:var(--accent); }
     input:checked + .slider::before { transform:translateX(16px); }
     .btn-logout { font-family:'DM Sans',sans-serif; font-size:.68rem; font-weight:400; letter-spacing:.1em; text-transform:uppercase; color:#8a8070; background:none; border:1px solid #dddad5; padding:8px 14px; cursor:pointer; transition:color .2s,border-color .2s; border-radius:4px; }
-    body.dark .btn-logout { color:#545454; border-color:#2e2e2e; }
+    body.dark .btn-logout { color:#9a9a9a; border-color:#3a3a3a; }
     .btn-logout:hover { color:var(--red); border-color:var(--red); }
 
     /* ── MAIN ── */
@@ -260,6 +260,10 @@
         <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
         Reportes
       </button>
+      <button class="nav-item" onclick="goTo('contador')">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+        Contador IA
+      </button>
     </nav>
     <div class="sidebar-footer">
       <div class="theme-toggle"><span class="theme-label">Privacidad</span><label class="switch"><input type="checkbox" id="foco-toggle" onchange="toggleFoco(this.checked)"><span class="slider"></span></label></div>
@@ -351,8 +355,23 @@
 
     <!-- CUENTAS -->
     <div class="page" id="page-cuentas">
-      <div class="page-title">Cuentas</div><div class="page-sub">Caja, banco y cuenta corriente</div>
-      <div class="coming-soon"><div class="coming-soon-icon">🏦</div><div class="coming-soon-title">Multi-cuenta en desarrollo</div><div class="coming-soon-sub">Próximamente: caja chica, cuenta bancaria, cuenta corriente.</div></div>
+      <div class="page-title">Cuentas</div>
+      <div class="page-sub">Saldos y movimientos por cuenta</div>
+
+      <!-- Cards de saldo por cuenta -->
+      <div id="cuentas-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px;margin-bottom:32px;"></div>
+
+      <!-- Acciones -->
+      <div class="section-header" style="margin-bottom:20px;">
+        <div class="section-title">Gestión de cuentas</div>
+        <div style="display:flex;gap:8px;">
+          <button class="btn-export" onclick="openModal('transferencia')">⇄ Transferencia</button>
+          <button class="btn-primary" onclick="openModal('cuenta')">+ Nueva cuenta</button>
+        </div>
+      </div>
+
+      <!-- Lista de cuentas con detalle -->
+      <div id="cuentas-detalle"></div>
     </div>
 
     <!-- CONTACTOS -->
@@ -384,6 +403,17 @@
       <div class="coming-soon"><div class="coming-soon-icon">📊</div><div class="coming-soon-title">Reportes en desarrollo</div><div class="coming-soon-sub">Próximamente: estado de resultados (P&amp;L), flujo de caja mensual y exportación a Excel.</div></div>
     </div>
 
+    <!-- CONTADOR IA -->
+    <div class="page" id="page-contador">
+      <div class="page-title">Contador IA</div>
+      <div class="page-sub">Asesoramiento contable y fiscal para tu PyME</div>
+      <div class="coming-soon">
+        <div class="coming-soon-icon">🧮</div>
+        <div class="coming-soon-title">Módulo Contador en desarrollo</div>
+        <div class="coming-soon-sub">Próximamente: asesoramiento fiscal, alertas impositivas, recomendaciones basadas en tus datos, guía de obligaciones AFIP y más.</div>
+      </div>
+    </div>
+
   </main>
 </div>
 
@@ -413,6 +443,7 @@
       <div id="tx-iva-wrap" style="display:none;margin-top:10px;"><label>Alícuota IVA</label><select id="tx-iva-alicuota"><option value="21">21%</option><option value="10.5">10,5%</option><option value="27">27%</option><option value="0">Exento</option></select></div>
     </div>
     <div class="field"><label>Notas (opcional)</label><textarea id="tx-notas" rows="2" style="resize:vertical;"></textarea></div>
+    <div class="field"><label>Cuenta</label><select id="tx-cuenta"><option value="">— Sin asignar —</option></select></div>
     <div class="modal-actions"><button class="btn-secondary" onclick="closeModal('tx')" style="flex:1">Cancelar</button><button class="btn-primary" onclick="saveTx()" style="flex:2">Guardar</button></div>
   </div>
 </div>
@@ -437,6 +468,7 @@
       <div id="edit-tx-iva-wrap" style="display:none;margin-top:10px;"><label>Alícuota IVA</label><select id="edit-tx-iva-alicuota"><option value="21">21%</option><option value="10.5">10,5%</option><option value="27">27%</option><option value="0">Exento</option></select></div>
     </div>
     <div class="field"><label>Notas (opcional)</label><textarea id="edit-tx-notas" rows="2" style="resize:vertical;"></textarea></div>
+    <div class="field"><label>Cuenta</label><select id="edit-tx-cuenta"><option value="">— Sin asignar —</option></select></div>
     <div class="modal-actions"><button class="btn-secondary" onclick="closeModal('edit-tx')" style="flex:1">Cancelar</button><button class="btn-primary" onclick="saveEditTx()" style="flex:2">Guardar cambios</button></div>
   </div>
 </div>
@@ -461,6 +493,52 @@
       <div style="font-size:.8rem;color:var(--muted);margin-top:6px;" id="import-result-sub"></div>
     </div>
     <div class="modal-actions" style="margin-top:20px;"><button class="btn-secondary" onclick="closeModal('import');resetImport();" style="flex:1">Cerrar</button></div>
+  </div>
+</div>
+
+<!-- MODAL: NUEVA CUENTA -->
+<div class="overlay" id="modal-cuenta" onclick="closeModal('cuenta')">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-title" id="cuenta-modal-title">Nueva cuenta</div>
+    <div class="field">
+      <label>Tipo de cuenta</label>
+      <select id="c-tipo">
+        <option value="caja">🏧 Caja (efectivo)</option>
+        <option value="banco">🏦 Cuenta bancaria</option>
+        <option value="corriente">📋 Cuenta corriente</option>
+        <option value="digital">📱 Billetera digital (Mercado Pago, etc.)</option>
+        <option value="inversion">📈 Inversiones / Plazo fijo</option>
+      </select>
+    </div>
+    <div class="field"><label>Nombre de la cuenta</label><input type="text" id="c-nombre-cuenta" placeholder="Ej: Caja principal, Banco Galicia, MP empresa"/></div>
+    <div class="field"><label>Saldo inicial ($)</label><input type="number" id="c-saldo-inicial" placeholder="0.00" min="0" step="0.01"/></div>
+    <div class="field"><label>Moneda</label>
+      <select id="c-moneda">
+        <option value="ARS">$ ARS — Pesos argentinos</option>
+        <option value="USD">USD — Dólares</option>
+      </select>
+    </div>
+    <div class="field"><label>Notas (opcional)</label><input type="text" id="c-notas-cuenta" placeholder="CBU, alias, banco, etc."/></div>
+    <div class="modal-actions">
+      <button class="btn-secondary" onclick="closeModal('cuenta')" style="flex:1">Cancelar</button>
+      <button class="btn-primary" onclick="saveCuenta()" style="flex:2">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: TRANSFERENCIA -->
+<div class="overlay" id="modal-transferencia" onclick="closeModal('transferencia')">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-title">Transferencia entre cuentas</div>
+    <div class="field"><label>Desde</label><select id="transf-origen"><option value="">— Seleccioná cuenta origen —</option></select></div>
+    <div class="field"><label>Hacia</label><select id="transf-destino"><option value="">— Seleccioná cuenta destino —</option></select></div>
+    <div class="field"><label>Monto ($)</label><input type="number" id="transf-monto" placeholder="0.00" min="0" step="0.01"/></div>
+    <div class="field"><label>Fecha</label><input type="date" id="transf-fecha"/></div>
+    <div class="field"><label>Descripción (opcional)</label><input type="text" id="transf-desc" placeholder="Ej: Paso efectivo a banco"/></div>
+    <div class="modal-actions">
+      <button class="btn-secondary" onclick="closeModal('transferencia')" style="flex:1">Cancelar</button>
+      <button class="btn-primary" onclick="saveTransferencia()" style="flex:2">Registrar</button>
+    </div>
   </div>
 </div>
 
@@ -512,9 +590,10 @@
   const auth = getAuth(app);
   const db   = getDatabase(app);
 
-  let uid = null, transactions = {}, contacts = {};
+  let uid = null, transactions = {}, contacts = {}, accounts = {};
   let activeFilter = 'all', currentType = 'income', activePeriod = 'month';
   let editingTxId = null, editCurrentType = 'income';
+  let editingCuentaId = null;
   let editingContactoId = null, currentContactoType = 'cliente', activeContactoTab = 'clientes';
   let chartMonthly = null, chartCats = null;
 
@@ -525,6 +604,7 @@
     document.getElementById('user-email').textContent = user.email;
     loadTransactions();
     loadContactos();
+    loadCuentas();
   });
   window.logout = async () => { await signOut(auth); window.location.href = 'index.html'; };
 
@@ -533,11 +613,15 @@
     onValue(ref(db, `empresas/${uid}/movimientos`), snap => {
       transactions = snap.val() || {};
       renderAll();
+      renderCuentas();
       document.getElementById('main-content').style.opacity = '1';
     });
   }
   function loadContactos() {
     onValue(ref(db, `empresas/${uid}/contactos`), snap => { contacts = snap.val() || {}; renderContactos(); });
+  }
+  function loadCuentas() {
+    onValue(ref(db, `empresas/${uid}/cuentas`), snap => { accounts = snap.val() || {}; renderCuentas(); populateCuentaSelects(); });
   }
 
   // ── UTILS ──
@@ -870,7 +954,10 @@
           };
           ok++;
         }
-        if(ok>0) await update(ref(db),batch);
+        if(ok>0){
+          await update(ref(db),batch);
+          // onValue en movimientos dispara renderAll automáticamente
+        }
         document.getElementById('import-step1').style.display='none';
         document.getElementById('import-step2').style.display='block';
         document.getElementById('import-result').textContent=`${ok} movimiento${ok!==1?'s':''} importado${ok!==1?'s':''}`;
@@ -878,6 +965,143 @@
       }catch(err){alert('Error al leer el archivo. Verificá que sea el template correcto.');console.error(err);}
     };
     reader.readAsArrayBuffer(file);
+  };
+
+  // ── CUENTAS ──
+  let accounts = {};
+  let editingCuentaId = null;
+  const CUENTA_ICONS   = { caja:'🏧', banco:'🏦', corriente:'📋', digital:'📱', inversion:'📈' };
+  const CUENTA_LABELS  = { caja:'Caja', banco:'Banco', corriente:'Cta. Corriente', digital:'Billetera digital', inversion:'Inversiones' };
+  const CUENTA_COLORS  = { caja:'#3d6b52', banco:'#1e4d8c', corriente:'#2460a7', digital:'#7a526b', inversion:'#c17a4a' };
+
+  function loadCuentas() {
+    onValue(ref(db,`empresas/${uid}/cuentas`), snap => {
+      accounts = snap.val()||{};
+      renderCuentas();
+      populateCuentaSelects();
+    });
+  }
+
+  function calcSaldoCuenta(id) {
+    const inicial = accounts[id]?.saldoInicial||0;
+    const txArr   = Object.values(transactions).filter(t=>t.cuentaId===id);
+    const ingresos= txArr.filter(t=>t.type==='income').reduce((s,t)=>s+t.amount,0);
+    const gastos  = txArr.filter(t=>t.type==='expense').reduce((s,t)=>s+t.amount,0);
+    const transf  = Object.values(transactions).filter(t=>t.type==='transferencia');
+    const recibidas= transf.filter(t=>t.cuentaDestinoId===id&&!t.esEntrada).reduce((s,t)=>s+t.amount,0);
+    const enviadas = transf.filter(t=>t.cuentaId===id&&!t.esEntrada).reduce((s,t)=>s+t.amount,0);
+    return inicial + ingresos - gastos + recibidas - enviadas;
+  }
+
+  window.renderCuentas = function() {
+    const arr = Object.entries(accounts).map(([id,c])=>({id,...c}));
+    const grid = document.getElementById('cuentas-grid');
+    const det  = document.getElementById('cuentas-detalle');
+    if(!grid||!det) return;
+    if(!arr.length) {
+      grid.innerHTML=`<div class="coming-soon" style="grid-column:1/-1;"><div class="coming-soon-icon">🏦</div><div class="coming-soon-title">No hay cuentas todavía</div><div class="coming-soon-sub">Creá tu primera cuenta con el botón + Nueva cuenta</div></div>`;
+      det.innerHTML=''; return;
+    }
+    const totalARS = arr.filter(c=>c.moneda!=='USD').reduce((s,c)=>s+calcSaldoCuenta(c.id),0);
+    const totalUSD = arr.filter(c=>c.moneda==='USD').reduce((s,c)=>s+calcSaldoCuenta(c.id),0);
+
+    grid.innerHTML = arr.map(c=>{
+      const saldo=calcSaldoCuenta(c.id);
+      const color=CUENTA_COLORS[c.tipo]||'var(--accent)';
+      const sym=c.moneda==='USD'?'USD ':'$';
+      return `<div class="card" style="border-top:3px solid ${color};cursor:pointer;" onclick="openEditCuenta('${c.id}')">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;">
+          <span style="font-size:1.4rem;">${CUENTA_ICONS[c.tipo]||'💳'}</span>
+          <span style="font-size:.6rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:${color};background:${color}22;padding:2px 8px;border-radius:3px;">${CUENTA_LABELS[c.tipo]||c.tipo}</span>
+        </div>
+        <div style="font-size:.85rem;font-weight:500;color:var(--ink);margin-bottom:2px;">${esc(c.nombre||'Sin nombre')}</div>
+        <div style="font-size:.68rem;color:var(--muted);margin-bottom:10px;">${c.notas||'&nbsp;'}</div>
+        <div style="font-family:'Plus Jakarta Sans',sans-serif;font-size:1.5rem;font-weight:600;color:${saldo>=0?color:'var(--red)'};">${sym}${Math.abs(saldo).toLocaleString('es-AR',{maximumFractionDigits:0})}</div>
+        <div style="font-size:.65rem;color:var(--muted);margin-top:3px;">Saldo actual · ${c.moneda||'ARS'}</div>
+      </div>`;
+    }).join('');
+
+    det.innerHTML = `
+      <div style="background:var(--surface);border:1px solid var(--border);border-top:3px solid var(--accent);padding:20px 24px;margin-bottom:24px;">
+        <div style="display:flex;gap:32px;flex-wrap:wrap;">
+          <div><div style="font-size:.62rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:6px;">Total ARS</div>
+            <div style="font-family:'Plus Jakarta Sans',sans-serif;font-size:1.6rem;font-weight:600;color:var(--accent);">$${totalARS.toLocaleString('es-AR',{maximumFractionDigits:0})}</div></div>
+          ${totalUSD>0?`<div><div style="font-size:.62rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:6px;">Total USD</div>
+            <div style="font-family:'Plus Jakarta Sans',sans-serif;font-size:1.6rem;font-weight:600;color:var(--accent2);">USD ${totalUSD.toLocaleString('es-AR',{minimumFractionDigits:2,maximumFractionDigits:2})}</div></div>`:''}
+        </div>
+      </div>
+      ${arr.map(c=>{
+        const saldo=calcSaldoCuenta(c.id);
+        const color=CUENTA_COLORS[c.tipo]||'var(--accent)';
+        const sym=c.moneda==='USD'?'USD ':'$';
+        const txCuenta=Object.entries(transactions).map(([id,t])=>({id,...t})).filter(t=>t.cuentaId===c.id&&t.type!=='transferencia').sort((a,b)=>(b.date||'').localeCompare(a.date||'')).slice(0,5);
+        return `<div style="margin-bottom:24px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid var(--border);margin-bottom:8px;">
+            <div style="display:flex;align-items:center;gap:10px;">
+              <span style="font-size:1.1rem;">${CUENTA_ICONS[c.tipo]||'💳'}</span>
+              <div><div style="font-size:.88rem;font-weight:600;color:var(--ink);">${esc(c.nombre)}</div>
+                <div style="font-size:.68rem;color:var(--muted);">${CUENTA_LABELS[c.tipo]||c.tipo} · ${c.moneda||'ARS'}</div></div>
+            </div>
+            <div style="text-align:right;">
+              <div style="font-family:'Plus Jakarta Sans',sans-serif;font-size:1.15rem;font-weight:600;color:${saldo>=0?color:'var(--red)'};">${sym}${Math.abs(saldo).toLocaleString('es-AR',{maximumFractionDigits:0})}</div>
+              <button class="tx-btn-action edit" style="font-size:.55rem;padding:3px 8px;margin-top:4px;" onclick="openEditCuenta('${c.id}')">Editar</button>
+            </div>
+          </div>
+          ${txCuenta.length?`<div class="tx-list">${txCuenta.map(t=>`<div class="tx-item">
+            <div class="tx-item-left"><div class="tx-desc">${esc(t.description||'Sin descripción')}</div><div class="tx-cat">${esc(t.category||'')} · ${fmtDate(t.date)}</div></div>
+            <div class="tx-item-right"><div class="tx-amount ${t.type==='income'?'income':'expense'}">${t.type==='income'?'+':'−'}${fmt(t.amount)}</div></div>
+          </div>`).join('')}</div>`:'<div style="font-size:.78rem;color:var(--muted);padding:8px 0;">Sin movimientos asignados.</div>'}
+        </div>`;
+      }).join('')}`;
+  };
+
+  function populateCuentaSelects() {
+    const arr=Object.entries(accounts).map(([id,c])=>({id,...c}));
+    const opts=`<option value="">— Sin asignar —</option>`+arr.map(c=>`<option value="${c.id}">${CUENTA_ICONS[c.tipo]||'💳'} ${esc(c.nombre)} (${c.moneda||'ARS'})</option>`).join('');
+    ['tx-cuenta','edit-tx-cuenta'].forEach(id=>{const el=document.getElementById(id);if(el)el.innerHTML=opts;});
+    const optsT=`<option value="">— Seleccioná —</option>`+arr.map(c=>`<option value="${c.id}">${CUENTA_ICONS[c.tipo]||'💳'} ${esc(c.nombre)}</option>`).join('');
+    ['transf-origen','transf-destino'].forEach(id=>{const el=document.getElementById(id);if(el)el.innerHTML=optsT;});
+  }
+
+  window.openEditCuenta=function(id){
+    const c=accounts[id];if(!c)return;
+    editingCuentaId=id;
+    document.getElementById('cuenta-modal-title').textContent='Editar cuenta';
+    document.getElementById('c-tipo').value=c.tipo||'caja';
+    document.getElementById('c-nombre-cuenta').value=c.nombre||'';
+    document.getElementById('c-saldo-inicial').value=c.saldoInicial||0;
+    document.getElementById('c-moneda').value=c.moneda||'ARS';
+    document.getElementById('c-notas-cuenta').value=c.notas||'';
+    document.getElementById('modal-cuenta').classList.add('open');
+  };
+
+  window.saveCuenta=async function(){
+    const nombre=document.getElementById('c-nombre-cuenta').value.trim();
+    if(!nombre){alert('Ingresá un nombre.');return;}
+    const data={tipo:document.getElementById('c-tipo').value,nombre,saldoInicial:parseFloat(document.getElementById('c-saldo-inicial').value)||0,moneda:document.getElementById('c-moneda').value,notas:document.getElementById('c-notas-cuenta').value.trim()||null,updatedAt:Date.now()};
+    if(editingCuentaId){await update(ref(db,`empresas/${uid}/cuentas/${editingCuentaId}`),data);editingCuentaId=null;}
+    else{data.createdAt=Date.now();await push(ref(db,`empresas/${uid}/cuentas`),data);}
+    closeModal('cuenta');
+  };
+
+  window.saveTransferencia=async function(){
+    const origen=document.getElementById('transf-origen').value;
+    const destino=document.getElementById('transf-destino').value;
+    const monto=parseFloat(document.getElementById('transf-monto').value);
+    const fecha=document.getElementById('transf-fecha').value;
+    const desc=document.getElementById('transf-desc').value.trim()||'Transferencia entre cuentas';
+    if(!origen||!destino){alert('Seleccioná origen y destino.');return;}
+    if(origen===destino){alert('Origen y destino no pueden ser la misma cuenta.');return;}
+    if(!monto||monto<=0){alert('Ingresá un monto válido.');return;}
+    if(!fecha){alert('Seleccioná una fecha.');return;}
+    const idS=push(ref(db,`empresas/${uid}/movimientos`)).key;
+    const idE=push(ref(db,`empresas/${uid}/movimientos`)).key;
+    const batch={};
+    batch[`empresas/${uid}/movimientos/${idS}`]={type:'transferencia',description:desc,amount:monto,category:'Transferencia',date:fecha,cuentaId:origen,cuentaDestinoId:destino,createdAt:Date.now()};
+    batch[`empresas/${uid}/movimientos/${idE}`]={type:'transferencia',description:desc,amount:monto,category:'Transferencia',date:fecha,cuentaId:destino,cuentaOrigenId:origen,esEntrada:true,createdAt:Date.now()};
+    await update(ref(db),batch);
+    closeModal('transferencia');
+    ['transf-monto','transf-desc'].forEach(id=>document.getElementById(id).value='');
   };
 
   // ── CONTACTOS ──
@@ -991,6 +1215,7 @@
     closeMobileNav();
     if(section==='movimientos') renderTxList();
     if(section==='contactos')  renderContactos();
+    if(section==='cuentas')    renderCuentas();
   };
 
   // ── DARK / FOCO ──
