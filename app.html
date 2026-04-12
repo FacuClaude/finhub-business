@@ -575,16 +575,35 @@
     </div>
 
     <!-- ═══════════════════════════════════════════════════════ -->
-    <!-- CONTACTOS (coming soon)                                 -->
+    <!-- CONTACTOS                                               -->
     <!-- ═══════════════════════════════════════════════════════ -->
     <div class="page" id="page-contactos">
       <div class="page-title">Contactos</div>
       <div class="page-sub">Clientes y proveedores</div>
-      <div class="coming-soon">
-        <div class="coming-soon-icon">👥</div>
-        <div class="coming-soon-title">Gestión de contactos en desarrollo</div>
-        <div class="coming-soon-sub">Próximamente: registro de clientes y proveedores con CUIT, condición IVA y asociación a movimientos.</div>
+
+      <!-- Tabs cliente/proveedor -->
+      <div style="display:flex;gap:0;margin-bottom:24px;border:1px solid var(--border);width:fit-content;border-radius:4px;overflow:hidden;">
+        <button class="contacto-tab active" id="tab-clientes" onclick="setContactoTab('clientes')"
+          style="font-family:'DM Sans',sans-serif;font-size:0.7rem;font-weight:400;letter-spacing:0.12em;text-transform:uppercase;padding:9px 24px;cursor:pointer;border:none;background:var(--accent);color:white;font-weight:500;transition:all 0.2s;">
+          Clientes
+        </button>
+        <button class="contacto-tab" id="tab-proveedores" onclick="setContactoTab('proveedores')"
+          style="font-family:'DM Sans',sans-serif;font-size:0.7rem;font-weight:400;letter-spacing:0.12em;text-transform:uppercase;padding:9px 24px;cursor:pointer;border:none;background:transparent;color:var(--muted);transition:all 0.2s;">
+          Proveedores
+        </button>
       </div>
+
+      <!-- Buscador + botón -->
+      <div class="section-header" style="margin-bottom:16px;">
+        <div style="position:relative;flex:1;max-width:320px;">
+          <svg style="position:absolute;left:12px;top:50%;transform:translateY(-50%);opacity:0.4;" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="text" id="contacto-search" placeholder="Buscar por nombre o CUIT…" oninput="renderContactos()" style="padding-left:36px;width:100%;">
+        </div>
+        <button class="btn-primary" onclick="openModal('contacto')">+ Contacto</button>
+      </div>
+
+      <!-- Grid de contactos -->
+      <div id="contactos-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;"></div>
     </div>
 
     <!-- ═══════════════════════════════════════════════════════ -->
@@ -625,8 +644,65 @@
 </button>
 
 <!-- ══════════════════════════════════════════════════════════════ -->
-<!-- MODAL: NUEVO MOVIMIENTO                                        -->
+<!-- MODAL: CONTACTO                                                -->
 <!-- ══════════════════════════════════════════════════════════════ -->
+<div class="overlay" id="modal-contacto" onclick="closeModal('contacto')">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-title" id="contacto-modal-title">Nuevo contacto</div>
+
+    <div class="field">
+      <div class="type-toggle">
+        <button type="button" class="type-btn active-income" id="ctype-cliente" onclick="setContactoType('cliente')">Cliente</button>
+        <button type="button" class="type-btn" id="ctype-proveedor" onclick="setContactoType('proveedor')">Proveedor</button>
+      </div>
+    </div>
+
+    <div class="field"><label>Nombre / Razón social</label><input type="text" id="c-nombre" placeholder="Ej: Distribuidora López S.A." /></div>
+    <div class="field"><label>CUIT</label><input type="text" id="c-cuit" placeholder="20-12345678-9" maxlength="13" oninput="formatCUIT(this)" /></div>
+
+    <div class="field">
+      <label>Condición IVA</label>
+      <select id="c-iva">
+        <option value="responsable_inscripto">Responsable Inscripto</option>
+        <option value="monotributista">Monotributista</option>
+        <option value="exento">Exento</option>
+        <option value="consumidor_final">Consumidor Final</option>
+        <option value="no_responsable">No Responsable</option>
+      </select>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+      <div class="field"><label>Email</label><input type="email" id="c-email" placeholder="contacto@empresa.com" /></div>
+      <div class="field"><label>Teléfono</label><input type="text" id="c-tel" placeholder="+54 11 1234-5678" /></div>
+    </div>
+
+    <div class="field">
+      <label>Notas (opcional)</label>
+      <textarea id="c-notas" rows="2" placeholder="Observaciones, condiciones de pago…" style="resize:vertical;"></textarea>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn-secondary" onclick="closeModal('contacto')" style="flex:1">Cancelar</button>
+      <button class="btn-primary" onclick="saveContacto()" style="flex:2" id="c-save-btn">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════ -->
+<!-- MODAL: DETALLE CONTACTO                                        -->
+<!-- ══════════════════════════════════════════════════════════════ -->
+<div class="overlay" id="modal-contacto-detalle" onclick="closeModal('contacto-detalle')">
+  <div class="modal" onclick="event.stopPropagation()" style="max-width:520px;">
+    <div id="contacto-detalle-content"></div>
+    <div class="modal-actions">
+      <button class="btn-secondary" onclick="closeModal('contacto-detalle')" style="flex:1">Cerrar</button>
+      <button class="btn-export" onclick="editContactoFromDetalle()" style="flex:1">Editar</button>
+      <button class="btn-primary" style="flex:1;background:var(--red);border-color:var(--red);" onclick="deleteContactoFromDetalle()">Eliminar</button>
+    </div>
+  </div>
+</div>
+
+
 <div class="overlay" id="modal-tx" onclick="closeModal('tx')">
   <div class="modal" onclick="event.stopPropagation()">
     <div class="modal-title">Nuevo movimiento</div>
@@ -742,6 +818,7 @@
     uid = user.uid;
     document.getElementById('user-email').textContent = user.email;
     loadTransactions();
+    loadContactos();
   });
 
   window.logout = async () => {
@@ -1112,9 +1189,248 @@
     document.getElementById('main-content').scrollTop = 0;
     closeMobileNav();
     if (section === 'movimientos') renderTxList();
+    if (section === 'contactos')  renderContactos();
   };
 
-  // ── DARK MODE ──
+  // ══════════════════════════════════════════════════
+  // CONTACTOS
+  // ══════════════════════════════════════════════════
+
+  let contacts = {};
+  let activeContactoTab = 'clientes';
+  let currentContactoType = 'cliente';
+  let editingContactoId = null;
+
+  function loadContactos() {
+    const cRef = ref(db, `empresas/${uid}/contactos`);
+    onValue(cRef, snap => { contacts = snap.val() || {}; renderContactos(); });
+  }
+
+  window.setContactoTab = function(tab) {
+    activeContactoTab = tab;
+    document.getElementById('tab-clientes').style.background    = tab==='clientes'    ? 'var(--accent)' : 'transparent';
+    document.getElementById('tab-clientes').style.color         = tab==='clientes'    ? 'white' : 'var(--muted)';
+    document.getElementById('tab-proveedores').style.background = tab==='proveedores' ? 'var(--accent)' : 'transparent';
+    document.getElementById('tab-proveedores').style.color      = tab==='proveedores' ? 'white' : 'var(--muted)';
+    renderContactos();
+  };
+
+  window.renderContactos = function() {
+    const q = (document.getElementById('contacto-search')?.value||'').toLowerCase();
+    const tipo = activeContactoTab === 'clientes' ? 'cliente' : 'proveedor';
+    const arr = Object.entries(contacts)
+      .map(([id,c]) => ({id,...c}))
+      .filter(c => c.tipo === tipo)
+      .filter(c => !q || (c.nombre||'').toLowerCase().includes(q) || (c.cuit||'').includes(q))
+      .sort((a,b) => (a.nombre||'').localeCompare(b.nombre||''));
+
+    const grid = document.getElementById('contactos-grid');
+    if (!arr.length) {
+      grid.innerHTML = `<div class="coming-soon" style="grid-column:1/-1;">
+        <div class="coming-soon-icon">${tipo==='cliente'?'🤝':'🏭'}</div>
+        <div class="coming-soon-title">No hay ${tipo==='cliente'?'clientes':'proveedores'} todavía</div>
+        <div class="coming-soon-sub">Agregá el primero con el botón + Contacto</div>
+      </div>`;
+      return;
+    }
+
+    // Calcular totales por contacto desde movimientos
+    const txArr = Object.values(transactions);
+    grid.innerHTML = arr.map(c => {
+      const cTxs = txArr.filter(t => t.contactoId === c.id);
+      const totalVentas  = cTxs.filter(t=>t.type==='income').reduce((s,t)=>s+t.amount,0);
+      const totalCompras = cTxs.filter(t=>t.type==='expense').reduce((s,t)=>s+t.amount,0);
+      const total = tipo==='cliente' ? totalVentas : totalCompras;
+      const ivaBadge = ivaLabel(c.condicionIva);
+
+      return `<div class="card" style="cursor:pointer;transition:box-shadow 0.2s;" onclick="openContactoDetalle('${c.id}')"
+        onmouseover="this.style.boxShadow='0 4px 20px rgba(30,77,140,0.1)'" onmouseout="this.style.boxShadow='none'">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;">
+          <div style="width:40px;height:40px;border-radius:50%;background:var(--accent-bg);border:1px solid rgba(30,77,140,0.15);display:flex;align-items:center;justify-content:center;font-family:'Plus Jakarta Sans',sans-serif;font-size:1rem;font-weight:700;color:var(--accent);">
+            ${(c.nombre||'?').charAt(0).toUpperCase()}
+          </div>
+          <span style="font-size:0.58rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:3px 8px;border-radius:3px;background:var(--accent-bg);color:var(--accent);">${ivaBadge}</span>
+        </div>
+        <div style="font-size:0.92rem;font-weight:500;color:var(--ink);margin-bottom:3px;">${esc(c.nombre||'Sin nombre')}</div>
+        <div style="font-size:0.7rem;color:var(--muted);margin-bottom:12px;">CUIT: ${esc(c.cuit||'—')}</div>
+        ${c.email ? `<div style="font-size:0.72rem;color:var(--muted2);margin-bottom:2px;">✉ ${esc(c.email)}</div>` : ''}
+        ${c.telefono ? `<div style="font-size:0.72rem;color:var(--muted2);margin-bottom:2px;">✆ ${esc(c.telefono)}</div>` : ''}
+        ${total > 0 ? `<div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;">
+          <span style="font-size:0.62rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);">${tipo==='cliente'?'Total vendido':'Total comprado'}</span>
+          <span style="font-family:'Plus Jakarta Sans',sans-serif;font-size:1rem;font-weight:600;color:var(--accent);">${fmt(total)}</span>
+        </div>` : ''}
+      </div>`;
+    }).join('');
+  };
+
+  function ivaLabel(val) {
+    const map = {
+      'responsable_inscripto': 'Resp. Inscripto',
+      'monotributista': 'Monotrib.',
+      'exento': 'Exento',
+      'consumidor_final': 'Cons. Final',
+      'no_responsable': 'No Resp.',
+    };
+    return map[val] || val || '—';
+  }
+
+  window.openContactoDetalle = function(id) {
+    const c = contacts[id];
+    if (!c) return;
+    const tipo = c.tipo;
+    const txArr = Object.values(transactions);
+    const cTxs = txArr.filter(t => t.contactoId === id).sort((a,b)=>(b.date||'').localeCompare(a.date||''));
+    const totalVentas  = cTxs.filter(t=>t.type==='income').reduce((s,t)=>s+t.amount,0);
+    const totalCompras = cTxs.filter(t=>t.type==='expense').reduce((s,t)=>s+t.amount,0);
+
+    document.getElementById('contacto-detalle-content').innerHTML = `
+      <div style="display:flex;align-items:center;gap:14px;margin-bottom:20px;">
+        <div style="width:52px;height:52px;border-radius:50%;background:var(--accent-bg);border:1px solid rgba(30,77,140,0.15);display:flex;align-items:center;justify-content:center;font-family:'Plus Jakarta Sans',sans-serif;font-size:1.3rem;font-weight:700;color:var(--accent);flex-shrink:0;">
+          ${(c.nombre||'?').charAt(0).toUpperCase()}
+        </div>
+        <div>
+          <div style="font-family:'Plus Jakarta Sans',sans-serif;font-size:1.2rem;font-weight:600;color:var(--ink);">${esc(c.nombre||'Sin nombre')}</div>
+          <div style="font-size:0.72rem;color:var(--muted);margin-top:2px;">${tipo==='cliente'?'Cliente':'Proveedor'} · ${ivaLabel(c.condicionIva)}</div>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px;">
+        <div style="background:var(--surface2);padding:12px 14px;border-radius:4px;">
+          <div style="font-size:0.6rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:4px;">CUIT</div>
+          <div style="font-size:0.88rem;color:var(--ink);">${esc(c.cuit||'—')}</div>
+        </div>
+        <div style="background:var(--surface2);padding:12px 14px;border-radius:4px;">
+          <div style="font-size:0.6rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:4px;">Condición IVA</div>
+          <div style="font-size:0.88rem;color:var(--ink);">${ivaLabel(c.condicionIva)}</div>
+        </div>
+        ${c.email ? `<div style="background:var(--surface2);padding:12px 14px;border-radius:4px;">
+          <div style="font-size:0.6rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:4px;">Email</div>
+          <div style="font-size:0.82rem;color:var(--ink);word-break:break-all;">${esc(c.email)}</div>
+        </div>` : ''}
+        ${c.telefono ? `<div style="background:var(--surface2);padding:12px 14px;border-radius:4px;">
+          <div style="font-size:0.6rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:4px;">Teléfono</div>
+          <div style="font-size:0.88rem;color:var(--ink);">${esc(c.telefono)}</div>
+        </div>` : ''}
+      </div>
+      ${c.notas ? `<div style="background:var(--surface2);padding:12px 14px;border-radius:4px;margin-bottom:16px;">
+        <div style="font-size:0.6rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:4px;">Notas</div>
+        <div style="font-size:0.82rem;color:var(--ink2);line-height:1.6;">${esc(c.notas)}</div>
+      </div>` : ''}
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:${cTxs.length?'20px':'0'};">
+        <div style="background:var(--accent-bg);padding:12px 14px;border-radius:4px;">
+          <div style="font-size:0.6rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--accent);margin-bottom:4px;">Total vendido</div>
+          <div style="font-family:'Plus Jakarta Sans',sans-serif;font-size:1.1rem;font-weight:600;color:var(--accent);">${fmt(totalVentas)}</div>
+        </div>
+        <div style="background:var(--red-bg);padding:12px 14px;border-radius:4px;">
+          <div style="font-size:0.6rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--red);margin-bottom:4px;">Total comprado</div>
+          <div style="font-family:'Plus Jakarta Sans',sans-serif;font-size:1.1rem;font-weight:600;color:var(--red);">${fmt(totalCompras)}</div>
+        </div>
+      </div>
+      ${cTxs.length ? `
+        <div style="font-size:0.62rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;">Últimos movimientos</div>
+        <div style="background:var(--surface);border:1px solid var(--border);">
+          ${cTxs.slice(0,5).map(t=>`
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 14px;border-bottom:1px solid var(--border);">
+              <div>
+                <div style="font-size:0.82rem;color:var(--ink);">${esc(t.description||'Sin descripción')}</div>
+                <div style="font-size:0.68rem;color:var(--muted);margin-top:1px;">${fmtDate(t.date)}</div>
+              </div>
+              <div style="font-family:'Plus Jakarta Sans',sans-serif;font-size:0.95rem;font-weight:600;color:${t.type==='income'?'var(--green)':'var(--red)'};">
+                ${t.type==='income'?'+':'−'}${fmt(t.amount)}
+              </div>
+            </div>`).join('')}
+        </div>` : ''}
+    `;
+    document.getElementById('modal-contacto-detalle').dataset.contactoId = id;
+    document.getElementById('modal-contacto-detalle').classList.add('open');
+  };
+
+  window.editContactoFromDetalle = function() {
+    const id = document.getElementById('modal-contacto-detalle').dataset.contactoId;
+    closeModal('contacto-detalle');
+    openEditContacto(id);
+  };
+
+  window.deleteContactoFromDetalle = async function() {
+    const id = document.getElementById('modal-contacto-detalle').dataset.contactoId;
+    if (!confirm('¿Eliminar este contacto?')) return;
+    await remove(ref(db, `empresas/${uid}/contactos/${id}`));
+    closeModal('contacto-detalle');
+  };
+
+  function openEditContacto(id) {
+    const c = contacts[id];
+    if (!c) return;
+    editingContactoId = id;
+    document.getElementById('contacto-modal-title').textContent = 'Editar contacto';
+    document.getElementById('c-nombre').value  = c.nombre || '';
+    document.getElementById('c-cuit').value    = c.cuit || '';
+    document.getElementById('c-iva').value     = c.condicionIva || 'responsable_inscripto';
+    document.getElementById('c-email').value   = c.email || '';
+    document.getElementById('c-tel').value     = c.telefono || '';
+    document.getElementById('c-notas').value   = c.notas || '';
+    setContactoType(c.tipo || 'cliente');
+    document.getElementById('modal-contacto').classList.add('open');
+  }
+
+  window.setContactoType = function(tipo) {
+    currentContactoType = tipo;
+    const btnC = document.getElementById('ctype-cliente');
+    const btnP = document.getElementById('ctype-proveedor');
+    btnC.className = 'type-btn ' + (tipo==='cliente' ? 'active-income' : '');
+    btnP.className = 'type-btn ' + (tipo==='proveedor' ? 'active-expense' : '');
+  };
+
+  window.formatCUIT = function(input) {
+    let v = input.value.replace(/\D/g,'').slice(0,11);
+    if (v.length > 2)  v = v.slice(0,2) + '-' + v.slice(2);
+    if (v.length > 11) v = v.slice(0,11) + '-' + v.slice(11);
+    input.value = v;
+  };
+
+  window.saveContacto = async function() {
+    const nombre = document.getElementById('c-nombre').value.trim();
+    const cuit   = document.getElementById('c-cuit').value.trim();
+    if (!nombre) { alert('Ingresá un nombre.'); return; }
+
+    const data = {
+      tipo:         currentContactoType,
+      nombre,
+      cuit:         cuit || null,
+      condicionIva: document.getElementById('c-iva').value,
+      email:        document.getElementById('c-email').value.trim() || null,
+      telefono:     document.getElementById('c-tel').value.trim() || null,
+      notas:        document.getElementById('c-notas').value.trim() || null,
+      updatedAt:    Date.now(),
+    };
+
+    if (editingContactoId) {
+      await update(ref(db, `empresas/${uid}/contactos/${editingContactoId}`), data);
+      editingContactoId = null;
+    } else {
+      data.createdAt = Date.now();
+      await push(ref(db, `empresas/${uid}/contactos`), data);
+    }
+    closeModal('contacto');
+  };
+
+  // Reset modal al abrir
+  const _origOpenModal = window.openModal;
+  window.openModal = function(name) {
+    if (name === 'contacto') {
+      editingContactoId = null;
+      document.getElementById('contacto-modal-title').textContent = 'Nuevo contacto';
+      document.getElementById('c-nombre').value = '';
+      document.getElementById('c-cuit').value   = '';
+      document.getElementById('c-email').value  = '';
+      document.getElementById('c-tel').value    = '';
+      document.getElementById('c-notas').value  = '';
+      document.getElementById('c-iva').value    = 'responsable_inscripto';
+      setContactoType('cliente');
+    }
+    _origOpenModal(name);
+  };
+
+
   window.toggleDark = (on) => {
     document.body.classList.toggle('dark', on);
     localStorage.setItem('finhub-biz-dark', on ? '1' : '0');
