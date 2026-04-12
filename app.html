@@ -968,19 +968,9 @@
   };
 
   // ── CUENTAS ──
-  let accounts = {};
-  let editingCuentaId = null;
   const CUENTA_ICONS   = { caja:'🏧', banco:'🏦', corriente:'📋', digital:'📱', inversion:'📈' };
   const CUENTA_LABELS  = { caja:'Caja', banco:'Banco', corriente:'Cta. Corriente', digital:'Billetera digital', inversion:'Inversiones' };
   const CUENTA_COLORS  = { caja:'#3d6b52', banco:'#1e4d8c', corriente:'#2460a7', digital:'#7a526b', inversion:'#c17a4a' };
-
-  function loadCuentas() {
-    onValue(ref(db,`empresas/${uid}/cuentas`), snap => {
-      accounts = snap.val()||{};
-      renderCuentas();
-      populateCuentaSelects();
-    });
-  }
 
   function calcSaldoCuenta(id) {
     const inicial = accounts[id]?.saldoInicial||0;
@@ -1219,7 +1209,7 @@
   };
 
   // ── DARK / FOCO ──
-  window.toggleDark=(on)=>{document.body.classList.toggle('dark',on);localStorage.setItem('finhub-biz-dark',on?'1':'0');renderAll();};
+  window.toggleDark=(on)=>{document.body.classList.toggle('dark',on);localStorage.setItem('finhub-biz-dark',on?'1':'0');renderAll();renderCuentas();};
   window.toggleFoco=(on)=>{document.getElementById('shell').classList.toggle('foco-active',on);};
   if(localStorage.getItem('finhub-biz-dark')==='1'){document.body.classList.add('dark');const t=document.getElementById('dark-toggle');if(t)t.checked=true;}
 
