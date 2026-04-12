@@ -630,6 +630,7 @@
   function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
   function getTxByPeriod(txArr) {
+    const real = txArr.filter(t => t.type !== 'transferencia');
     const now = new Date();
     let from;
     if (activePeriod==='week')  { from=new Date(now); from.setDate(now.getDate()-7); }
@@ -638,7 +639,32 @@
     else if (activePeriod==='6m')  { from=new Date(now); from.setMonth(now.getMonth()-6); }
     else if (activePeriod==='year'){ from=new Date(now); from.setFullYear(now.getFullYear()-1); }
     const fromStr = from.toISOString().slice(0,10);
-    return txArr.filter(t=>t.date>=fromStr);
+    return real.filter(t => t.date >= fromStr);
+  }
+
+  // Si el período activo no tiene datos, devuelve el mes más reciente con datos
+  function getEffectiveTxArr(txArr) {
+    const byPeriod = getTxByPeriod(txArr);
+    if (byPeriod.length > 0) return byPeriod;
+    // Fallback: mes más reciente con datos
+    const real = txArr.filter(t => t.type !== 'transferencia');
+    const months = [...new Set(real.map(t=>t.date?.slice(0,7)).filter(Boolean))].sort().reverse();
+    if (!months.length) return [];
+    return real.filter(t => t.date?.startsWith(months[0]));
+  }
+
+  function getEffectiveLabel() {
+    const txArr = Object.entries(transactions).map(([id,t])=>({id,...t}));
+    const byPeriod = getTxByPeriod(txArr);
+    if (byPeriod.length > 0) {
+      const labels = {month:'Este mes',week:'Esta semana','3m':'Últimos 3 meses','6m':'Últimos 6 meses',year:'Último año'};
+      return labels[activePeriod] || '';
+    }
+    // Fallback: indicar qué mes se está mostrando
+    const real = txArr.filter(t => t.type !== 'transferencia');
+    const months = [...new Set(real.map(t=>t.date?.slice(0,7)).filter(Boolean))].sort().reverse();
+    if (!months.length) return 'Sin datos';
+    return getMonthLabel(months[0]) + ' (último con datos)';
   }
 
   function getMonthLabel(key) {
@@ -653,7 +679,7 @@
   // ── DASHBOARD ──
   function renderDashboard() {
     const txArr = Object.entries(transactions).map(([id,t])=>({id,...t}));
-    const filtered = getTxByPeriod(txArr);
+    const filtered = getEffectiveTxArr(txArr);
 
     const ing  = filtered.filter(t=>t.type==='income').reduce((s,t)=>s+t.amount,0);
     const gast = filtered.filter(t=>t.type==='expense').reduce((s,t)=>s+t.amount,0);
@@ -662,9 +688,7 @@
     const ivaC = filtered.filter(t=>t.type==='expense' && t.ivaAlicuota).reduce((s,t)=>s+(t.amount*t.ivaAlicuota/100),0);
     const margen = ing>0 ? Math.round(bal/ing*100) : 0;
 
-    // Label período
-    const labels = {month:'Este mes',week:'Esta semana','3m':'Últimos 3 meses','6m':'Últimos 6 meses',year:'Último año'};
-    document.getElementById('dash-mes-label').textContent = (labels[activePeriod]||'').toUpperCase();
+    document.getElementById('dash-mes-label').textContent = getEffectiveLabel().toUpperCase();
 
     document.getElementById('dash-ventas').textContent  = fmt(ing);
     document.getElementById('dash-gastos').textContent  = fmt(gast);
@@ -761,9 +785,7 @@
   // ── TX BANNER ──
   function updateTxBanner() {
     const txArr = Object.entries(transactions).map(([id,t])=>({id,...t}));
-    const now = new Date();
-    const key = now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0');
-    const txs = txArr.filter(t=>t.date?.startsWith(key));
+    const txs = getEffectiveTxArr(txArr);
     const ing  = txs.filter(t=>t.type==='income').reduce((s,t)=>s+t.amount,0);
     const gast = txs.filter(t=>t.type==='expense').reduce((s,t)=>s+t.amount,0);
     const ivaD = txs.filter(t=>t.type==='income'&&t.ivaAlicuota).reduce((s,t)=>s+(t.amount*t.ivaAlicuota/100),0);
