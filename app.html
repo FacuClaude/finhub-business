@@ -48,43 +48,44 @@
 
     /* ── SIDEBAR ── */
     .sidebar { background:#1e4d8c; border-right:none; padding:0; display:flex; flex-direction:column; height:100%; overflow-y:auto; overscroll-behavior:contain; transition:background .3s; }
-    body.dark .sidebar { background:#2c2c2c; border-right:1px solid #3a3a3a; }
+    body.dark .sidebar { background:#3a3a3a; border-right:1px solid #4a4a4a; }
     .wordmark { padding:20px 24px 16px; border-bottom:1px solid rgba(255,255,255,.12); }
-    body.dark .wordmark { border-bottom-color:#3a3a3a; }
+    body.dark .wordmark { border-bottom-color:#4a4a4a; }
     .wordmark-badge { display:inline-flex; align-items:center; gap:5px; font-size:.58rem; font-weight:700; letter-spacing:.14em; text-transform:uppercase; color:white; background:rgba(255,255,255,.15); border:1px solid rgba(255,255,255,.25); border-radius:10px; padding:2px 8px; margin-top:6px; }
-    body.dark .wordmark-badge { color:var(--accent); background:var(--accent-bg); border-color:rgba(30,77,140,.3); }
+    body.dark .wordmark-badge { color:#c0c0c0; background:rgba(255,255,255,.1); border-color:rgba(255,255,255,.2); }
     nav { padding:8px 0; flex:1; }
-    .nav-section { font-size:.58rem; font-weight:700; letter-spacing:.14em; text-transform:uppercase; color:rgba(255,255,255,.4); padding:14px 20px 4px; }
-    body.dark .nav-section { color:#686868; }
-    .nav-item { display:flex; align-items:center; gap:10px; padding:8px 20px; width:100%; font-size:.78rem; font-weight:400; letter-spacing:.04em; color:rgba(255,255,255,.65); cursor:pointer; transition:color .2s,background .2s; border:none; border-left:2px solid transparent; background:transparent; text-align:left; font-family:'DM Sans',sans-serif; }
-    body.dark .nav-item { color:#9a9a9a; }
-    .nav-item:hover { color:white; background:rgba(255,255,255,.1); }
-    body.dark .nav-item:hover { color:#e0e0e0; background:rgba(255,255,255,.06); }
-    .nav-item.active { color:white; border-left-color:white; background:rgba(255,255,255,.15); font-weight:500; }
-    body.dark .nav-item.active { color:#6aaee8; border-left-color:#6aaee8; background:rgba(74,128,196,.14); }
+    .nav-section { font-size:.58rem; font-weight:700; letter-spacing:.14em; text-transform:uppercase; color:rgba(255,255,255,.5); padding:14px 20px 4px; }
+    body.dark .nav-section { color:#888; }
+    .nav-item { display:flex; align-items:center; gap:10px; padding:8px 20px; width:100%; font-size:.78rem; font-weight:400; letter-spacing:.04em; color:rgba(255,255,255,.82); cursor:pointer; transition:color .2s,background .2s; border:none; border-left:2px solid transparent; background:transparent; text-align:left; font-family:'DM Sans',sans-serif; }
+    body.dark .nav-item { color:#c0c0c0; }
+    .nav-item:hover { color:white; background:rgba(255,255,255,.12); }
+    body.dark .nav-item:hover { color:#e8e8e8; background:rgba(255,255,255,.08); }
+    .nav-item.active { color:white; border-left-color:white; background:rgba(255,255,255,.18); font-weight:500; }
+    body.dark .nav-item.active { color:white; border-left-color:#6aaee8; background:rgba(106,174,232,.18); }
     .nav-icon { width:14px; height:14px; flex-shrink:0; }
     .sidebar-footer { padding:14px 24px 20px; border-top:1px solid rgba(255,255,255,.12); }
-    body.dark .sidebar-footer { border-top-color:#3a3a3a; }
-    .user-email { font-size:.7rem; color:rgba(255,255,255,.45); margin-bottom:12px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-    body.dark .user-email { color:#787878; }
+    body.dark .sidebar-footer { border-top-color:#4a4a4a; }
+    .user-email { font-size:.7rem; color:rgba(255,255,255,.55); margin-bottom:12px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    body.dark .user-email { color:#aaa; }
     .theme-toggle { display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; }
-    .theme-label { font-size:.68rem; letter-spacing:.08em; text-transform:uppercase; color:rgba(255,255,255,.5); }
-    body.dark .theme-label { color:#787878; }
+    .theme-label { font-size:.68rem; letter-spacing:.08em; text-transform:uppercase; color:rgba(255,255,255,.6); }
+    body.dark .theme-label { color:#aaa; }
     .switch { position:relative; width:36px; height:20px; flex-shrink:0; }
     .switch input { opacity:0; width:0; height:0; }
-    .slider { position:absolute; inset:0; background:rgba(255,255,255,.2); border-radius:20px; cursor:pointer; transition:background .3s; }
-    body.dark .slider { background:#484848; }
+    .slider { position:absolute; inset:0; background:rgba(255,255,255,.22); border-radius:20px; cursor:pointer; transition:background .3s; }
+    body.dark .slider { background:#585858; }
     .slider::before { content:''; position:absolute; width:14px; height:14px; left:3px; top:3px; background:white; border-radius:50%; transition:transform .3s; }
     input:checked + .slider { background:rgba(255,255,255,.55); }
-    body.dark input:checked + .slider { background:var(--accent); }
+    body.dark input:checked + .slider { background:#4a80c4; }
     input:checked + .slider::before { transform:translateX(16px); }
-    .btn-logout { font-family:'DM Sans',sans-serif; font-size:.68rem; font-weight:400; letter-spacing:.1em; text-transform:uppercase; color:rgba(255,255,255,.6); background:none; border:1px solid rgba(255,255,255,.25); padding:8px 14px; cursor:pointer; transition:all .2s; border-radius:4px; width:100%; text-align:center; }
-    body.dark .btn-logout { color:#9a9a9a; border-color:#3a3a3a; }
-    .btn-logout:hover { color:white; border-color:rgba(255,255,255,.6); }
+    .btn-logout { font-family:'DM Sans',sans-serif; font-size:.68rem; font-weight:400; letter-spacing:.1em; text-transform:uppercase; color:rgba(255,255,255,.65); background:none; border:1px solid rgba(255,255,255,.28); padding:8px 14px; cursor:pointer; transition:all .2s; border-radius:4px; width:100%; text-align:center; }
+    body.dark .btn-logout { color:#c0c0c0; border-color:rgba(255,255,255,.2); }
+    .btn-logout:hover { color:white; border-color:rgba(255,255,255,.7); }
     body.dark .btn-logout:hover { color:var(--red); border-color:var(--red); }
 
     /* ── MAIN ── */
-    main { padding:48px 52px; animation:fadeIn .4s ease both; height:100%; overflow-y:auto; overscroll-behavior:contain; }
+    main { padding:48px 52px; animation:fadeIn .4s ease both; height:100%; overflow-y:auto; overscroll-behavior:contain; scrollbar-width:none; }
+    main::-webkit-scrollbar { display:none; }
     @keyframes fadeIn { from{opacity:0} to{opacity:1} }
     .page { display:none; }
     .page.active { display:block; }
@@ -250,6 +251,17 @@
       </div>
       <div class="wordmark-badge">Business</div>
     </div>
+
+    <!-- BÚSQUEDA GLOBAL -->
+    <div style="padding:12px 16px;border-bottom:1px solid rgba(255,255,255,.1);">
+      <div style="position:relative;">
+        <svg style="position:absolute;left:10px;top:50%;transform:translateY(-50%);opacity:.5;pointer-events:none;" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" id="global-search" placeholder="Buscar en todo..." oninput="runGlobalSearch(this.value)"
+          style="width:100%;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);color:white;font-family:'DM Sans',sans-serif;font-size:.78rem;padding:8px 10px 8px 30px;border-radius:6px;outline:none;transition:background .2s;"
+          onfocus="this.style.background='rgba(255,255,255,.18)'" onblur="this.style.background='rgba(255,255,255,.12)'"/>
+        <button id="global-search-clear" onclick="clearGlobalSearch()" style="display:none;position:absolute;right:8px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:rgba(255,255,255,.6);font-size:.9rem;padding:0 2px;">✕</button>
+      </div>
+    </div>
     <nav>
       <div class="nav-section">Principal</div>
       <button class="nav-item active" onclick="goTo('dashboard')">
@@ -292,6 +304,13 @@
 
   <!-- ── MAIN ── -->
   <main id="main-content" style="opacity:0;transition:opacity .3s">
+
+    <!-- BÚSQUEDA GLOBAL -->
+    <div class="page" id="page-busqueda">
+      <div class="page-title">Búsqueda</div>
+      <div class="page-sub" id="busqueda-sub">Resultados de la búsqueda</div>
+      <div id="busqueda-resultados"></div>
+    </div>
 
     <!-- DASHBOARD -->
     <div class="page active" id="page-dashboard">
@@ -363,6 +382,7 @@
         </div>
         <div style="display:flex;gap:8px;flex-wrap:wrap;">
           <button class="btn-export" onclick="exportTxCSV()">↓ CSV</button>
+          <button class="btn-export" onclick="exportTxExcel()">↓ Excel</button>
           <button class="btn-export" onclick="openModal('import')">↑ Importar Excel</button>
           <button class="btn-primary" onclick="openModal('tx')">+ Movimiento</button>
         </div>
@@ -414,7 +434,8 @@
       <div class="page-sub">Libro de IVA débito y crédito</div>
       <div style="display:flex;align-items:center;gap:12px;margin-bottom:28px;flex-wrap:wrap;">
         <select id="iva-mes" onchange="renderIVA()" style="width:auto;padding:8px 14px;font-size:.82rem;"></select>
-        <button class="btn-export" onclick="exportIVACSV()">↓ Exportar para contador</button>
+        <button class="btn-export" onclick="exportIVACSV()">↓ CSV</button>
+        <button class="btn-export" onclick="exportIVAExcel()">↓ Excel</button>
       </div>
       <div class="cards-row" style="margin-bottom:24px;">
         <div class="card" style="border-top:2px solid var(--accent2);"><div class="card-label">IVA Débito (ventas)</div><div class="card-value" style="font-size:1.8rem;color:var(--accent2);" id="iva-debito-total">$0</div><div class="card-sub" id="iva-debito-count">0 comprobantes</div></div>
@@ -447,7 +468,8 @@
         <!-- Selector año + exportar -->
         <div style="display:flex;align-items:center;gap:12px;margin-bottom:24px;flex-wrap:wrap;">
           <select id="pl-anio" onchange="renderPL()" style="width:auto;padding:8px 14px;font-size:.82rem;"></select>
-          <button class="btn-export" onclick="exportPLCSV()">↓ Exportar P&amp;L CSV</button>
+          <button class="btn-export" onclick="exportPLCSV()">↓ CSV</button>
+          <button class="btn-export" onclick="exportPLExcel()">↓ Excel</button>
         </div>
 
         <!-- KPIs anuales -->
@@ -481,7 +503,8 @@
       <div id="rep-flujo" style="display:none;">
         <div style="display:flex;align-items:center;gap:12px;margin-bottom:24px;flex-wrap:wrap;">
           <select id="flujo-anio" onchange="renderFlujo()" style="width:auto;padding:8px 14px;font-size:.82rem;"></select>
-          <button class="btn-export" onclick="exportFlujoCSV()">↓ Exportar flujo CSV</button>
+          <button class="btn-export" onclick="exportFlujoCSV()">↓ CSV</button>
+          <button class="btn-export" onclick="exportFlujoExcel()">↓ Excel</button>
         </div>
 
         <!-- KPIs flujo -->
@@ -560,7 +583,11 @@
       <div id="tx-iva-wrap" style="display:none;margin-top:10px;"><label>Alícuota IVA</label><select id="tx-iva-alicuota"><option value="21">21%</option><option value="10.5">10,5%</option><option value="27">27%</option><option value="0">Exento</option></select></div>
     </div>
     <div class="field"><label>Notas (opcional)</label><textarea id="tx-notas" rows="2" style="resize:vertical;"></textarea></div>
-    <div class="field"><label>Cuenta</label><select id="tx-cuenta"><option value="">— Sin asignar —</option></select></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+      <div class="field" style="margin-bottom:0;"><label>Cuenta</label><select id="tx-cuenta"><option value="">— Sin asignar —</option></select></div>
+      <div class="field" style="margin-bottom:0;"><label>Contacto</label><select id="tx-contacto"><option value="">— Sin asignar —</option></select></div>
+    </div>
+    <div style="margin-bottom:16px;"></div>
     <div class="modal-actions"><button class="btn-secondary" onclick="closeModal('tx')" style="flex:1">Cancelar</button><button class="btn-primary" onclick="saveTx()" style="flex:2">Guardar</button></div>
   </div>
 </div>
@@ -585,7 +612,11 @@
       <div id="edit-tx-iva-wrap" style="display:none;margin-top:10px;"><label>Alícuota IVA</label><select id="edit-tx-iva-alicuota"><option value="21">21%</option><option value="10.5">10,5%</option><option value="27">27%</option><option value="0">Exento</option></select></div>
     </div>
     <div class="field"><label>Notas (opcional)</label><textarea id="edit-tx-notas" rows="2" style="resize:vertical;"></textarea></div>
-    <div class="field"><label>Cuenta</label><select id="edit-tx-cuenta"><option value="">— Sin asignar —</option></select></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+      <div class="field" style="margin-bottom:0;"><label>Cuenta</label><select id="edit-tx-cuenta"><option value="">— Sin asignar —</option></select></div>
+      <div class="field" style="margin-bottom:0;"><label>Contacto</label><select id="edit-tx-contacto"><option value="">— Sin asignar —</option></select></div>
+    </div>
+    <div style="margin-bottom:16px;"></div>
     <div class="modal-actions"><button class="btn-secondary" onclick="closeModal('edit-tx')" style="flex:1">Cancelar</button><button class="btn-primary" onclick="saveEditTx()" style="flex:2">Guardar cambios</button></div>
   </div>
 </div>
@@ -735,7 +766,11 @@
     });
   }
   function loadContactos() {
-    onValue(ref(db, `empresas/${uid}/contactos`), snap => { contacts = snap.val() || {}; renderContactos(); });
+    onValue(ref(db, `empresas/${uid}/contactos`), snap => {
+      contacts = snap.val() || {};
+      renderContactos();
+      populateContactoSelects();
+    });
   }
   function loadCuentas() {
     onValue(ref(db, `empresas/${uid}/cuentas`), snap => { accounts = snap.val() || {}; renderCuentas(); populateCuentaSelects(); });
@@ -949,13 +984,17 @@
 
   function txItemHTML(t, showActions) {
     const isInc=t.type==='income';
-    const ivaBadge=t.ivaAlicuota?`<span class="tx-tag iva">IVA ${t.ivaAlicuota}%</span>`:'';
+    const cuentaNombre  = t.cuentaId   && accounts[t.cuentaId]   ? accounts[t.cuentaId].nombre   : null;
+    const contactoNombre= t.contactoId && contacts[t.contactoId] ? contacts[t.contactoId].nombre : null;
+    const ivaBadge      = t.ivaAlicuota ? `<span class="tx-tag iva">IVA ${t.ivaAlicuota}%</span>` : '';
+    const cuentaBadge   = cuentaNombre  ? `<span class="tx-tag cuenta">${esc(cuentaNombre)}</span>` : '';
+    const contactoBadge = contactoNombre? `<span class="tx-tag" style="background:rgba(61,107,82,.1);color:var(--green);">${esc(contactoNombre)}</span>` : '';
     const actions=showActions?`<div class="tx-item-actions"><button class="tx-btn-action edit" onclick="openEditTx('${t.id}')">Editar</button><button class="tx-btn-action del" onclick="deleteTx('${t.id}')">Eliminar</button></div>`:'';
     return `<div class="tx-item">
       <div class="tx-item-left">
         <div class="tx-desc">${esc(t.description||'Sin descripción')}</div>
         <div class="tx-cat">${esc(t.category||'')}${t.comprobante?' · '+esc(t.comprobante):''}</div>
-        <div style="display:flex;gap:6px;margin-top:4px;">${ivaBadge}</div>
+        <div style="display:flex;gap:6px;margin-top:4px;flex-wrap:wrap;">${ivaBadge}${cuentaBadge}${contactoBadge}</div>
       </div>
       <div class="tx-item-right">
         <div class="tx-amount ${isInc?'income':'expense'}">${isInc?'+':'−'}${fmt(t.amount)}</div>
@@ -976,6 +1015,8 @@
       document.getElementById('tx-amount').value='';
       document.getElementById('tx-tiene-iva').checked=false;
       document.getElementById('tx-iva-wrap').style.display='none';
+      document.getElementById('tx-cuenta').value='';
+      document.getElementById('tx-contacto').value='';
       setType('income');
     }
     if(name==='contacto'){
@@ -1002,8 +1043,10 @@
     const tieneIva=document.getElementById('tx-tiene-iva').checked;
     await push(ref(db,`empresas/${uid}/movimientos`),{
       type:currentType, description:desc, amount, category:document.getElementById('tx-cat').value, date,
+      cuentaId:   document.getElementById('tx-cuenta').value||null,
+      contactoId: document.getElementById('tx-contacto').value||null,
       comprobante:document.getElementById('tx-comprobante').value.trim()||null,
-      notas:document.getElementById('tx-notas').value.trim()||null,
+      notas:      document.getElementById('tx-notas').value.trim()||null,
       ivaAlicuota:tieneIva?parseFloat(document.getElementById('tx-iva-alicuota').value):null,
       createdAt:Date.now()
     });
@@ -1020,6 +1063,8 @@
     document.getElementById('edit-tx-comprobante').value=t.comprobante||'';
     document.getElementById('edit-tx-notas').value=t.notas||'';
     document.getElementById('edit-tx-cat').value=t.category||'Ventas';
+    document.getElementById('edit-tx-cuenta').value=t.cuentaId||'';
+    document.getElementById('edit-tx-contacto').value=t.contactoId||'';
     const ti=!!t.ivaAlicuota;
     document.getElementById('edit-tx-tiene-iva').checked=ti;
     document.getElementById('edit-tx-iva-wrap').style.display=ti?'block':'none';
@@ -1038,8 +1083,10 @@
     const ti=document.getElementById('edit-tx-tiene-iva').checked;
     await update(ref(db,`empresas/${uid}/movimientos/${editingTxId}`),{
       type:editCurrentType, description:desc, amount, category:document.getElementById('edit-tx-cat').value, date,
+      cuentaId:   document.getElementById('edit-tx-cuenta').value||null,
+      contactoId: document.getElementById('edit-tx-contacto').value||null,
       comprobante:document.getElementById('edit-tx-comprobante').value.trim()||null,
-      notas:document.getElementById('edit-tx-notas').value.trim()||null,
+      notas:      document.getElementById('edit-tx-notas').value.trim()||null,
       ivaAlicuota:ti?parseFloat(document.getElementById('edit-tx-iva-alicuota').value):null,
       updatedAt:Date.now()
     });
@@ -1286,6 +1333,20 @@
     ['tx-cuenta','edit-tx-cuenta'].forEach(id=>{const el=document.getElementById(id);if(el)el.innerHTML=opts;});
     const optsT=`<option value="">— Seleccioná —</option>`+arr.map(c=>`<option value="${c.id}">${CUENTA_ICONS[c.tipo]||'💳'} ${esc(c.nombre)}</option>`).join('');
     ['transf-origen','transf-destino'].forEach(id=>{const el=document.getElementById(id);if(el)el.innerHTML=optsT;});
+    populateContactoSelects();
+  }
+
+  function populateContactoSelects() {
+    const arr = Object.entries(contacts).map(([id,c])=>({id,...c})).sort((a,b)=>(a.nombre||'').localeCompare(b.nombre||''));
+    const icon = c => c.tipo==='cliente' ? '🤝' : '🏭';
+    const opts = `<option value="">— Sin asignar —</option>`
+      + (arr.filter(c=>c.tipo==='cliente').length
+          ? `<optgroup label="── Clientes ──">${arr.filter(c=>c.tipo==='cliente').map(c=>`<option value="${c.id}">${icon(c)} ${esc(c.nombre)}${c.cuit?' · '+esc(c.cuit):''}</option>`).join('')}</optgroup>`
+          : '')
+      + (arr.filter(c=>c.tipo==='proveedor').length
+          ? `<optgroup label="── Proveedores ──">${arr.filter(c=>c.tipo==='proveedor').map(c=>`<option value="${c.id}">${icon(c)} ${esc(c.nombre)}${c.cuit?' · '+esc(c.cuit):''}</option>`).join('')}</optgroup>`
+          : '');
+    ['tx-contacto','edit-tx-contacto'].forEach(id=>{const el=document.getElementById(id);if(el)el.innerHTML=opts;});
   }
 
   window.openEditCuenta=function(id){
@@ -1718,6 +1779,206 @@
     const a=document.createElement('a');a.href='data:text/csv;charset=utf-8,\uFEFF'+encodeURIComponent(csv);a.download=`FlujoCaja-${anio}-finhub-business.csv`;a.click();
   };
 
+  // ══════════════════════════════════════════════════
+  // BÚSQUEDA GLOBAL
+  // ══════════════════════════════════════════════════
+  window.runGlobalSearch = function(q) {
+    q = q.trim();
+    const clearBtn = document.getElementById('global-search-clear');
+    if (clearBtn) clearBtn.style.display = q ? 'block' : 'none';
+    if (!q) {
+      // Si borraron el texto, volver al dashboard
+      const pages = document.querySelectorAll('.page');
+      if ([...pages].find(p=>p.id==='page-busqueda'&&p.classList.contains('active'))) {
+        goTo('dashboard');
+      }
+      return;
+    }
+    // Activar página de búsqueda sin tocar el nav activo
+    document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+    document.getElementById('page-busqueda').classList.add('active');
+    const ql = q.toLowerCase();
+
+    // Buscar en movimientos
+    const txRes = Object.entries(transactions).map(([id,t])=>({id,...t}))
+      .filter(t => t.type!=='transferencia' && (
+        (t.description||'').toLowerCase().includes(ql) ||
+        (t.category||'').toLowerCase().includes(ql) ||
+        (t.comprobante||'').toLowerCase().includes(ql) ||
+        (t.notas||'').toLowerCase().includes(ql)
+      )).sort((a,b)=>(b.date||'').localeCompare(a.date||'')).slice(0,20);
+
+    // Buscar en contactos
+    const ctRes = Object.entries(contacts).map(([id,c])=>({id,...c}))
+      .filter(c => (c.nombre||'').toLowerCase().includes(ql) || (c.cuit||'').includes(ql) || (c.email||'').toLowerCase().includes(ql))
+      .slice(0,10);
+
+    // Buscar en cuentas
+    const acRes = Object.entries(accounts).map(([id,a])=>({id,...a}))
+      .filter(a => (a.nombre||'').toLowerCase().includes(ql) || (a.notas||'').toLowerCase().includes(ql))
+      .slice(0,5);
+
+    const total = txRes.length + ctRes.length + acRes.length;
+    document.getElementById('busqueda-sub').textContent = total
+      ? `${total} resultado${total!==1?'s':''} para "${q}"`
+      : `Sin resultados para "${q}"`;
+
+    const highlight = (text) => {
+      if (!text) return '';
+      return esc(text).replace(new RegExp(esc(q).replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),'gi'), m=>`<mark style="background:rgba(30,77,140,.2);color:var(--accent);border-radius:2px;padding:0 2px;">${m}</mark>`);
+    };
+
+    let html = '';
+
+    if (!total) {
+      html = `<div class="coming-soon"><div class="coming-soon-icon">🔍</div><div class="coming-soon-title">Sin resultados</div><div class="coming-soon-sub">Probá con otro término — podés buscar por descripción, categoría, nombre de contacto o número de comprobante.</div></div>`;
+    }
+
+    if (txRes.length) {
+      html += `<div class="section-header" style="margin-bottom:12px;"><div class="section-title">Movimientos (${txRes.length})</div></div>
+        <div class="tx-list" style="margin-bottom:28px;">${txRes.map(t=>{
+          const isInc = t.type==='income';
+          const ctNombre = t.contactoId&&contacts[t.contactoId]?contacts[t.contactoId].nombre:null;
+          return `<div class="tx-item" style="cursor:pointer;" onclick="goTo('movimientos')">
+            <div class="tx-item-left">
+              <div class="tx-desc">${highlight(t.description||'Sin descripción')}</div>
+              <div class="tx-cat">${highlight(t.category||'')}${t.comprobante?' · '+highlight(t.comprobante):''}${ctNombre?' · '+esc(ctNombre):''}</div>
+              <div style="font-size:.68rem;color:var(--muted);margin-top:2px;">${fmtDate(t.date)}</div>
+            </div>
+            <div class="tx-item-right">
+              <div class="tx-amount ${isInc?'income':'expense'}">${isInc?'+':'−'}${fmt(t.amount)}</div>
+              <button class="tx-btn-action edit" onclick="event.stopPropagation();openEditTx('${t.id}')" style="margin-top:4px;">Editar</button>
+            </div>
+          </div>`;
+        }).join('')}</div>`;
+    }
+
+    if (ctRes.length) {
+      html += `<div class="section-header" style="margin-bottom:12px;"><div class="section-title">Contactos (${ctRes.length})</div></div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px;margin-bottom:28px;">${ctRes.map(c=>`
+          <div class="card" style="cursor:pointer;" onclick="goTo('contactos')">
+            <div style="display:flex;align-items:center;gap:10px;">
+              <div style="width:36px;height:36px;border-radius:50%;background:var(--accent-bg);display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--accent);font-size:.9rem;flex-shrink:0;">${(c.nombre||'?').charAt(0).toUpperCase()}</div>
+              <div>
+                <div style="font-size:.88rem;font-weight:500;color:var(--ink);">${highlight(c.nombre||'Sin nombre')}</div>
+                <div style="font-size:.68rem;color:var(--muted);">${c.tipo==='cliente'?'🤝 Cliente':'🏭 Proveedor'} · CUIT: ${highlight(c.cuit||'—')}</div>
+              </div>
+            </div>
+          </div>`).join('')}</div>`;
+    }
+
+    if (acRes.length) {
+      html += `<div class="section-header" style="margin-bottom:12px;"><div class="section-title">Cuentas (${acRes.length})</div></div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;">${acRes.map(a=>{
+          const saldo = calcSaldoCuenta(a.id);
+          const color = CUENTA_COLORS[a.tipo]||'var(--accent)';
+          return `<div class="card" style="cursor:pointer;border-top:3px solid ${color};" onclick="goTo('cuentas')">
+            <div style="font-size:1.2rem;margin-bottom:6px;">${CUENTA_ICONS[a.tipo]||'💳'}</div>
+            <div style="font-size:.88rem;font-weight:500;color:var(--ink);">${highlight(a.nombre||'Sin nombre')}</div>
+            <div style="font-family:'Plus Jakarta Sans',sans-serif;font-size:1.1rem;font-weight:600;color:${saldo>=0?color:'var(--red)'};margin-top:6px;">${fmt(saldo)}</div>
+          </div>`;
+        }).join('')}</div>`;
+    }
+
+    document.getElementById('busqueda-resultados').innerHTML = html;
+  };
+
+  window.clearGlobalSearch = function() {
+    const input = document.getElementById('global-search');
+    if (input) input.value = '';
+    document.getElementById('global-search-clear').style.display = 'none';
+    goTo('dashboard');
+  };
+
+  // ══════════════════════════════════════════════════
+  // EXPORTAR A EXCEL (XLSX)
+  // ══════════════════════════════════════════════════
+  function buildExcelAndDownload(sheetData, sheetName, filename) {
+    if (!window.XLSX) { alert('Librería Excel no cargada, intentá de nuevo.'); return; }
+    const wb = XLSX.utils.book_new();
+    const ws = XLSX.utils.aoa_to_sheet(sheetData);
+    // Ancho de columnas automático
+    const colWidths = sheetData[0].map((_, ci) => ({
+      wch: Math.max(...sheetData.map(r => String(r[ci]||'').length), 10)
+    }));
+    ws['!cols'] = colWidths;
+    XLSX.utils.book_append_sheet(wb, ws, sheetName);
+    XLSX.writeFile(wb, filename);
+  }
+
+  window.exportTxExcel = function() {
+    const txArr = Object.entries(transactions).map(([id,t])=>({id,...t}))
+      .filter(t=>t.type!=='transferencia').sort((a,b)=>(b.date||'').localeCompare(a.date||''));
+    const rows = [['Fecha','Tipo','Categoría','Descripción','Monto','IVA %','IVA $','Total c/IVA','Comprobante','Cuenta','Contacto','Notas']];
+    txArr.forEach(t=>{
+      const ivaAmt = t.ivaAlicuota ? +(t.amount*t.ivaAlicuota/100).toFixed(2) : 0;
+      const cuentaN   = t.cuentaId   && accounts[t.cuentaId]   ? accounts[t.cuentaId].nombre   : '';
+      const contactoN = t.contactoId && contacts[t.contactoId] ? contacts[t.contactoId].nombre : '';
+      rows.push([t.date||'', t.type==='income'?'Ingreso':'Gasto', t.category||'', t.description||'',
+        t.amount||0, t.ivaAlicuota||0, ivaAmt, (t.amount||0)+ivaAmt,
+        t.comprobante||'', cuentaN, contactoN, t.notas||'']);
+    });
+    buildExcelAndDownload(rows, 'Movimientos', 'finhub-business-movimientos.xlsx');
+  };
+
+  window.exportIVAExcel = function() {
+    const mes = document.getElementById('iva-mes')?.value; if(!mes) return;
+    const txArr = Object.entries(transactions).map(([id,t])=>({id,...t}))
+      .filter(t=>t.ivaAlicuota&&t.date?.startsWith(mes)&&t.type!=='transferencia')
+      .sort((a,b)=>(a.date||'').localeCompare(b.date||''));
+    const rows = [['Fecha','Tipo','Descripción','Categoría','Comprobante','Base imponible','Alícuota %','Monto IVA','Total']];
+    txArr.forEach(t=>{
+      const ivaAmt = +(t.amount*t.ivaAlicuota/100).toFixed(2);
+      rows.push([t.date||'', t.type==='income'?'Débito (Venta)':'Crédito (Compra)',
+        t.description||'', t.category||'', t.comprobante||'',
+        t.amount, t.ivaAlicuota, ivaAmt, +(t.amount+ivaAmt).toFixed(2)]);
+    });
+    buildExcelAndDownload(rows, `IVA ${mes}`, `IVA-${mes}-finhub-business.xlsx`);
+  };
+
+  window.exportPLExcel = function() {
+    const anio = document.getElementById('pl-anio')?.value; if(!anio) return;
+    const meses=[]; for(let m=1;m<=12;m++) meses.push(`${anio}-${String(m).padStart(2,'0')}`);
+    const txArr = Object.values(transactions).filter(t=>t.type!=='transferencia'&&t.date?.startsWith(anio));
+    const catIng={}, catGas={};
+    txArr.filter(t=>t.type==='income').forEach(t=>{catIng[t.category||'Otros']=(catIng[t.category||'Otros']||0)+t.amount;});
+    txArr.filter(t=>t.type==='expense').forEach(t=>{catGas[t.category||'Otros']=(catGas[t.category||'Otros']||0)+t.amount;});
+    const mesLabels = meses.map(m=>new Date(m+'-01').toLocaleString('es-AR',{month:'long'}));
+    const rows = [['Concepto',...mesLabels,'Total']];
+    rows.push(['── INGRESOS ──',...meses.map(()=>''),'']);
+    Object.entries(catIng).forEach(([cat,tot])=>{
+      rows.push([cat,...meses.map(m=>txArr.filter(t=>t.type==='income'&&t.category===cat&&t.date.startsWith(m)).reduce((s,t)=>s+t.amount,0)),tot]);
+    });
+    const tIng = meses.map(m=>txArr.filter(t=>t.type==='income'&&t.date.startsWith(m)).reduce((s,t)=>s+t.amount,0));
+    rows.push(['Total ingresos',...tIng, tIng.reduce((s,v)=>s+v,0)]);
+    rows.push(['── GASTOS ──',...meses.map(()=>''),'']);
+    Object.entries(catGas).forEach(([cat,tot])=>{
+      rows.push([cat,...meses.map(m=>txArr.filter(t=>t.type==='expense'&&t.category===cat&&t.date.startsWith(m)).reduce((s,t)=>s+t.amount,0)),tot]);
+    });
+    const tGas = meses.map(m=>txArr.filter(t=>t.type==='expense'&&t.date.startsWith(m)).reduce((s,t)=>s+t.amount,0));
+    rows.push(['Total gastos',...tGas, tGas.reduce((s,v)=>s+v,0)]);
+    const res = meses.map((_,i)=>tIng[i]-tGas[i]);
+    rows.push(['Resultado neto',...res, res.reduce((s,v)=>s+v,0)]);
+    buildExcelAndDownload(rows, `P&L ${anio}`, `PL-${anio}-finhub-business.xlsx`);
+  };
+
+  window.exportFlujoExcel = function() {
+    const anio = document.getElementById('flujo-anio')?.value; if(!anio) return;
+    const meses=[]; for(let m=1;m<=12;m++) meses.push(`${anio}-${String(m).padStart(2,'0')}`);
+    const txArr = Object.values(transactions).filter(t=>t.type!=='transferencia'&&t.date?.startsWith(anio));
+    const rows = [['Mes','Entradas','Salidas','Flujo neto','Saldo acumulado','Margen %']];
+    let acum = 0;
+    meses.forEach(m=>{
+      const ing  = txArr.filter(t=>t.type==='income' &&t.date.startsWith(m)).reduce((s,t)=>s+t.amount,0);
+      const gas  = txArr.filter(t=>t.type==='expense'&&t.date.startsWith(m)).reduce((s,t)=>s+t.amount,0);
+      if(!ing&&!gas) return;
+      const flujo = ing-gas; acum+=flujo;
+      const mrg = ing>0 ? +((flujo/ing)*100).toFixed(1) : 0;
+      rows.push([new Date(m+'-01').toLocaleString('es-AR',{month:'long'}), ing, gas, flujo, acum, mrg]);
+    });
+    buildExcelAndDownload(rows, `Flujo ${anio}`, `FlujoCaja-${anio}-finhub-business.xlsx`);
+  };
+
   // ── NAV ──
   window.goTo=function(section){
     document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
@@ -1725,6 +1986,9 @@
     document.getElementById('page-'+section)?.classList.add('active');
     document.querySelectorAll('.nav-item').forEach(n=>{if(n.getAttribute('onclick')?.includes("'"+section+"'"))n.classList.add('active');});
     document.getElementById('main-content').scrollTop=0;
+    // Limpiar búsqueda global al navegar
+    const gsInput = document.getElementById('global-search');
+    if(gsInput&&section!=='busqueda'){gsInput.value='';document.getElementById('global-search-clear').style.display='none';}
     closeMobileNav();
     if(section==='movimientos') renderTxList();
     if(section==='contactos')  renderContactos();
