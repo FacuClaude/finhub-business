@@ -199,6 +199,20 @@
     .coming-soon-title { font-family:'Plus Jakarta Sans',sans-serif; font-size:1.1rem; font-weight:600; color:var(--ink); margin-bottom:8px; }
     .coming-soon-sub { font-size:.82rem; color:var(--muted); line-height:1.7; max-width:320px; }
 
+    /* ── TABLA P&L ── */
+    .pl-table { width:100%; border-collapse:collapse; font-size:.8rem; }
+    .pl-table th { background:var(--accent); color:white; padding:10px 14px; text-align:right; font-size:.65rem; font-weight:600; letter-spacing:.08em; text-transform:uppercase; white-space:nowrap; }
+    .pl-table th:first-child { text-align:left; }
+    .pl-table td { padding:9px 14px; text-align:right; border-bottom:1px solid var(--border); white-space:nowrap; color:var(--ink2); }
+    .pl-table td:first-child { text-align:left; color:var(--ink); }
+    .pl-table tr:hover td { background:var(--surface2); }
+    .pl-table .row-section td { background:var(--surface2); font-weight:600; font-size:.72rem; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); padding:6px 14px; }
+    .pl-table .row-total td { background:var(--accent-bg); font-family:'Plus Jakarta Sans',sans-serif; font-weight:600; font-size:.9rem; border-top:2px solid var(--accent); }
+    .pl-table .row-subtotal td { font-weight:600; border-top:1px solid var(--border2); }
+    .pl-table .positive { color:var(--green)!important; }
+    .pl-table .negative { color:var(--red)!important; }
+    .pl-table .accent-col { color:var(--accent)!important; font-weight:500; }
+
     /* ── FOCO ── */
     .foco-active .card-value,.foco-active .tx-amount { color:transparent!important; background:var(--border)!important; border-radius:4px!important; user-select:none!important; }
 
@@ -419,8 +433,91 @@
 
     <!-- REPORTES -->
     <div class="page" id="page-reportes">
-      <div class="page-title">Reportes</div><div class="page-sub">P&amp;L mensual y flujo de caja</div>
-      <div class="coming-soon"><div class="coming-soon-icon">📊</div><div class="coming-soon-title">Reportes en desarrollo</div><div class="coming-soon-sub">Próximamente: estado de resultados (P&amp;L), flujo de caja mensual y exportación a Excel.</div></div>
+      <div class="page-title">Reportes</div>
+      <div class="page-sub">Estado de resultados y flujo de caja</div>
+
+      <!-- Tabs P&L / Flujo de caja -->
+      <div style="display:flex;margin-bottom:28px;border:1px solid var(--border);width:fit-content;border-radius:4px;overflow:hidden;">
+        <button class="period-btn active" id="rep-tab-pl"    onclick="setReporteTab('pl',this)">Estado de resultados (P&amp;L)</button>
+        <button class="period-btn"        id="rep-tab-flujo" onclick="setReporteTab('flujo',this)">Flujo de caja</button>
+      </div>
+
+      <!-- ── P&L ── -->
+      <div id="rep-pl">
+        <!-- Selector año + exportar -->
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:24px;flex-wrap:wrap;">
+          <select id="pl-anio" onchange="renderPL()" style="width:auto;padding:8px 14px;font-size:.82rem;"></select>
+          <button class="btn-export" onclick="exportPLCSV()">↓ Exportar P&amp;L CSV</button>
+        </div>
+
+        <!-- KPIs anuales -->
+        <div class="cards-row-4" id="pl-kpis" style="margin-bottom:28px;"></div>
+
+        <!-- Tabla P&L mensual -->
+        <div style="overflow-x:auto;margin-bottom:28px;">
+          <table id="pl-tabla" style="width:100%;border-collapse:collapse;font-size:.82rem;"></table>
+        </div>
+
+        <!-- Gráfico evolución anual -->
+        <div class="chart-card" style="margin-bottom:28px;">
+          <div class="chart-title">Evolución mensual — Ingresos vs Gastos vs Resultado</div>
+          <div style="position:relative;height:240px;"><canvas id="chart-pl"></canvas></div>
+        </div>
+
+        <!-- Desglose por categoría -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+          <div class="chart-card">
+            <div class="chart-title">Ingresos por categoría</div>
+            <div id="pl-cat-ingresos"></div>
+          </div>
+          <div class="chart-card">
+            <div class="chart-title">Gastos por categoría</div>
+            <div id="pl-cat-gastos"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── FLUJO DE CAJA ── -->
+      <div id="rep-flujo" style="display:none;">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:24px;flex-wrap:wrap;">
+          <select id="flujo-anio" onchange="renderFlujo()" style="width:auto;padding:8px 14px;font-size:.82rem;"></select>
+          <button class="btn-export" onclick="exportFlujoCSV()">↓ Exportar flujo CSV</button>
+        </div>
+
+        <!-- KPIs flujo -->
+        <div class="cards-row" style="margin-bottom:28px;">
+          <div class="card" style="border-top:2px solid var(--accent);">
+            <div class="card-label">Total ingresos del año</div>
+            <div class="card-value accent" style="font-size:1.8rem;" id="flujo-total-ing">$0</div>
+          </div>
+          <div class="card" style="border-top:2px solid var(--red);">
+            <div class="card-label">Total egresos del año</div>
+            <div class="card-value negative" style="font-size:1.8rem;" id="flujo-total-gas">$0</div>
+          </div>
+          <div class="card" style="border-top:2px solid var(--green);">
+            <div class="card-label">Flujo neto del año</div>
+            <div class="card-value" style="font-size:1.8rem;" id="flujo-neto">$0</div>
+          </div>
+        </div>
+
+        <!-- Gráfico waterfall / área -->
+        <div class="chart-card" style="margin-bottom:28px;">
+          <div class="chart-title">Flujo mensual — Entradas, Salidas y Saldo acumulado</div>
+          <div style="position:relative;height:280px;"><canvas id="chart-flujo"></canvas></div>
+        </div>
+
+        <!-- Tabla flujo mes a mes -->
+        <div style="overflow-x:auto;margin-bottom:28px;">
+          <table id="flujo-tabla" style="width:100%;border-collapse:collapse;font-size:.82rem;"></table>
+        </div>
+
+        <!-- Proyección próximos 3 meses -->
+        <div class="chart-card">
+          <div class="chart-title" style="margin-bottom:8px;">Proyección — Próximos 3 meses</div>
+          <div style="font-size:.72rem;color:var(--muted);margin-bottom:16px;">Basado en el promedio de los últimos 3 meses con datos</div>
+          <div id="flujo-proyeccion"></div>
+        </div>
+      </div>
     </div>
 
     <!-- CONTADOR IA -->
@@ -1333,6 +1430,294 @@
     closeModal('contacto');
   };
 
+  // ══════════════════════════════════════════════════
+  // REPORTES
+  // ══════════════════════════════════════════════════
+  let chartPL = null, chartFlujo = null;
+
+  window.setReporteTab = function(tab, btn) {
+    document.getElementById('rep-pl').style.display    = tab==='pl'    ? 'block' : 'none';
+    document.getElementById('rep-flujo').style.display = tab==='flujo' ? 'block' : 'none';
+    document.querySelectorAll('#page-reportes .period-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    if (tab==='pl')    renderPL();
+    if (tab==='flujo') renderFlujo();
+  };
+
+  function getAniosDisponibles() {
+    const txArr = Object.values(transactions).filter(t=>t.type!=='transferencia'&&t.date);
+    const anios = [...new Set(txArr.map(t=>t.date.slice(0,4)))].sort().reverse();
+    return anios.length ? anios : [new Date().getFullYear().toString()];
+  }
+
+  function populateAnioSelect(selId) {
+    const sel = document.getElementById(selId); if(!sel) return;
+    const anios = getAniosDisponibles();
+    const cur   = sel.value || anios[0];
+    sel.innerHTML = anios.map(a=>`<option value="${a}" ${a===cur?'selected':''}>${a}</option>`).join('');
+  }
+
+  // ── P&L ──
+  window.renderPL = function() {
+    populateAnioSelect('pl-anio');
+    const anio = document.getElementById('pl-anio')?.value; if(!anio) return;
+
+    const meses = [];
+    for(let m=1;m<=12;m++) meses.push(`${anio}-${String(m).padStart(2,'0')}`);
+    const labels = meses.map(m=>new Date(m+'-01').toLocaleString('es-AR',{month:'short'}));
+
+    const txArr = Object.values(transactions).filter(t=>t.type!=='transferencia'&&t.date?.startsWith(anio));
+
+    // Datos por mes
+    const ingMes  = meses.map(m=>txArr.filter(t=>t.type==='income' &&t.date.startsWith(m)).reduce((s,t)=>s+t.amount,0));
+    const gasMes  = meses.map(m=>txArr.filter(t=>t.type==='expense'&&t.date.startsWith(m)).reduce((s,t)=>s+t.amount,0));
+    const resMes  = meses.map((_,i)=>ingMes[i]-gasMes[i]);
+
+    // KPIs anuales
+    const totalIng = ingMes.reduce((s,v)=>s+v,0);
+    const totalGas = gasMes.reduce((s,v)=>s+v,0);
+    const totalRes = totalIng - totalGas;
+    const margenPct = totalIng>0 ? (totalRes/totalIng*100).toFixed(1) : '0.0';
+    const mejorMes = resMes.indexOf(Math.max(...resMes));
+
+    document.getElementById('pl-kpis').innerHTML = `
+      <div class="card ventas-card"><div class="card-label">Ingresos ${anio}</div><div class="card-value accent" style="font-size:1.6rem;">${fmt(totalIng)}</div><div class="card-sub">${txArr.filter(t=>t.type==='income').length} movimientos</div></div>
+      <div class="card gastos-card"><div class="card-label">Gastos ${anio}</div><div class="card-value negative" style="font-size:1.6rem;">${fmt(totalGas)}</div><div class="card-sub">${txArr.filter(t=>t.type==='expense').length} movimientos</div></div>
+      <div class="card balance-card"><div class="card-label">Resultado neto</div><div class="card-value ${totalRes>=0?'positive':'negative'}" style="font-size:1.6rem;">${fmt(totalRes)}</div><div class="card-sub">${totalRes>=0?'Ganancia':'Pérdida'}</div></div>
+      <div class="card"><div class="card-label">Margen neto</div><div class="card-value ${parseFloat(margenPct)>=0?'positive':'negative'}" style="font-size:1.6rem;">${margenPct}%</div><div class="card-sub">Mejor mes: ${labels[mejorMes]||'—'}</div></div>`;
+
+    // Categorías
+    const catIng={}, catGas={};
+    txArr.filter(t=>t.type==='income').forEach(t=>{catIng[t.category||'Otros']=(catIng[t.category||'Otros']||0)+t.amount;});
+    txArr.filter(t=>t.type==='expense').forEach(t=>{catGas[t.category||'Otros']=(catGas[t.category||'Otros']||0)+t.amount;});
+
+    // Tabla P&L
+    const mesConDatos = meses.filter((_,i)=>ingMes[i]>0||gasMes[i]>0);
+    const mesesLabel  = mesConDatos.map(m=>new Date(m+'-01').toLocaleString('es-AR',{month:'short'}));
+
+    // Filas de ingresos por categoría
+    const filasIng = Object.entries(catIng).sort((a,b)=>b[1]-a[1]).map(([cat,total])=>{
+      const porMes = mesConDatos.map(m=>txArr.filter(t=>t.type==='income'&&t.category===cat&&t.date.startsWith(m)).reduce((s,t)=>s+t.amount,0));
+      return {cat, total, porMes};
+    });
+    const filasGas = Object.entries(catGas).sort((a,b)=>b[1]-a[1]).map(([cat,total])=>{
+      const porMes = mesConDatos.map(m=>txArr.filter(t=>t.type==='expense'&&t.category===cat&&t.date.startsWith(m)).reduce((s,t)=>s+t.amount,0));
+      return {cat, total, porMes};
+    });
+
+    const ingPorMes = mesConDatos.map(m=>txArr.filter(t=>t.type==='income'&&t.date.startsWith(m)).reduce((s,t)=>s+t.amount,0));
+    const gasPorMes = mesConDatos.map(m=>txArr.filter(t=>t.type==='expense'&&t.date.startsWith(m)).reduce((s,t)=>s+t.amount,0));
+    const resPorMes = mesConDatos.map((_,i)=>ingPorMes[i]-gasPorMes[i]);
+    const margenPorMes = mesConDatos.map((_,i)=>ingPorMes[i]>0?((resPorMes[i]/ingPorMes[i])*100).toFixed(1)+'%':'—');
+
+    function fmtCell(n) { return n===0?'<span style="color:var(--muted2);">—</span>':fmt(n); }
+    function fmtRes(n)  { return `<span class="${n>=0?'positive':'negative'}">${fmt(n)}</span>`; }
+
+    let html = `<table class="pl-table">
+      <thead><tr>
+        <th style="min-width:180px;">Concepto</th>
+        ${mesesLabel.map(l=>`<th>${l}</th>`).join('')}
+        <th style="border-left:2px solid rgba(255,255,255,.3);">Total año</th>
+      </tr></thead><tbody>`;
+
+    // Ingresos
+    html += `<tr class="row-section"><td colspan="${mesConDatos.length+2}">▸ Ingresos</td></tr>`;
+    filasIng.forEach(f=>{
+      html += `<tr><td style="padding-left:22px;">${esc(f.cat)}</td>${f.porMes.map(v=>`<td>${fmtCell(v)}</td>`).join('')}<td style="border-left:1px solid var(--border);font-weight:500;">${fmt(f.total)}</td></tr>`;
+    });
+    html += `<tr class="row-subtotal"><td>Total ingresos</td>${ingPorMes.map(v=>`<td class="accent-col">${fmt(v)}</td>`).join('')}<td class="accent-col" style="border-left:1px solid var(--border);">${fmt(totalIng)}</td></tr>`;
+
+    // Gastos
+    html += `<tr class="row-section"><td colspan="${mesConDatos.length+2}">▸ Gastos</td></tr>`;
+    filasGas.forEach(f=>{
+      html += `<tr><td style="padding-left:22px;">${esc(f.cat)}</td>${f.porMes.map(v=>`<td>${fmtCell(v)}</td>`).join('')}<td style="border-left:1px solid var(--border);font-weight:500;">${fmt(f.total)}</td></tr>`;
+    });
+    html += `<tr class="row-subtotal"><td>Total gastos</td>${gasPorMes.map(v=>`<td class="negative">${fmt(v)}</td>`).join('')}<td class="negative" style="border-left:1px solid var(--border);">${fmt(totalGas)}</td></tr>`;
+
+    // Resultado
+    html += `<tr class="row-total"><td>Resultado neto</td>${resPorMes.map(v=>`<td>${fmtRes(v)}</td>`).join('')}<td style="border-left:2px solid var(--accent);">${fmtRes(totalRes)}</td></tr>`;
+    html += `<tr class="row-subtotal"><td style="color:var(--muted);">Margen %</td>${margenPorMes.map(v=>`<td style="color:var(--muted);">${v}</td>`).join('')}<td style="color:var(--muted);border-left:1px solid var(--border);">${margenPct}%</td></tr>`;
+    html += '</tbody></table>';
+    document.getElementById('pl-tabla').outerHTML = html;
+
+    // Gráfico
+    const isDark = document.body.classList.contains('dark');
+    const grid = isDark?'rgba(255,255,255,.07)':'rgba(0,0,0,.05)';
+    const textC = isDark?'#888':'#aaa';
+    if(chartPL) chartPL.destroy();
+    chartPL = new Chart(document.getElementById('chart-pl'),{
+      type:'bar',
+      data:{labels,datasets:[
+        {label:'Ingresos',data:ingMes,backgroundColor:isDark?'rgba(74,159,212,.35)':'rgba(30,77,140,.2)',borderColor:isDark?'#4a9fd4':'#1e4d8c',borderWidth:1.5,borderRadius:3,order:2},
+        {label:'Gastos',  data:gasMes,backgroundColor:isDark?'rgba(224,96,96,.35)':'rgba(184,80,80,.2)',borderColor:isDark?'#e06060':'#b85050',borderWidth:1.5,borderRadius:3,order:2},
+        {label:'Resultado',data:resMes,type:'line',borderColor:isDark?'#5ab87a':'#3d6b52',backgroundColor:'transparent',borderWidth:2,pointRadius:4,pointBackgroundColor:isDark?'#5ab87a':'#3d6b52',tension:.3,order:1}
+      ]},
+      options:{responsive:true,maintainAspectRatio:false,
+        plugins:{legend:{position:'bottom',labels:{color:textC,font:{size:10},boxWidth:8,padding:14}},
+          tooltip:{mode:'index',intersect:false,backgroundColor:isDark?'#242424':'#fff',borderColor:isDark?'#3a3a3a':'#e0ddd8',borderWidth:1,titleColor:isDark?'#c0c0c0':'#555',bodyColor:isDark?'#ddd':'#333',padding:12,callbacks:{label:c=>' '+c.dataset.label+': '+fmt(c.raw)}}},
+        scales:{x:{grid:{color:grid,lineWidth:.5},border:{display:false},ticks:{color:textC,font:{size:10}}},y:{grid:{color:grid,lineWidth:.5},border:{display:false},ticks:{color:textC,font:{size:10},callback:v=>'$'+Math.round(v/1000)+'k'}}}}
+    });
+
+    // Desglose categorías
+    function catHTML(cats, color) {
+      const total = Object.values(cats).reduce((s,v)=>s+v,0);
+      if(!total) return '<div style="font-size:.78rem;color:var(--muted);padding:12px 0;">Sin datos</div>';
+      return Object.entries(cats).sort((a,b)=>b[1]-a[1]).map(([cat,val])=>{
+        const pct = total>0?Math.round(val/total*100):0;
+        return `<div style="margin-bottom:12px;">
+          <div style="display:flex;justify-content:space-between;font-size:.8rem;margin-bottom:4px;">
+            <span style="color:var(--ink);">${esc(cat)}</span>
+            <span style="font-weight:500;color:var(--ink);">${fmt(val)} <span style="color:var(--muted);font-size:.72rem;">${pct}%</span></span>
+          </div>
+          <div style="height:5px;background:var(--border2);border-radius:3px;overflow:hidden;">
+            <div style="height:100%;width:${pct}%;background:${color};border-radius:3px;"></div>
+          </div>
+        </div>`;
+      }).join('');
+    }
+    document.getElementById('pl-cat-ingresos').innerHTML = catHTML(catIng, isDark?'#4a9fd4':'#1e4d8c');
+    document.getElementById('pl-cat-gastos').innerHTML   = catHTML(catGas, isDark?'#e06060':'#b85050');
+  };
+
+  window.exportPLCSV = function() {
+    const anio = document.getElementById('pl-anio')?.value; if(!anio) return;
+    const meses=[];for(let m=1;m<=12;m++)meses.push(`${anio}-${String(m).padStart(2,'0')}`);
+    const txArr=Object.values(transactions).filter(t=>t.type!=='transferencia'&&t.date?.startsWith(anio));
+    const rows=[['Concepto',...meses.map(m=>new Date(m+'-01').toLocaleString('es-AR',{month:'long'})),'Total']];
+    const catIng={},catGas={};
+    txArr.filter(t=>t.type==='income').forEach(t=>{catIng[t.category||'Otros']=(catIng[t.category||'Otros']||0)+t.amount;});
+    txArr.filter(t=>t.type==='expense').forEach(t=>{catGas[t.category||'Otros']=(catGas[t.category||'Otros']||0)+t.amount;});
+    rows.push(['── INGRESOS ──',...meses.map(()=>''),'']);
+    Object.entries(catIng).forEach(([cat,tot])=>{rows.push([cat,...meses.map(m=>txArr.filter(t=>t.type==='income'&&t.category===cat&&t.date.startsWith(m)).reduce((s,t)=>s+t.amount,0)),tot]);});
+    const tIng=meses.map(m=>txArr.filter(t=>t.type==='income'&&t.date.startsWith(m)).reduce((s,t)=>s+t.amount,0));
+    rows.push(['Total ingresos',...tIng,tIng.reduce((s,v)=>s+v,0)]);
+    rows.push(['── GASTOS ──',...meses.map(()=>''),'']);
+    Object.entries(catGas).forEach(([cat,tot])=>{rows.push([cat,...meses.map(m=>txArr.filter(t=>t.type==='expense'&&t.category===cat&&t.date.startsWith(m)).reduce((s,t)=>s+t.amount,0)),tot]);});
+    const tGas=meses.map(m=>txArr.filter(t=>t.type==='expense'&&t.date.startsWith(m)).reduce((s,t)=>s+t.amount,0));
+    rows.push(['Total gastos',...tGas,tGas.reduce((s,v)=>s+v,0)]);
+    const res=meses.map((_,i)=>tIng[i]-tGas[i]);
+    rows.push(['Resultado neto',...res,res.reduce((s,v)=>s+v,0)]);
+    const csv=rows.map(r=>r.map(c=>'"'+String(c).replace(/"/g,'""')+'"').join(',')).join('\n');
+    const a=document.createElement('a');a.href='data:text/csv;charset=utf-8,\uFEFF'+encodeURIComponent(csv);a.download=`PL-${anio}-finhub-business.csv`;a.click();
+  };
+
+  // ── FLUJO DE CAJA ──
+  window.renderFlujo = function() {
+    populateAnioSelect('flujo-anio');
+    const anio = document.getElementById('flujo-anio')?.value; if(!anio) return;
+    const meses=[];for(let m=1;m<=12;m++)meses.push(`${anio}-${String(m).padStart(2,'0')}`);
+    const labels=meses.map(m=>new Date(m+'-01').toLocaleString('es-AR',{month:'short'}));
+    const txArr=Object.values(transactions).filter(t=>t.type!=='transferencia'&&t.date?.startsWith(anio));
+
+    const ingMes=meses.map(m=>txArr.filter(t=>t.type==='income' &&t.date.startsWith(m)).reduce((s,t)=>s+t.amount,0));
+    const gasMes=meses.map(m=>txArr.filter(t=>t.type==='expense'&&t.date.startsWith(m)).reduce((s,t)=>s+t.amount,0));
+    const flujoMes=meses.map((_,i)=>ingMes[i]-gasMes[i]);
+
+    // Saldo acumulado (arranca en 0 al inicio del año)
+    const acumMes=[];let acum=0;
+    flujoMes.forEach(f=>{acum+=f;acumMes.push(acum);});
+
+    const totalIng=ingMes.reduce((s,v)=>s+v,0);
+    const totalGas=gasMes.reduce((s,v)=>s+v,0);
+    const flujoNeto=totalIng-totalGas;
+
+    document.getElementById('flujo-total-ing').textContent=fmt(totalIng);
+    document.getElementById('flujo-total-gas').textContent=fmt(totalGas);
+    document.getElementById('flujo-neto').textContent=fmt(Math.abs(flujoNeto));
+    document.getElementById('flujo-neto').style.color=flujoNeto>=0?'var(--green)':'var(--red)';
+
+    // Gráfico
+    const isDark=document.body.classList.contains('dark');
+    const grid=isDark?'rgba(255,255,255,.07)':'rgba(0,0,0,.05)';
+    const textC=isDark?'#888':'#aaa';
+    if(chartFlujo)chartFlujo.destroy();
+    chartFlujo=new Chart(document.getElementById('chart-flujo'),{
+      data:{labels,datasets:[
+        {type:'bar',label:'Entradas',data:ingMes,backgroundColor:isDark?'rgba(74,159,212,.35)':'rgba(30,77,140,.2)',borderColor:isDark?'#4a9fd4':'#1e4d8c',borderWidth:1.5,borderRadius:3,order:2},
+        {type:'bar',label:'Salidas', data:gasMes.map(v=>-v),backgroundColor:isDark?'rgba(224,96,96,.35)':'rgba(184,80,80,.2)',borderColor:isDark?'#e06060':'#b85050',borderWidth:1.5,borderRadius:3,order:2},
+        {type:'line',label:'Saldo acumulado',data:acumMes,borderColor:isDark?'#c17a4a':'#c17a4a',backgroundColor:'transparent',borderWidth:2.5,pointRadius:5,pointBackgroundColor:isDark?'#c17a4a':'#c17a4a',tension:.35,order:1,yAxisID:'y1'}
+      ]},
+      options:{responsive:true,maintainAspectRatio:false,
+        plugins:{legend:{position:'bottom',labels:{color:textC,font:{size:10},boxWidth:8,padding:14}},
+          tooltip:{mode:'index',intersect:false,backgroundColor:isDark?'#242424':'#fff',borderColor:isDark?'#3a3a3a':'#e0ddd8',borderWidth:1,titleColor:isDark?'#c0c0c0':'#555',bodyColor:isDark?'#ddd':'#333',padding:12,callbacks:{label:c=>' '+c.dataset.label+': '+fmt(Math.abs(c.raw))}}},
+        scales:{
+          x:{grid:{color:grid,lineWidth:.5},border:{display:false},ticks:{color:textC,font:{size:10}}},
+          y:{grid:{color:grid,lineWidth:.5},border:{display:false},ticks:{color:textC,font:{size:10},callback:v=>'$'+Math.round(v/1000)+'k'}},
+          y1:{position:'right',grid:{display:false},border:{display:false},ticks:{color:'#c17a4a',font:{size:10},callback:v=>'$'+Math.round(v/1000)+'k'}}
+        }}
+    });
+
+    // Tabla mes a mes
+    const mesConDatos=meses.filter((_,i)=>ingMes[i]>0||gasMes[i]>0);
+    let thtml=`<table class="pl-table"><thead><tr>
+      <th>Mes</th><th>Entradas</th><th>Salidas</th><th>Flujo neto</th><th>Saldo acumulado</th><th>Margen %</th>
+    </tr></thead><tbody>`;
+    let acumRow=0;
+    meses.forEach((m,i)=>{
+      if(ingMes[i]===0&&gasMes[i]===0)return;
+      acumRow+=flujoMes[i];
+      const mrg=ingMes[i]>0?(flujoMes[i]/ingMes[i]*100).toFixed(1)+'%':'—';
+      const mes=new Date(m+'-01').toLocaleString('es-AR',{month:'long'});
+      thtml+=`<tr>
+        <td style="font-weight:500;">${mes}</td>
+        <td class="accent-col">${fmt(ingMes[i])}</td>
+        <td class="negative">${fmt(gasMes[i])}</td>
+        <td class="${flujoMes[i]>=0?'positive':'negative'}">${fmt(flujoMes[i])}</td>
+        <td class="${acumRow>=0?'accent-col':'negative'}" style="font-weight:600;">${fmt(acumRow)}</td>
+        <td style="color:var(--muted);">${mrg}</td>
+      </tr>`;
+    });
+    thtml+=`<tr class="row-total"><td>Total ${anio}</td><td class="accent-col">${fmt(totalIng)}</td><td class="negative">${fmt(totalGas)}</td><td class="${flujoNeto>=0?'positive':'negative'}">${fmt(flujoNeto)}</td><td class="${flujoNeto>=0?'accent-col':'negative'}">${fmt(flujoNeto)}</td><td style="color:var(--muted);">${totalIng>0?(flujoNeto/totalIng*100).toFixed(1)+'%':'—'}</td></tr>`;
+    thtml+='</tbody></table>';
+    document.getElementById('flujo-tabla').outerHTML=thtml;
+
+    // Proyección próximos 3 meses
+    const mesesConDatos=meses.map((_,i)=>({ing:ingMes[i],gas:gasMes[i]})).filter(m=>m.ing>0||m.gas>0).slice(-3);
+    if(mesesConDatos.length>=1){
+      const avgIng=mesesConDatos.reduce((s,m)=>s+m.ing,0)/mesesConDatos.length;
+      const avgGas=mesesConDatos.reduce((s,m)=>s+m.gas,0)/mesesConDatos.length;
+      const avgFlujo=avgIng-avgGas;
+      const now=new Date();
+      const proyMeses=[];
+      for(let i=1;i<=3;i++){const d=new Date(now.getFullYear(),now.getMonth()+i,1);proyMeses.push(d.toLocaleString('es-AR',{month:'long',year:'numeric'}));}
+      let saldoAcum=acumMes[acumMes.filter((_,i)=>ingMes[i]>0||gasMes[i]>0).length-1]||0;
+      document.getElementById('flujo-proyeccion').innerHTML=`
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;">
+          ${proyMeses.map((mes,i)=>{
+            saldoAcum+=avgFlujo;
+            return `<div style="background:var(--surface2);padding:16px;border-radius:4px;border-left:3px solid ${avgFlujo>=0?'var(--green)':'var(--red)'};">
+              <div style="font-size:.65rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;">${mes}</div>
+              <div style="display:flex;justify-content:space-between;font-size:.78rem;color:var(--muted);margin-bottom:3px;"><span>Entradas est.</span><span style="color:var(--accent);">${fmt(avgIng)}</span></div>
+              <div style="display:flex;justify-content:space-between;font-size:.78rem;color:var(--muted);margin-bottom:3px;"><span>Salidas est.</span><span style="color:var(--red);">${fmt(avgGas)}</span></div>
+              <div style="display:flex;justify-content:space-between;font-size:.78rem;color:var(--muted);margin-bottom:8px;"><span>Flujo est.</span><span style="color:${avgFlujo>=0?'var(--green)':'var(--red)'};">${fmt(avgFlujo)}</span></div>
+              <div style="border-top:1px solid var(--border);padding-top:8px;font-size:.8rem;font-weight:600;color:${saldoAcum>=0?'var(--accent)':'var(--red)'};">Saldo acum. est.: ${fmt(saldoAcum)}</div>
+            </div>`;
+          }).join('')}
+        </div>
+        <div style="font-size:.68rem;color:var(--muted2);margin-top:12px;">* Proyección basada en el promedio de los últimos ${mesesConDatos.length} mese${mesesConDatos.length!==1?'s':''} con datos. No considera estacionalidad ni eventos extraordinarios.</div>`;
+    } else {
+      document.getElementById('flujo-proyeccion').innerHTML='<div style="font-size:.78rem;color:var(--muted);padding:16px 0;">Necesitás al menos 1 mes con datos para proyectar.</div>';
+    }
+  };
+
+  window.exportFlujoCSV = function() {
+    const anio=document.getElementById('flujo-anio')?.value;if(!anio)return;
+    const meses=[];for(let m=1;m<=12;m++)meses.push(`${anio}-${String(m).padStart(2,'0')}`);
+    const txArr=Object.values(transactions).filter(t=>t.type!=='transferencia'&&t.date?.startsWith(anio));
+    const rows=[['Mes','Entradas','Salidas','Flujo neto','Saldo acumulado','Margen %']];
+    let acum=0;
+    meses.forEach(m=>{
+      const ing=txArr.filter(t=>t.type==='income'&&t.date.startsWith(m)).reduce((s,t)=>s+t.amount,0);
+      const gas=txArr.filter(t=>t.type==='expense'&&t.date.startsWith(m)).reduce((s,t)=>s+t.amount,0);
+      if(ing===0&&gas===0)return;
+      const flujo=ing-gas;acum+=flujo;
+      const mrg=ing>0?(flujo/ing*100).toFixed(1)+'%':'—';
+      rows.push([new Date(m+'-01').toLocaleString('es-AR',{month:'long'}),ing,gas,flujo,acum,mrg]);
+    });
+    const csv=rows.map(r=>r.map(c=>'"'+String(c).replace(/"/g,'""')+'"').join(',')).join('\n');
+    const a=document.createElement('a');a.href='data:text/csv;charset=utf-8,\uFEFF'+encodeURIComponent(csv);a.download=`FlujoCaja-${anio}-finhub-business.csv`;a.click();
+  };
+
   // ── NAV ──
   window.goTo=function(section){
     document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
@@ -1345,6 +1730,7 @@
     if(section==='contactos')  renderContactos();
     if(section==='cuentas')    renderCuentas();
     if(section==='iva')        { populateIVAMeses(); renderIVA(); }
+    if(section==='reportes')   { populateAnioSelect('pl-anio'); populateAnioSelect('flujo-anio'); renderPL(); }
   };
 
   // ── DARK / FOCO ──
