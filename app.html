@@ -500,7 +500,7 @@
       <!-- Empresa switcher -->
       <button id="empresa-switcher" onclick="toggleEmpresaMenu()" style="display:flex;align-items:center;justify-content:space-between;width:100%;margin-top:8px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:5px;padding:7px 10px;cursor:pointer;gap:6px;transition:background .15s;" onmouseover="this.style.background='rgba(255,255,255,.14)'" onmouseout="this.style.background='rgba(255,255,255,.08)'">
         <span id="empresa-nombre" style="font-size:.72rem;color:rgba(255,255,255,.85);font-family:'DM Sans',sans-serif;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;text-align:left;">Mi empresa</span>
-        <svg id="empresa-arrow" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.5)" stroke-width="2.5" style="flex-shrink:0;transition:transform .2s;"><polyline points="6 9 12 15 18 9"/></svg>
+        <svg id="empresa-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.85)" stroke-width="2.5" style="flex-shrink:0;transition:transform .2s;"><polyline points="6 9 12 15 18 9"/></svg>
       </button>
       <!-- Dropdown empresas -->
       <div id="empresa-menu" style="display:none;background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.15);border-radius:5px;margin-top:4px;overflow:hidden;">
@@ -1131,7 +1131,10 @@
             <div style="font-family:'Plus Jakarta Sans',sans-serif;font-size:1.2rem;font-weight:700;color:var(--ink);" id="usuarios-empresa-nombre">—</div>
             <div style="font-size:.72rem;color:var(--muted);margin-top:3px;" id="usuarios-empresa-id"></div>
           </div>
-          <button class="btn-secondary" onclick="openModal('editar-empresa')">✏️ Editar datos</button>
+          <div style="display:flex;gap:8px;">
+            <button class="btn-secondary" onclick="openModal('editar-empresa')">✏️ Editar datos</button>
+            <button onclick="abrirEliminarEmpresa()" style="font-family:'DM Sans',sans-serif;font-size:.65rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--red);background:var(--red-bg);border:1px solid var(--red);padding:8px 14px;cursor:pointer;border-radius:4px;transition:all .2s;" onmouseover="this.style.opacity='.8'" onmouseout="this.style.opacity='1'">🗑 Eliminar empresa</button>
+          </div>
         </div>
       </div>
 
@@ -1214,6 +1217,37 @@
         <div class="modal-actions">
           <button class="btn-secondary" onclick="closeModal('editar-empresa')" style="flex:1">Cancelar</button>
           <button class="btn-primary" onclick="guardarEmpresa()" style="flex:2">Guardar</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL: NUEVA EMPRESA -->
+    <div class="overlay" id="modal-nueva-empresa" onclick="closeModal('nueva-empresa')">
+      <div class="modal" onclick="event.stopPropagation()" style="max-width:420px;">
+        <div class="modal-title">Nueva empresa</div>
+        <div style="font-size:.8rem;color:var(--muted);margin-bottom:20px;line-height:1.6;">Creás una empresa completamente separada. Podés cambiar entre ellas desde el selector en el sidebar.</div>
+        <div class="field"><label>Nombre de la empresa</label><input type="text" id="nueva-empresa-nombre" placeholder="Ej: Distribuidora López S.A." onkeydown="if(event.key==='Enter')confirmarNuevaEmpresa()"/></div>
+        <div class="field"><label>CUIT (opcional)</label><input type="text" id="nueva-empresa-cuit" placeholder="30-12345678-9" onkeydown="if(event.key==='Enter')confirmarNuevaEmpresa()"/></div>
+        <div class="modal-actions">
+          <button class="btn-secondary" onclick="closeModal('nueva-empresa')" style="flex:1">Cancelar</button>
+          <button class="btn-primary" onclick="confirmarNuevaEmpresa()" style="flex:2">Crear empresa →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL: ELIMINAR EMPRESA -->
+    <div class="overlay" id="modal-eliminar-empresa" onclick="closeModal('eliminar-empresa')">
+      <div class="modal" onclick="event.stopPropagation()" style="max-width:420px;">
+        <div class="modal-title" style="color:var(--red);">⚠️ Eliminar empresa</div>
+        <div style="font-size:.82rem;color:var(--ink2);line-height:1.7;margin-bottom:16px;">Esta acción es <strong>irreversible</strong>. Se eliminarán permanentemente todos los datos: movimientos, cuentas, contactos, empleados y configuración.</div>
+        <div class="field">
+          <label>Escribí el nombre exacto de la empresa para confirmar</label>
+          <input type="text" id="confirmar-eliminar-nombre" placeholder="Nombre de la empresa"/>
+        </div>
+        <div id="eliminar-empresa-error" style="display:none;font-size:.75rem;color:var(--red);margin-top:-8px;margin-bottom:8px;">El nombre no coincide.</div>
+        <div class="modal-actions">
+          <button class="btn-secondary" onclick="closeModal('eliminar-empresa')" style="flex:1">Cancelar</button>
+          <button style="flex:2;background:var(--red);color:white;border:none;padding:10px;font-family:'DM Sans',sans-serif;font-size:.78rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;border-radius:4px;" onclick="confirmarEliminarEmpresa()">Eliminar definitivamente</button>
         </div>
       </div>
     </div>
@@ -4613,27 +4647,88 @@
     }
   };
 
-  window.crearNuevaEmpresa = async function() {
+  window.crearNuevaEmpresa = function() {
     cerrarEmpresaMenu();
-    const nombre = prompt('Nombre de la nueva empresa:');
-    if (!nombre || !nombre.trim()) return;
+    // Limpiar campos del modal
+    const n = document.getElementById('nueva-empresa-nombre');
+    const c = document.getElementById('nueva-empresa-cuit');
+    if (n) n.value = '';
+    if (c) c.value = '';
+    document.getElementById('modal-nueva-empresa').classList.add('open');
+    setTimeout(() => n?.focus(), 100);
+  };
+
+  window.confirmarNuevaEmpresa = async function() {
+    const nombre = document.getElementById('nueva-empresa-nombre').value.trim();
+    const cuit   = document.getElementById('nueva-empresa-cuit').value.trim();
+    if (!nombre) { document.getElementById('nueva-empresa-nombre').focus(); return; }
 
     const nuevoEmpresaId = push(ref(db, 'empresas')).key;
     const rolAdmin = { ...PERMISOS_DEFAULT.admin, tipoRol: 'admin', nombre: auth.currentUser?.email || '', email: auth.currentUser?.email || '' };
 
     const batch = {};
-    batch[`empresas/${nuevoEmpresaId}/info`] = {
-      nombre: nombre.trim(),
-      createdAt: Date.now(),
-      ownerUid: uid
-    };
+    batch[`empresas/${nuevoEmpresaId}/info`] = { nombre, cuit: cuit || null, createdAt: Date.now(), ownerUid: uid };
     batch[`usuarios/${uid}/empresas/${nuevoEmpresaId}`] = rolAdmin;
     batch[`usuariosDeEmpresa/${nuevoEmpresaId}/${uid}`] = rolAdmin;
-
     await update(ref(db), batch);
 
-    // Cambiar a la nueva empresa automáticamente
+    closeModal('nueva-empresa');
     cambiarEmpresa(nuevoEmpresaId, rolAdmin);
+  };
+
+  // Eliminar empresa
+  let empresaAEliminarNombre = '';
+
+  window.abrirEliminarEmpresa = function() {
+    // No se puede eliminar si es la única empresa
+    if (Object.keys(misEmpresas).length <= 1) {
+      alert('No podés eliminar tu única empresa. Creá otra primero y luego eliminá esta.');
+      return;
+    }
+    // Obtener nombre actual para la confirmación
+    onValue(ref(db, `empresas/${empresaId}/info`), snap => {
+      empresaAEliminarNombre = snap.val()?.nombre || '';
+      document.getElementById('confirmar-eliminar-nombre').value = '';
+      document.getElementById('eliminar-empresa-error').style.display = 'none';
+      document.getElementById('modal-eliminar-empresa').classList.add('open');
+    }, { onlyOnce: true });
+  };
+
+  window.confirmarEliminarEmpresa = async function() {
+    const input = document.getElementById('confirmar-eliminar-nombre').value.trim();
+    const errorEl = document.getElementById('eliminar-empresa-error');
+
+    if (input !== empresaAEliminarNombre) {
+      errorEl.style.display = 'block';
+      document.getElementById('confirmar-eliminar-nombre').focus();
+      return;
+    }
+    errorEl.style.display = 'none';
+    closeModal('eliminar-empresa');
+
+    // Eliminar todos los datos de la empresa en Firebase
+    const batch = {};
+    batch[`empresas/${empresaId}`] = null;
+    batch[`usuariosDeEmpresa/${empresaId}`] = null;
+    batch[`invitacionesPendientes/${empresaId}`] = null;
+    // Quitar el acceso a esta empresa de todos los usuarios que la tenían
+    Object.keys(misEmpresas).forEach(() => {
+      batch[`usuarios/${uid}/empresas/${empresaId}`] = null;
+    });
+    // También limpiar los otros usuarios con acceso
+    onValue(ref(db, `usuariosDeEmpresa/${empresaId}`), async snap => {
+      const usuarios = snap.val() || {};
+      Object.keys(usuarios).forEach(uKey => {
+        batch[`usuarios/${uKey}/empresas/${empresaId}`] = null;
+      });
+      await update(ref(db), batch);
+
+      // Cambiar a otra empresa automáticamente
+      const otraEmpresa = Object.keys(misEmpresas).find(id => id !== empresaId);
+      if (otraEmpresa) {
+        cambiarEmpresa(otraEmpresa, misEmpresas[otraEmpresa]);
+      }
+    }, { onlyOnce: true });
   };
 
   // ── NAV ──
