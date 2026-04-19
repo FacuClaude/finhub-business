@@ -1094,11 +1094,11 @@
       <div style="background:var(--surface);border:1px solid var(--border);border-top:3px solid var(--accent);padding:20px 24px;margin-bottom:28px;">
         <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;">
           <div>
-            <div style="font-size:.62rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:4px;">Empresa activa</div>
-            <div style="font-family:'Plus Jakarta Sans',sans-serif;font-size:1.1rem;font-weight:600;color:var(--ink);" id="usuarios-empresa-nombre">—</div>
-            <div style="font-size:.72rem;color:var(--muted);margin-top:2px;" id="usuarios-empresa-id"></div>
+            <div style="font-size:.62rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:4px;">Empresa</div>
+            <div style="font-family:'Plus Jakarta Sans',sans-serif;font-size:1.2rem;font-weight:700;color:var(--ink);" id="usuarios-empresa-nombre">—</div>
+            <div style="font-size:.72rem;color:var(--muted);margin-top:3px;" id="usuarios-empresa-id"></div>
           </div>
-          <button class="btn-secondary" onclick="openModal('editar-empresa')">✏️ Editar nombre</button>
+          <button class="btn-secondary" onclick="openModal('editar-empresa')">✏️ Editar datos</button>
         </div>
       </div>
 
@@ -4287,13 +4287,14 @@
   let editandoUsuarioUid = null;
 
   window.renderUsuarios = function() {
-    // Cargar info empresa
+    // Cargar info empresa y mostrar de forma útil
     onValue(ref(db, `empresas/${empresaId}/info`), snap => {
       const info = snap.val() || {};
       const n = document.getElementById('usuarios-empresa-nombre');
-      const id = document.getElementById('usuarios-empresa-id');
+      const idEl = document.getElementById('usuarios-empresa-id');
       if (n) n.textContent = info.nombre || '—';
-      if (id) id.textContent = `ID: ${empresaId}`;
+      // Mostrar CUIT si existe, sino nada técnico
+      if (idEl) idEl.textContent = info.cuit ? `CUIT: ${info.cuit}` : '';
       // Precargar modal editar empresa
       const inp = document.getElementById('edit-empresa-nombre');
       const inp2 = document.getElementById('edit-empresa-cuit');
@@ -4311,23 +4312,50 @@
   function renderListaUsuarios() {
     const lista = document.getElementById('usuarios-lista');
     if (!lista) return;
+    // Filtrar la entrada del usuario actual (mostrarla separada)
     const arr = Object.entries(usuariosEmpresa);
-    if (!arr.length) {
-      lista.innerHTML = '<div style="padding:32px;text-align:center;font-size:.82rem;color:var(--muted);background:var(--surface);border:1px solid var(--border);">No hay usuarios adicionales. Solo vos tenés acceso.</div>';
-      return;
-    }
     const rolColors = { admin:'var(--accent)', contador:'var(--accent2)', operador:'var(--green)', visualizador:'var(--muted)', personalizado:'var(--ink2)' };
-    lista.innerHTML = arr.map(([userUid, u]) => `
-      <div style="background:var(--surface);border:1px solid var(--border);padding:16px 20px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;gap:12px;border-left:4px solid ${rolColors[u.tipoRol]||'var(--muted)'};">
+    const rolLabel  = { admin:'Admin', contador:'Contador', operador:'Operador', visualizador:'Visualizador', personalizado:'Personalizado' };
+
+    // Separar "yo" del resto
+    const emailKeyActual = auth.currentUser?.email?.replace(/\./g,'_').replace(/@/g,'__at__') || '';
+    const otrosArr = arr.filter(([k]) => k !== uid && k !== emailKeyActual);
+    const yoEntry  = arr.find(([k]) => k === uid || k === emailKeyActual);
+
+    let html = '';
+
+    // Fila "Vos" siempre arriba
+    if (yoEntry) {
+      const [, u] = yoEntry;
+      html += `<div style="background:var(--accent-bg);border:1px solid rgba(30,77,140,.2);padding:14px 20px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;gap:12px;border-left:4px solid var(--accent);">
         <div>
-          <div style="font-size:.88rem;font-weight:600;color:var(--ink);">${esc(u.nombre||u.email||userUid)}</div>
-          <div style="font-size:.72rem;color:var(--muted);margin-top:2px;">${esc(u.email||'')} · <span style="color:${rolColors[u.tipoRol]||'var(--muted)'};">${u.tipoRol||'personalizado'}</span></div>
+          <div style="font-size:.88rem;font-weight:600;color:var(--ink);">${esc(u.nombre||u.email||'Vos')} <span style="font-size:.62rem;background:var(--accent);color:white;padding:2px 7px;border-radius:3px;margin-left:6px;">${rolLabel[u.tipoRol]||u.tipoRol||'Admin'}</span></div>
+          <div style="font-size:.72rem;color:var(--muted);margin-top:2px;">${esc(u.email||auth.currentUser?.email||'')} · Tu cuenta</div>
         </div>
-        <div style="display:flex;gap:8px;">
-          ${userUid !== uid ? `<button class="tx-btn-action edit" onclick="editarUsuario('${userUid}')">Editar</button>
-          <button class="tx-btn-action del" onclick="eliminarUsuario('${userUid}')">Quitar</button>` : '<span style="font-size:.68rem;color:var(--muted);">Vos</span>'}
-        </div>
-      </div>`).join('');
+        <span style="font-size:.68rem;color:var(--muted);">Tu acceso</span>
+      </div>`;
+    }
+
+    if (!otrosArr.length) {
+      html += '<div style="padding:28px;text-align:center;font-size:.82rem;color:var(--muted);background:var(--surface);border:1px solid var(--border);border-radius:4px;">No hay otros usuarios con acceso. Usá <strong>+ Agregar usuario</strong> para invitar a tu contador o equipo.</div>';
+    } else {
+      html += otrosArr.map(([userKey, u]) => `
+        <div style="background:var(--surface);border:1px solid var(--border);padding:14px 20px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;gap:12px;border-left:4px solid ${rolColors[u.tipoRol]||'var(--muted)'};">
+          <div>
+            <div style="font-size:.88rem;font-weight:600;color:var(--ink);">${esc(u.nombre||u.email||userKey)}</div>
+            <div style="font-size:.72rem;color:var(--muted);margin-top:2px;">
+              ${esc(u.email||'')}
+              <span style="margin-left:6px;font-size:.62rem;background:${rolColors[u.tipoRol]||'var(--muted)'};color:white;padding:2px 7px;border-radius:3px;">${rolLabel[u.tipoRol]||u.tipoRol||'—'}</span>
+              ${!u.uid ? '<span style="margin-left:6px;font-size:.62rem;color:var(--accent2);">⏳ Pendiente de primer login</span>' : ''}
+            </div>
+          </div>
+          <div style="display:flex;gap:8px;">
+            <button class="tx-btn-action edit" onclick="editarUsuario('${userKey}')">Editar</button>
+            <button class="tx-btn-action del" onclick="eliminarUsuario('${userKey}')">Quitar</button>
+          </div>
+        </div>`).join('');
+    }
+    lista.innerHTML = html;
   }
 
   window.aplicarRolBase = function(rol) {
@@ -4345,47 +4373,62 @@
     const tipoRol = document.getElementById('inv-rol').value;
     if (!email) { alert('Ingresá el email del usuario.'); return; }
 
-    // Construir objeto de permisos
     const campos = ['verTodo','editarMovimientos','editarCuentas','editarContactos','verReportes','exportar','verRRHH','editarRRHH','configurar','gestionarUsuarios'];
     const permisos = { tipoRol, email, nombre: nombre || email };
     campos.forEach(p => { permisos[p] = document.getElementById('perm-'+p)?.checked || false; });
 
-    // Buscar si el usuario ya tiene cuenta en Firebase
-    // Guardamos por email como clave temporal — cuando el usuario inicie sesión
-    // Firebase buscará su UID y lo linkea
     const emailKey = email.replace(/\./g, '_').replace(/@/g, '__at__');
+    const claveGuardar = editandoUsuarioUid || emailKey;
+
     const batch = {};
     batch[`invitacionesPendientes/${empresaId}/${emailKey}`] = { ...permisos, createdAt: Date.now(), creadoPor: uid };
-    // También guardar en usuariosDeEmpresa para mostrar en lista
-    batch[`usuariosDeEmpresa/${empresaId}/${emailKey}`] = { ...permisos };
+    batch[`usuariosDeEmpresa/${empresaId}/${claveGuardar}`] = { ...permisos };
+    // Si editamos y la clave cambió, limpiar la anterior
+    if (editandoUsuarioUid && editandoUsuarioUid !== emailKey) {
+      batch[`usuariosDeEmpresa/${empresaId}/${editandoUsuarioUid}`] = null;
+    }
     await update(ref(db), batch);
+    editandoUsuarioUid = null;
     closeModal('invitar-usuario');
     renderUsuarios();
-    alert(`✓ Acceso configurado para ${email}.\nLa próxima vez que ese usuario inicie sesión en finHub Business con ese email, tendrá acceso automáticamente.`);
+    alert(`✓ Acceso configurado para ${email}.\nLa próxima vez que inicie sesión con ese email en finHub Business tendrá acceso automáticamente.`);
   };
 
-  window.editarUsuario = function(userUid) {
-    editandoUsuarioUid = userUid;
-    const u = usuariosEmpresa[userUid];
-    if (!u) return;
-    document.getElementById('inv-email').value = u.email || '';
+  window.editarUsuario = function(userKey) {
+    // Buscar los datos del usuario en usuariosEmpresa por su clave (emailKey o uid)
+    const u = usuariosEmpresa[userKey];
+    if (!u) { alert('No se encontraron los datos del usuario.'); return; }
+
+    editandoUsuarioUid = userKey;
+
+    // Poblar el modal con los datos guardados
+    document.getElementById('inv-email').value  = u.email  || '';
     document.getElementById('inv-nombre').value = u.nombre || '';
-    document.getElementById('inv-rol').value = u.tipoRol || 'personalizado';
+    document.getElementById('inv-rol').value    = u.tipoRol || 'personalizado';
+
+    // Primero aplicar el rol base para setear checkboxes por defecto
     aplicarRolBase(u.tipoRol || 'personalizado');
-    // Aplicar permisos guardados
+
+    // Luego sobreescribir con los permisos individuales guardados
     const campos = ['verTodo','editarMovimientos','editarCuentas','editarContactos','verReportes','exportar','verRRHH','editarRRHH','configurar','gestionarUsuarios'];
-    campos.forEach(p => { const el = document.getElementById('perm-'+p); if(el) el.checked = u[p]===true; });
-    openModal('invitar-usuario');
+    campos.forEach(p => {
+      const el = document.getElementById('perm-'+p);
+      if (el) el.checked = u[p] === true;
+    });
+
+    // Abrir modal con título de edición (sin pasar por openModal para no resetear)
     document.querySelector('#modal-invitar-usuario .modal-title').textContent = 'Editar permisos';
+    document.getElementById('modal-invitar-usuario').classList.add('open');
   };
 
-  window.eliminarUsuario = async function(userUid) {
-    if (!confirm('¿Quitar el acceso de este usuario?')) return;
+  window.eliminarUsuario = async function(userKey) {
+    const u = usuariosEmpresa[userKey];
+    const nombre = u?.nombre || u?.email || userKey;
+    if (!confirm(`¿Quitar el acceso de ${nombre}?`)) return;
     const batch = {};
-    batch[`usuariosDeEmpresa/${empresaId}/${userUid}`] = null;
-    batch[`invitacionesPendientes/${empresaId}/${userUid}`] = null;
-    // Si tiene UID real, también remover de usuarios/${uid}/empresas
-    batch[`usuarios/${userUid}/empresas/${empresaId}`] = null;
+    batch[`usuariosDeEmpresa/${empresaId}/${userKey}`] = null;
+    batch[`invitacionesPendientes/${empresaId}/${userKey}`] = null;
+    batch[`usuarios/${userKey}/empresas/${empresaId}`] = null;
     await update(ref(db), batch);
     renderUsuarios();
   };
