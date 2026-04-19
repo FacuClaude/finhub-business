@@ -204,6 +204,45 @@
     .coming-soon-title { font-family:'Plus Jakarta Sans',sans-serif; font-size:1.1rem; font-weight:600; color:var(--ink); margin-bottom:8px; }
     .coming-soon-sub { font-size:.82rem; color:var(--muted); line-height:1.7; max-width:320px; }
 
+    /* ── INSTRUCTIVO ── */
+    .inst-overlay { display:none; position:fixed; inset:0; background:rgba(26,26,20,.5); backdrop-filter:blur(6px); z-index:500; }
+    .inst-overlay.open { display:flex; align-items:center; justify-content:center; padding:20px; }
+    .inst-modal { background:var(--bg); border:1px solid var(--border); border-radius:8px; width:100%; max-width:900px; max-height:90vh; display:grid; grid-template-columns:220px 1fr; overflow:hidden; box-shadow:0 32px 80px rgba(0,0,0,.2); animation:slideUp .3s cubic-bezier(.16,1,.3,1); position:relative; }
+    .inst-nav { background:var(--surface); border-right:1px solid var(--border); padding:0; display:flex; flex-direction:column; overflow-y:auto; scrollbar-width:none; }
+    .inst-nav::-webkit-scrollbar { display:none; }
+    .inst-nav-header { padding:20px 18px 14px; border-bottom:1px solid var(--border); }
+    .inst-nav-title { font-family:'Plus Jakarta Sans',sans-serif; font-size:.95rem; font-weight:700; color:var(--ink); margin-bottom:2px; }
+    .inst-nav-sub { font-size:.68rem; color:var(--muted); }
+    .inst-nav-item { display:flex; align-items:center; gap:8px; padding:9px 18px; cursor:pointer; font-size:.78rem; color:var(--ink2); transition:background .15s,color .15s; border-left:3px solid transparent; border-right:none; border-top:none; border-bottom:none; background:transparent; width:100%; text-align:left; font-family:'DM Sans',sans-serif; }
+    .inst-nav-item:hover { background:var(--surface2); color:var(--ink); }
+    .inst-nav-item.active { background:var(--accent-bg); color:var(--accent); border-left-color:var(--accent); font-weight:500; }
+    .inst-nav-icon { font-size:.95rem; flex-shrink:0; }
+    .inst-content { overflow-y:auto; padding:32px 36px; scrollbar-width:none; }
+    .inst-content::-webkit-scrollbar { display:none; }
+    .inst-section { display:none; }
+    .inst-section.active { display:block; }
+    .inst-section-title { font-family:'Plus Jakarta Sans',sans-serif; font-size:1.5rem; font-weight:700; color:var(--ink); margin-bottom:6px; }
+    .inst-section-sub { font-size:.82rem; color:var(--muted); margin-bottom:28px; line-height:1.6; }
+    .inst-step { display:flex; gap:14px; margin-bottom:20px; }
+    .inst-step-num { width:28px; height:28px; border-radius:50%; background:var(--accent); color:white; font-family:'Plus Jakarta Sans',sans-serif; font-size:.8rem; font-weight:700; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px; }
+    .inst-step-body { flex:1; }
+    .inst-step-title { font-size:.88rem; font-weight:600; color:var(--ink); margin-bottom:4px; }
+    .inst-step-desc { font-size:.8rem; color:var(--ink2); line-height:1.7; }
+    .inst-tip  { background:var(--accent-bg); border-left:3px solid var(--accent); padding:12px 16px; border-radius:0 4px 4px 0; margin:16px 0; font-size:.8rem; color:var(--ink2); line-height:1.6; }
+    .inst-warn { background:rgba(193,122,74,.08); border-left:3px solid var(--accent2); padding:12px 16px; border-radius:0 4px 4px 0; margin:16px 0; font-size:.8rem; color:var(--ink2); line-height:1.6; }
+    .inst-divider { border:none; border-top:1px solid var(--border); margin:24px 0; }
+    .inst-badge { display:inline-block; background:var(--surface2); border:1px solid var(--border); border-radius:4px; padding:2px 8px; font-size:.72rem; font-family:'DM Sans',sans-serif; color:var(--ink2); margin:0 2px; }
+    @media(max-width:900px){
+      .inst-modal { grid-template-columns:1fr; max-height:95vh; }
+      .inst-nav { flex-direction:row; overflow-x:auto; overflow-y:hidden; border-right:none; border-bottom:1px solid var(--border); }
+      .inst-nav-header { display:none; }
+      .inst-nav-item { white-space:nowrap; padding:12px 12px; border-left:none; border-bottom:3px solid transparent; font-size:.72rem; }
+      .inst-nav-item.active { border-left:none; border-bottom-color:var(--accent); }
+      .inst-content { padding:20px 16px; }
+      .inst-overlay { padding:0; align-items:flex-end; }
+      .inst-modal { border-radius:12px 12px 0 0; max-height:92vh; }
+    }
+
     /* ── RRHH ── */
     .emp-card { background:var(--surface); border:1px solid var(--border); padding:20px 22px; display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:10px; border-left:4px solid var(--accent); transition:box-shadow .2s; cursor:pointer; }
     .emp-card:hover { box-shadow:0 4px 16px rgba(0,0,0,.08); }
@@ -506,6 +545,10 @@
       <div class="theme-toggle"><span class="theme-label">Privacidad</span><label class="switch"><input type="checkbox" id="foco-toggle" onchange="toggleFoco(this.checked)"><span class="slider"></span></label></div>
       <div class="theme-toggle"><span class="theme-label">Modo noche</span><label class="switch"><input type="checkbox" id="dark-toggle" onchange="toggleDark(this.checked)"><span class="slider"></span></label></div>
       <div class="user-email" id="user-email">—</div>
+      <button onclick="abrirInstructivo()" style="display:flex;align-items:center;justify-content:center;gap:6px;width:100%;margin-bottom:8px;font-family:'DM Sans',sans-serif;font-size:.68rem;font-weight:400;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.65);background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.2);padding:8px 14px;cursor:pointer;border-radius:4px;transition:all .2s;" onmouseover="this.style.color='white';this.style.background='rgba(255,255,255,.15)'" onmouseout="this.style.color='rgba(255,255,255,.65)';this.style.background='rgba(255,255,255,.08)'">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
+        Instructivo
+      </button>
       <button class="btn-logout" onclick="logout()" style="width:100%;text-align:center;">Salir</button>
     </div>
   </aside>
@@ -1036,6 +1079,182 @@
         </div>
       </div>
     </div>
+
+<!-- MODAL: INSTRUCTIVO -->
+<div class="inst-overlay" id="modal-instructivo" onclick="cerrarInstructivo(event)">
+  <div class="inst-modal" onclick="event.stopPropagation()">
+
+    <!-- Nav lateral -->
+    <div class="inst-nav">
+      <div class="inst-nav-header">
+        <div class="inst-nav-title">📖 Instructivo</div>
+        <div class="inst-nav-sub">finHub Business</div>
+      </div>
+      <button class="inst-nav-item active" onclick="instIr('bienvenida',this)"><span class="inst-nav-icon">🏠</span>Bienvenida</button>
+      <button class="inst-nav-item" onclick="instIr('dashboard',this)"><span class="inst-nav-icon">📊</span>Dashboard</button>
+      <button class="inst-nav-item" onclick="instIr('movimientos',this)"><span class="inst-nav-icon">📋</span>Movimientos</button>
+      <button class="inst-nav-item" onclick="instIr('cuentas',this)"><span class="inst-nav-icon">💳</span>Cuentas</button>
+      <button class="inst-nav-item" onclick="instIr('contactos',this)"><span class="inst-nav-icon">👥</span>Contactos</button>
+      <button class="inst-nav-item" onclick="instIr('iva',this)"><span class="inst-nav-icon">🧾</span>IVA</button>
+      <button class="inst-nav-item" onclick="instIr('reportes',this)"><span class="inst-nav-icon">📈</span>Reportes</button>
+      <button class="inst-nav-item" onclick="instIr('busqueda',this)"><span class="inst-nav-icon">🔍</span>Búsqueda</button>
+      <button class="inst-nav-item" onclick="instIr('contador',this)"><span class="inst-nav-icon">🧮</span>Contador IA</button>
+      <button class="inst-nav-item" onclick="instIr('asesor',this)"><span class="inst-nav-icon">⚖️</span>Asesor Legal IA</button>
+      <button class="inst-nav-item" onclick="instIr('rrhh',this)"><span class="inst-nav-icon">👤</span>RRHH</button>
+      <button class="inst-nav-item" onclick="instIr('configuracion',this)"><span class="inst-nav-icon">⚙️</span>Configuración</button>
+    </div>
+
+    <!-- Contenido -->
+    <div class="inst-content">
+      <button onclick="cerrarInstructivo()" style="position:absolute;top:14px;right:14px;background:none;border:none;cursor:pointer;color:var(--muted);font-size:1.3rem;padding:4px 8px;border-radius:4px;line-height:1;" title="Cerrar">✕</button>
+
+      <!-- BIENVENIDA -->
+      <div class="inst-section active" id="inst-bienvenida">
+        <div class="inst-section-title">Bienvenido a finHub Business</div>
+        <div class="inst-section-sub">Tu sistema de gestión financiera y administrativa para PyMEs argentinas. Este instructivo te guía por cada módulo de la app.</div>
+        <div class="inst-step"><div class="inst-step-num">1</div><div class="inst-step-body"><div class="inst-step-title">Navegación</div><div class="inst-step-desc">Usá el menú de la izquierda para moverte entre módulos. En mobile, tocá el ícono <span class="inst-badge">☰</span> arriba a la izquierda para abrir el menú.</div></div></div>
+        <div class="inst-step"><div class="inst-step-num">2</div><div class="inst-step-body"><div class="inst-step-title">Buscador global</div><div class="inst-step-desc">El campo de búsqueda en el sidebar busca simultáneamente en movimientos, contactos y cuentas. Los resultados son clickeables y te llevan a la sección correspondiente.</div></div></div>
+        <div class="inst-step"><div class="inst-step-num">3</div><div class="inst-step-body"><div class="inst-step-title">Modo noche y privacidad</div><div class="inst-step-desc">Al pie del sidebar encontrás dos toggles: <span class="inst-badge">Modo noche</span> cambia el tema visual, y <span class="inst-badge">Privacidad</span> oculta todos los montos (útil en reuniones o en público).</div></div></div>
+        <div class="inst-step"><div class="inst-step-num">4</div><div class="inst-step-body"><div class="inst-step-title">Datos en tiempo real</div><div class="inst-step-desc">Todos los datos se sincronizan automáticamente con Firebase. Si abrís la app en otro dispositivo, los datos se actualizan instantáneamente.</div></div></div>
+        <div class="inst-tip">💡 Empezá cargando tus cuentas bancarias y luego importá tus movimientos históricos desde Excel para que el dashboard tenga datos desde el primer día.</div>
+      </div>
+
+      <!-- DASHBOARD -->
+      <div class="inst-section" id="inst-dashboard">
+        <div class="inst-section-title">Dashboard</div>
+        <div class="inst-section-sub">Panorama financiero completo de tu negocio. El primer módulo que ves al iniciar sesión.</div>
+        <div class="inst-step"><div class="inst-step-num">1</div><div class="inst-step-body"><div class="inst-step-title">KPIs principales</div><div class="inst-step-desc">Las tres tarjetas superiores muestran <strong>Ingresos</strong>, <strong>Gastos</strong> y <strong>Resultado</strong> del período seleccionado. Las cuatro tarjetas debajo muestran IVA débito, IVA crédito, saldo IVA y margen bruto.</div></div></div>
+        <div class="inst-step"><div class="inst-step-num">2</div><div class="inst-step-body"><div class="inst-step-title">Filtro de período</div><div class="inst-step-desc">Usá los botones <span class="inst-badge">Este mes</span> <span class="inst-badge">Semana</span> <span class="inst-badge">3 meses</span> <span class="inst-badge">6 meses</span> <span class="inst-badge">1 año</span> para cambiar el período analizado. Todos los KPIs y gráficos se actualizan instantáneamente.</div></div></div>
+        <div class="inst-step"><div class="inst-step-num">3</div><div class="inst-step-body"><div class="inst-step-title">Gráficos</div><div class="inst-step-desc">El gráfico de barras muestra ingresos vs gastos por mes. El donut muestra la distribución de gastos por categoría. Pasá el cursor sobre los gráficos para ver los valores exactos.</div></div></div>
+        <div class="inst-step"><div class="inst-step-num">4</div><div class="inst-step-body"><div class="inst-step-title">Últimos movimientos</div><div class="inst-step-desc">Los 6 movimientos más recientes del período. Hacé clic en <span class="inst-badge">Ver todos</span> para ir al módulo de Movimientos completo.</div></div></div>
+        <div class="inst-tip">💡 Si el período actual no tiene datos, el dashboard muestra automáticamente el último mes con información disponible.</div>
+      </div>
+
+      <!-- MOVIMIENTOS -->
+      <div class="inst-section" id="inst-movimientos">
+        <div class="inst-section-title">Movimientos</div>
+        <div class="inst-section-sub">Registro de todos los ingresos y gastos de tu empresa.</div>
+        <div class="inst-step"><div class="inst-step-num">1</div><div class="inst-step-body"><div class="inst-step-title">Agregar un movimiento</div><div class="inst-step-desc">Hacé clic en <span class="inst-badge">+ Movimiento</span>. Completá: tipo (ingreso/gasto), descripción, monto, categoría, fecha. Opcionalmente podés asignar cuenta, contacto, comprobante, IVA y notas.</div></div></div>
+        <div class="inst-step"><div class="inst-step-num">2</div><div class="inst-step-body"><div class="inst-step-title">IVA en movimientos</div><div class="inst-step-desc">Marcá la casilla <span class="inst-badge">Tiene IVA</span> y seleccioná la alícuota (21%, 10.5%, 27% o exento). El sistema calculará automáticamente el monto de IVA débito/crédito.</div></div></div>
+        <div class="inst-step"><div class="inst-step-num">3</div><div class="inst-step-body"><div class="inst-step-title">Importar desde Excel</div><div class="inst-step-desc">Usá el botón <span class="inst-badge">↑ Importar Excel</span> para cargar movimientos masivamente. El archivo debe tener las columnas: <strong>fecha</strong> (YYYY-MM-DD), <strong>tipo</strong> (ingreso/gasto), <strong>descripcion</strong>, <strong>monto</strong>, <strong>categoria</strong>.</div></div></div>
+        <div class="inst-step"><div class="inst-step-num">4</div><div class="inst-step-body"><div class="inst-step-title">Exportar</div><div class="inst-step-desc">Botones <span class="inst-badge">↓ CSV</span> y <span class="inst-badge">↓ Excel</span> para exportar todos los movimientos con todos sus campos incluyendo cuenta, contacto e IVA.</div></div></div>
+        <div class="inst-step"><div class="inst-step-num">5</div><div class="inst-step-body"><div class="inst-step-title">Filtros y búsqueda</div><div class="inst-step-desc">Filtrá por tipo (Todos / Ingresos / Gastos) o buscá por descripción o categoría. Los movimientos están agrupados por mes — hacé clic en el encabezado del mes para colapsar/expandir.</div></div></div>
+        <div class="inst-warn">⚠️ Las transferencias entre cuentas no aparecen en la lista de movimientos para no distorsionar los totales.</div>
+      </div>
+
+      <!-- CUENTAS -->
+      <div class="inst-section" id="inst-cuentas">
+        <div class="inst-section-title">Cuentas</div>
+        <div class="inst-section-sub">Gestión de todas tus cuentas: caja, banco, cuenta corriente, billeteras digitales e inversiones.</div>
+        <div class="inst-step"><div class="inst-step-num">1</div><div class="inst-step-body"><div class="inst-step-title">Crear una cuenta</div><div class="inst-step-desc">Hacé clic en <span class="inst-badge">+ Nueva cuenta</span>. Elegí el tipo, nombre, saldo inicial (lo que tenías al empezar a usar la app), moneda (ARS o USD) y una nota opcional (CBU, alias, banco).</div></div></div>
+        <div class="inst-step"><div class="inst-step-num">2</div><div class="inst-step-body"><div class="inst-step-title">Saldo calculado en tiempo real</div><div class="inst-step-desc">El saldo de cada cuenta se calcula automáticamente: <strong>Saldo inicial + Ingresos asignados − Gastos asignados ± Transferencias</strong>. No necesitás actualizarlo manualmente.</div></div></div>
+        <div class="inst-step"><div class="inst-step-num">3</div><div class="inst-step-body"><div class="inst-step-title">Transferencias entre cuentas</div><div class="inst-step-desc">Usá el botón <span class="inst-badge">⇄ Transferencia</span> para registrar movimientos entre tus propias cuentas (por ejemplo, de caja a banco). Seleccioná origen, destino, monto y fecha.</div></div></div>
+        <div class="inst-step"><div class="inst-step-num">4</div><div class="inst-step-body"><div class="inst-step-title">Asignar movimientos a cuentas</div><div class="inst-step-desc">Al cargar o editar un movimiento, podés seleccionar de qué cuenta sale o a cuál entra. Esto mantiene los saldos siempre actualizados.</div></div></div>
+        <div class="inst-tip">💡 El resumen superior muestra el total consolidado en ARS y USD separados.</div>
+      </div>
+
+      <!-- CONTACTOS -->
+      <div class="inst-section" id="inst-contactos">
+        <div class="inst-section-title">Contactos</div>
+        <div class="inst-section-sub">Base de datos de clientes y proveedores con historial de operaciones.</div>
+        <div class="inst-step"><div class="inst-step-num">1</div><div class="inst-step-body"><div class="inst-step-title">Agregar un contacto</div><div class="inst-step-desc">Hacé clic en <span class="inst-badge">+ Contacto</span>. Indicá si es cliente o proveedor, nombre/razón social, CUIT (con formato automático), condición de IVA, email y teléfono.</div></div></div>
+        <div class="inst-step"><div class="inst-step-num">2</div><div class="inst-step-body"><div class="inst-step-title">Asociar movimientos a contactos</div><div class="inst-step-desc">Al cargar un movimiento, el selector <span class="inst-badge">Contacto</span> te permite asociarlo a un cliente o proveedor. El movimiento aparecerá en el historial del contacto.</div></div></div>
+        <div class="inst-step"><div class="inst-step-num">3</div><div class="inst-step-body"><div class="inst-step-title">Detalle del contacto</div><div class="inst-step-desc">Hacé clic en cualquier tarjeta de contacto para ver su historial completo: total vendido/comprado y los últimos 5 movimientos asociados.</div></div></div>
+        <div class="inst-step"><div class="inst-step-num">4</div><div class="inst-step-body"><div class="inst-step-title">Pestañas Clientes / Proveedores</div><div class="inst-step-desc">Los contactos están separados en dos pestañas. Podés buscar por nombre o CUIT en tiempo real.</div></div></div>
+      </div>
+
+      <!-- IVA -->
+      <div class="inst-section" id="inst-iva">
+        <div class="inst-section-title">IVA</div>
+        <div class="inst-section-sub">Libro de IVA débito y crédito para preparar tus declaraciones.</div>
+        <div class="inst-step"><div class="inst-step-num">1</div><div class="inst-step-body"><div class="inst-step-title">Seleccionar el período</div><div class="inst-step-desc">El selector de mes muestra solo los períodos que tienen movimientos con IVA cargado. Elegí el mes para ver el libro correspondiente.</div></div></div>
+        <div class="inst-step"><div class="inst-step-num">2</div><div class="inst-step-body"><div class="inst-step-title">KPIs de IVA</div><div class="inst-step-desc"><strong>IVA Débito</strong>: IVA de tus ventas (lo que cobraste de IVA a tus clientes). <strong>IVA Crédito</strong>: IVA de tus compras (lo que pagaste de IVA a tus proveedores). <strong>Saldo</strong>: la diferencia — si es positivo, pagás a AFIP; si es negativo, tenés saldo a favor.</div></div></div>
+        <div class="inst-step"><div class="inst-step-num">3</div><div class="inst-step-body"><div class="inst-step-title">Breakdown por alícuota</div><div class="inst-step-desc">Desglosa el IVA por alícuota (21%, 10.5%, 27%) tanto para débito como para crédito, con base imponible y monto de IVA de cada una.</div></div></div>
+        <div class="inst-step"><div class="inst-step-num">4</div><div class="inst-step-body"><div class="inst-step-title">Exportar para el contador</div><div class="inst-step-desc">Los botones <span class="inst-badge">↓ CSV</span> y <span class="inst-badge">↓ Excel</span> exportan el libro completo del mes con todos los comprobantes, base imponible, alícuota, monto de IVA y total. Listo para entregar al contador.</div></div></div>
+        <div class="inst-tip">💡 Para que el módulo IVA funcione correctamente, cada movimiento gravado debe tener marcada la casilla "Tiene IVA" con la alícuota correspondiente.</div>
+      </div>
+
+      <!-- REPORTES -->
+      <div class="inst-section" id="inst-reportes">
+        <div class="inst-section-title">Reportes</div>
+        <div class="inst-section-sub">Estado de resultados (P&L) y flujo de caja con proyecciones.</div>
+        <hr class="inst-divider">
+        <div style="font-size:.8rem;font-weight:700;color:var(--accent);margin-bottom:12px;text-transform:uppercase;letter-spacing:.08em;">Estado de Resultados (P&L)</div>
+        <div class="inst-step"><div class="inst-step-num">1</div><div class="inst-step-body"><div class="inst-step-title">Selector de año</div><div class="inst-step-desc">Elegí el año a analizar. Solo aparecen los años que tienen movimientos registrados.</div></div></div>
+        <div class="inst-step"><div class="inst-step-num">2</div><div class="inst-step-body"><div class="inst-step-title">Tabla mensual por categoría</div><div class="inst-step-desc">Muestra cada categoría de ingreso y gasto con sus montos mes a mes, subtotales y resultado neto. El margen % se calcula automáticamente para cada mes y el total anual.</div></div></div>
+        <div class="inst-step"><div class="inst-step-num">3</div><div class="inst-step-body"><div class="inst-step-title">Desglose por categoría</div><div class="inst-step-desc">Barras de progreso que muestran qué categorías representan mayor peso en ingresos y gastos, con el porcentaje del total.</div></div></div>
+        <hr class="inst-divider">
+        <div style="font-size:.8rem;font-weight:700;color:var(--accent);margin-bottom:12px;text-transform:uppercase;letter-spacing:.08em;">Flujo de Caja</div>
+        <div class="inst-step"><div class="inst-step-num">4</div><div class="inst-step-body"><div class="inst-step-title">Gráfico combinado</div><div class="inst-step-desc">Barras de entradas y salidas por mes, más una línea naranja de saldo acumulado en el eje derecho. Te permite ver en qué meses el saldo acumulado cae.</div></div></div>
+        <div class="inst-step"><div class="inst-step-num">5</div><div class="inst-step-body"><div class="inst-step-title">Proyección a 3 meses</div><div class="inst-step-desc">Basada en el promedio de los últimos meses con datos. Muestra entradas, salidas y saldo acumulado estimado para los próximos 3 meses. Es una estimación — no considera estacionalidad.</div></div></div>
+        <div class="inst-tip">💡 Exportá el P&L en Excel para enviárselo a tu contador o usarlo en presentaciones de inversores.</div>
+      </div>
+
+      <!-- BÚSQUEDA -->
+      <div class="inst-section" id="inst-busqueda">
+        <div class="inst-section-title">Búsqueda global</div>
+        <div class="inst-section-sub">Buscador unificado que encuentra cualquier dato en toda la app.</div>
+        <div class="inst-step"><div class="inst-step-num">1</div><div class="inst-step-body"><div class="inst-step-title">Dónde está</div><div class="inst-step-desc">El campo de búsqueda está en la parte superior del sidebar, siempre visible. Escribí cualquier término y los resultados aparecen en tiempo real.</div></div></div>
+        <div class="inst-step"><div class="inst-step-num">2</div><div class="inst-step-body"><div class="inst-step-title">Qué busca</div><div class="inst-step-desc">Busca simultáneamente en: <strong>Movimientos</strong> (descripción, categoría, comprobante, notas), <strong>Contactos</strong> (nombre, CUIT, email) y <strong>Cuentas</strong> (nombre, notas). Los términos encontrados se resaltan en los resultados.</div></div></div>
+        <div class="inst-step"><div class="inst-step-num">3</div><div class="inst-step-body"><div class="inst-step-title">Navegar a resultados</div><div class="inst-step-desc">Hacé clic en cualquier resultado para ir a la sección correspondiente. En movimientos, podés editar directamente desde el resultado con el botón <span class="inst-badge">Editar</span>.</div></div></div>
+        <div class="inst-step"><div class="inst-step-num">4</div><div class="inst-step-body"><div class="inst-step-title">Limpiar búsqueda</div><div class="inst-step-desc">Hacé clic en la <span class="inst-badge">✕</span> al lado del campo o navegá a cualquier sección del menú para limpiar la búsqueda.</div></div></div>
+      </div>
+
+      <!-- CONTADOR IA -->
+      <div class="inst-section" id="inst-contador">
+        <div class="inst-section-title">Contador IA</div>
+        <div class="inst-section-sub">Asesoramiento contable y fiscal basado en los datos reales de tu empresa. Sin IA externa — funciona siempre.</div>
+        <div class="inst-step"><div class="inst-step-num">1</div><div class="inst-step-body"><div class="inst-step-title">Alertas automáticas</div><div class="inst-step-desc">Al abrir el módulo, el sistema analiza tus datos y muestra alertas si detecta: resultado negativo, IVA a pagar, runway bajo o margen ajustado.</div></div></div>
+        <div class="inst-step"><div class="inst-step-num">2</div><div class="inst-step-body"><div class="inst-step-title">Preguntas por categoría</div><div class="inst-step-desc">El panel izquierdo tiene 7 categorías desplegables con más de 40 preguntas frecuentes. Hacé clic en el título de una categoría para expandirla y luego en cualquier pregunta para ver la respuesta con tus números reales.</div></div></div>
+        <div class="inst-step"><div class="inst-step-num">3</div><div class="inst-step-body"><div class="inst-step-title">Respuestas con datos reales</div><div class="inst-step-desc">Las respuestas usan los datos reales de tu empresa: tus ingresos del mes, tus gastos por categoría, tu saldo IVA, tu liquidez. No son respuestas genéricas.</div></div></div>
+        <div class="inst-step"><div class="inst-step-num">4</div><div class="inst-step-body"><div class="inst-step-title">Consulta libre</div><div class="inst-step-desc">El campo de texto libre detecta el tema de tu pregunta y responde con la información más relevante. Funciona mejor con términos específicos como "margen", "IVA", "monotributo", "liquidez", etc.</div></div></div>
+        <div class="inst-warn">⚠️ Las respuestas son orientativas y se basan en los datos cargados en la app. Para decisiones importantes, siempre consultá con un contador matriculado.</div>
+      </div>
+
+      <!-- ASESOR LEGAL -->
+      <div class="inst-section" id="inst-asesor">
+        <div class="inst-section-title">Asesor Legal IA</div>
+        <div class="inst-section-sub">Orientación legal para PyMEs argentinas. 7 categorías con más de 50 consultas frecuentes.</div>
+        <div class="inst-step"><div class="inst-step-num">1</div><div class="inst-step-body"><div class="inst-step-title">Categorías disponibles</div><div class="inst-step-desc">Derecho laboral (despidos, sueldos, ART, vacaciones), Contratos comerciales, Societario (SAS/SRL/SA), Impositivo-legal (sanciones AFIP, clausura), Protección de datos, Propiedad intelectual y Relación con clientes.</div></div></div>
+        <div class="inst-step"><div class="inst-step-num">2</div><div class="inst-step-body"><div class="inst-step-title">Cómo navegar</div><div class="inst-step-desc">Hacé clic en el título de una categoría para expandirla. Al seleccionar una pregunta, la respuesta aparece en el panel derecho con información detallada y pasos concretos.</div></div></div>
+        <div class="inst-step"><div class="inst-step-num">3</div><div class="inst-step-body"><div class="inst-step-title">Consulta libre</div><div class="inst-step-desc">El campo libre detecta términos como "despido", "marca", "contrato", "AFIP", "datos personales" y responde con la información legal más relevante.</div></div></div>
+        <div class="inst-warn">⚠️ Toda la información es orientativa y no constituye asesoramiento legal. Para situaciones concretas, siempre consultá con un abogado matriculado.</div>
+      </div>
+
+      <!-- RRHH -->
+      <div class="inst-section" id="inst-rrhh">
+        <div class="inst-section-title">RRHH</div>
+        <div class="inst-section-sub">Gestión completa de personal: legajos, liquidaciones de sueldos y recibos en PDF.</div>
+        <hr class="inst-divider">
+        <div style="font-size:.8rem;font-weight:700;color:var(--accent);margin-bottom:12px;text-transform:uppercase;letter-spacing:.08em;">Tab Empleados</div>
+        <div class="inst-step"><div class="inst-step-num">1</div><div class="inst-step-body"><div class="inst-step-title">Cargar un empleado</div><div class="inst-step-desc">Hacé clic en <span class="inst-badge">+ Nuevo empleado</span>. Completá el legajo: nombre, CUIL, DNI, fecha de ingreso, estado, categoría, convenio, tipo de contrato, sueldo bruto, obra social, CBU y datos de contacto.</div></div></div>
+        <div class="inst-step"><div class="inst-step-num">2</div><div class="inst-step-body"><div class="inst-step-title">KPIs de nómina</div><div class="inst-step-desc">La parte superior muestra: total de empleados activos, masa salarial bruta mensual y costo total para el empleador (sueldo + contribuciones patronales).</div></div></div>
+        <div class="inst-step"><div class="inst-step-num">3</div><div class="inst-step-body"><div class="inst-step-title">Alertas de período de prueba</div><div class="inst-step-desc">El sistema alerta automáticamente cuando un empleado en período de prueba está por vencer (menos de 30 días) o ya venció.</div></div></div>
+        <hr class="inst-divider">
+        <div style="font-size:.8rem;font-weight:700;color:var(--accent);margin-bottom:12px;text-transform:uppercase;letter-spacing:.08em;">Tab Liquidación</div>
+        <div class="inst-step"><div class="inst-step-num">4</div><div class="inst-step-body"><div class="inst-step-title">Generar un recibo</div><div class="inst-step-desc">Seleccioná el empleado, el tipo de liquidación y el período. El sistema calcula automáticamente todos los conceptos y genera el recibo.</div></div></div>
+        <div class="inst-step"><div class="inst-step-num">5</div><div class="inst-step-body"><div class="inst-step-title">Tipos de liquidación</div><div class="inst-step-desc"><strong>Sueldo mensual</strong>: básico + antigüedad + presentismo − aportes. <strong>SAC</strong>: 50% del mayor sueldo del semestre. <strong>Vacaciones</strong>: días según antigüedad × valor día. <strong>Despido sin causa</strong>: indemnización + preaviso + integración + SAC prop. + vacaciones prop. <strong>Renuncia</strong>: SAC prop. + vacaciones prop.</div></div></div>
+        <div class="inst-step"><div class="inst-step-num">6</div><div class="inst-step-body"><div class="inst-step-title">Descargar como PDF</div><div class="inst-step-desc">Hacé clic en <span class="inst-badge">🖨️ Imprimir / PDF</span>. Se abre el diálogo de impresión del sistema. En la opción de destino, seleccioná <strong>"Guardar como PDF"</strong>. El recibo está optimizado para impresión en A4.</div></div></div>
+        <hr class="inst-divider">
+        <div style="font-size:.8rem;font-weight:700;color:var(--accent);margin-bottom:12px;text-transform:uppercase;letter-spacing:.08em;">Tab Configuración</div>
+        <div class="inst-step"><div class="inst-step-num">7</div><div class="inst-step-body"><div class="inst-step-title">Personalizar porcentajes</div><div class="inst-step-desc">Podés editar todos los porcentajes de aportes y contribuciones para adaptarlos a tu convenio o a cambios normativos. Seleccioná un convenio del listado para precargar los valores típicos, luego ajustá los que necesites.</div></div></div>
+        <div class="inst-tip">💡 Los cambios en Configuración afectan todos los cálculos de liquidación. Si cambian los porcentajes por ley, actualizalos acá.</div>
+      </div>
+
+      <!-- CONFIGURACIÓN -->
+      <div class="inst-section" id="inst-configuracion">
+        <div class="inst-section-title">Configuración general</div>
+        <div class="inst-section-sub">Ajustes globales de la app disponibles en el sidebar.</div>
+        <div class="inst-step"><div class="inst-step-num">1</div><div class="inst-step-body"><div class="inst-step-title">Modo noche</div><div class="inst-step-desc">Activa el tema oscuro en toda la app. La preferencia se guarda en el dispositivo y se restaura automáticamente al volver a ingresar.</div></div></div>
+        <div class="inst-step"><div class="inst-step-num">2</div><div class="inst-step-body"><div class="inst-step-title">Privacidad</div><div class="inst-step-desc">Oculta todos los montos monetarios de la app mostrándolos como bloques grises. Útil cuando estás en un lugar público o compartís pantalla. No afecta los datos — solo la visualización.</div></div></div>
+        <div class="inst-step"><div class="inst-step-num">3</div><div class="inst-step-body"><div class="inst-step-title">Sincronización</div><div class="inst-step-desc">Todos los datos se guardan automáticamente en Firebase en tiempo real. No hay botón de guardar — cada cambio se persiste de inmediato. Si abrís la app en otro dispositivo con la misma cuenta, ves los mismos datos.</div></div></div>
+        <div class="inst-step"><div class="inst-step-num">4</div><div class="inst-step-body"><div class="inst-step-title">Cerrar sesión</div><div class="inst-step-desc">El botón <span class="inst-badge">Salir</span> al pie del sidebar cierra la sesión y te devuelve a la pantalla de login. Los datos permanecen en Firebase y estarán disponibles al volver a ingresar.</div></div></div>
+        <div class="inst-tip">💡 finHub Business funciona en cualquier dispositivo con un navegador moderno. Podés usarla desde el celular, tablet o computadora con la misma cuenta.</div>
+      </div>
+
+    </div><!-- /inst-content -->
+  </div><!-- /inst-modal -->
+</div><!-- /inst-overlay -->
 
 <!-- MOBILE HEADER -->
 <div class="mobile-header" id="mobile-header">
@@ -3875,6 +4094,31 @@
   window.toggleDark=(on)=>{document.body.classList.toggle('dark',on);localStorage.setItem('finhub-biz-dark',on?'1':'0');renderAll();renderCuentas();};
   window.toggleFoco=(on)=>{document.getElementById('shell').classList.toggle('foco-active',on);};
   if(localStorage.getItem('finhub-biz-dark')==='1'){document.body.classList.add('dark');const t=document.getElementById('dark-toggle');if(t)t.checked=true;}
+
+  // ── INSTRUCTIVO ──
+  window.abrirInstructivo = function() {
+    document.getElementById('modal-instructivo').classList.add('open');
+    closeMobileNav();
+  };
+  window.cerrarInstructivo = function(e) {
+    if (!e || e.target === document.getElementById('modal-instructivo')) {
+      document.getElementById('modal-instructivo').classList.remove('open');
+    }
+  };
+  window.instIr = function(seccion, btn) {
+    document.querySelectorAll('.inst-section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.inst-nav-item').forEach(b => b.classList.remove('active'));
+    const sec = document.getElementById('inst-' + seccion);
+    if (sec) sec.classList.add('active');
+    if (btn) btn.classList.add('active');
+    // Scroll al top del contenido
+    const content = document.querySelector('.inst-content');
+    if (content) content.scrollTop = 0;
+  };
+  // Cerrar con ESC
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') document.getElementById('modal-instructivo')?.classList.remove('open');
+  });
 
   // ── MOBILE ──
   window.toggleMobileNav=()=>{document.getElementById('sidebar').classList.toggle('mobile-open');document.getElementById('mobile-overlay').classList.toggle('open');};
