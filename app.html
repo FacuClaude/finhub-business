@@ -1141,7 +1141,12 @@
       <!-- Lista de usuarios -->
       <div class="section-header">
         <div class="section-title">Usuarios con acceso</div>
-        <button class="btn-primary" onclick="openModal('invitar-usuario')">+ Agregar usuario</button>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <button class="btn-export" onclick="descargarTemplateEmpresas()">↓ Template Excel</button>
+          <button class="btn-export" onclick="document.getElementById('import-empresas-file').click()">↑ Importar Excel</button>
+          <input type="file" id="import-empresas-file" accept=".xlsx,.xls" style="display:none" onchange="importarEmpresasExcel(this)"/>
+          <button class="btn-primary" onclick="openModal('invitar-usuario')">+ Agregar usuario</button>
+        </div>
       </div>
       <div id="usuarios-lista" style="margin-bottom:28px;"></div>
 
@@ -1636,13 +1641,12 @@
     if (!user) { window.location.href = 'index.html'; return; }
     uid = user.uid;
 
-    // Buscar empresas a las que tiene acceso este usuario
     onValue(ref(db, `usuarios/${uid}/empresas`), async snap => {
-      const misEmpresas = snap.val() || {};
-      const ids = Object.keys(misEmpresas);
+      const todasEmpresas = snap.val() || {};
+      const ids = Object.keys(todasEmpresas);
 
       if (ids.length === 0) {
-        // Usuario nuevo — crear su empresa automáticamente
+        // Usuario nuevo — crear empresa automáticamente
         empresaId = push(ref(db, 'empresas')).key;
         const rolAdmin = { ...PERMISOS_DEFAULT.admin, tipoRol: 'admin', nombre: user.email, email: user.email };
         const batch = {};
@@ -1651,15 +1655,28 @@
         batch[`usuarios/${uid}/info`] = { email: user.email, nombre: user.email, createdAt: Date.now() };
         await update(ref(db), batch);
         miRol = rolAdmin;
+        localStorage.setItem(`finhub-last-empresa-${uid}`, empresaId);
         iniciarApp(user);
+
       } else if (ids.length === 1) {
         // Un solo acceso — entrar directo
         empresaId = ids[0];
-        miRol = misEmpresas[empresaId];
+        miRol = todasEmpresas[empresaId];
+        localStorage.setItem(`finhub-last-empresa-${uid}`, empresaId);
         iniciarApp(user);
+
       } else {
-        // Múltiples empresas — mostrar selector
-        mostrarSelectorEmpresa(misEmpresas, user);
+        // Múltiples empresas — intentar restaurar la última usada
+        const ultimaEmpresa = localStorage.getItem(`finhub-last-empresa-${uid}`);
+        if (ultimaEmpresa && todasEmpresas[ultimaEmpresa]) {
+          // Tenemos una empresa guardada y el usuario aún tiene acceso
+          empresaId = ultimaEmpresa;
+          miRol = todasEmpresas[ultimaEmpresa];
+          iniciarApp(user);
+        } else {
+          // Primera vez con múltiples empresas — mostrar selector
+          mostrarSelectorEmpresa(todasEmpresas, user);
+        }
       }
     }, { onlyOnce: true });
   });
@@ -4610,12 +4627,10 @@
   });
 
   window.cambiarEmpresa = function(nuevoEmpresaId, nuevoRol) {
-    // Limpiar listeners actuales evitando memory leaks
-    // Firebase onValue retorna un unsubscribe — para esto usaríamos off()
-    // Como usamos onValue con la misma ref, simplemente reasignamos empresaId
-    // y recargamos todos los listeners
     empresaId = nuevoEmpresaId;
     miRol     = nuevoRol;
+    // Recordar para el próximo login
+    if (uid) localStorage.setItem(`finhub-last-empresa-${uid}`, empresaId);
 
     // Limpiar estado local
     transactions = {}; contacts = {}; accounts = {}; empleados = {};
@@ -4784,6 +4799,170 @@
     if(section==='rrhh')       renderRRHH();
     if(section==='usuarios')   renderUsuarios();
   };
+
+  // ── IMPORTAR / EXPORTAR DATOS (EXCEL) ──
+  window.descargarTemplateEmpresas = function() {
+    if (!window.XLSX) {
+      const s = document.createElement('script');
+      s.src = 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
+      s.onload = _generarTemplateEmpresas;
+      document.head.appendChild(s);
+    } else { _generarTemplateEmpresas(); }
+  };
+
+  function _generarTemplateEmpresas() {
+    const wb = XLSX.utils.book_new();
+
+    const movData = [
+      ['fecha','tipo','descripcion','monto','categoria','comprobante','notas','iva_alicuota'],
+      ['2024-01-15','ingreso','Venta a cliente ABC','150000','Ventas','FC-0001','','21'],
+      ['2024-01-18','gasto','Alquiler oficina enero','80000','Alquiler','RC-0045','',''],
+      ['2024-01-20','gasto','Servicio de luz','12500','Servicios (luz, gas, internet)','','',''],
+      ['2024-01-22','ingreso','Consultoría enero','200000','Servicios prestados','FC-0002','Cliente nuevo','21'],
+      ['2024-01-25','gasto','Proveedor materiales','45000','Proveedores','FC-B-0012','','10.5'],
+    ];
+    const wsM = XLSX.utils.aoa_to_sheet(movData);
+    wsM['!cols'] = [{wch:14},{wch:10},{wch:35},{wch:12},{wch:28},{wch:14},{wch:20},{wch:12}];
+    XLSX.utils.book_append_sheet(wb, wsM, 'Movimientos');
+
+    const cuentaData = [
+      ['nombre','tipo','saldo_inicial','moneda','notas'],
+      ['Caja chica','caja','50000','ARS','Efectivo en oficina'],
+      ['Banco Nación CC','banco','250000','ARS','CBU 011-456789'],
+      ['Mercado Pago','digital','35000','ARS','Alias: miempresa.mp'],
+      ['Dólares efectivo','caja','1500','USD','Billete físico'],
+    ];
+    const wsC = XLSX.utils.aoa_to_sheet(cuentaData);
+    wsC['!cols'] = [{wch:22},{wch:14},{wch:14},{wch:10},{wch:28}];
+    XLSX.utils.book_append_sheet(wb, wsC, 'Cuentas');
+
+    const contactoData = [
+      ['tipo','nombre','cuit','condicion_iva','email','telefono','notas'],
+      ['cliente','Distribuidora Pérez S.A.','30-71234567-8','responsable_inscripto','compras@perez.com.ar','011-4567-8901','Cliente frecuente'],
+      ['cliente','Juan Rodríguez','20-35678901-2','monotributista','juan.r@gmail.com','011-1523-4567',''],
+      ['proveedor','Papelería Martínez','27-28901234-5','responsable_inscripto','ventas@papeleria.com','011-4789-0123','30 días de pago'],
+      ['proveedor','Servicios IT SRL','30-56789012-3','responsable_inscripto','admin@serviciosit.com','011-5678-9012','Soporte técnico'],
+    ];
+    const wsCo = XLSX.utils.aoa_to_sheet(contactoData);
+    wsCo['!cols'] = [{wch:12},{wch:28},{wch:16},{wch:22},{wch:28},{wch:16},{wch:24}];
+    XLSX.utils.book_append_sheet(wb, wsCo, 'Contactos');
+
+    const instrData = [
+      ['INSTRUCCIONES — finHub Business'],[''],
+      ['HOJA: Movimientos'],
+      ['fecha','YYYY-MM-DD (ej: 2024-01-15)'],
+      ['tipo','ingreso  ó  gasto'],
+      ['monto','Número sin signo (ej: 150000)'],
+      ['iva_alicuota','Opcional: 21, 10.5, 27 ó 0'],[''],
+      ['HOJA: Cuentas'],
+      ['tipo','caja / banco / corriente / digital / inversion'],
+      ['moneda','ARS ó USD'],[''],
+      ['HOJA: Contactos'],
+      ['tipo','cliente ó proveedor'],
+      ['condicion_iva','responsable_inscripto / monotributista / exento / consumidor_final'],[''],
+      ['CATEGORÍAS DE MOVIMIENTOS'],
+      ['Ingresos:','Ventas / Servicios prestados / Cobranzas / Anticipos / Otros ingresos'],
+      ['Gastos:','Nómina / Sueldos / Alquiler / Proveedores / Servicios (luz, gas, internet) / Impuestos y tasas'],
+      ['','Marketing y publicidad / Logística y flete / Materias primas / Honorarios profesionales / Mantenimiento / Otros gastos'],
+    ];
+    const wsI = XLSX.utils.aoa_to_sheet(instrData);
+    wsI['!cols'] = [{wch:22},{wch:65}];
+    XLSX.utils.book_append_sheet(wb, wsI, 'Instrucciones');
+
+    XLSX.writeFile(wb, 'finhub_template.xlsx');
+  }
+
+  window.importarEmpresasExcel = function(input) {
+    const file = input.files[0]; if (!file) return;
+    input.value = '';
+    if (!window.XLSX) {
+      const s = document.createElement('script');
+      s.src = 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
+      s.onload = () => _procesarImportExcel(file);
+      document.head.appendChild(s);
+    } else { _procesarImportExcel(file); }
+  };
+
+  async function _procesarImportExcel(file) {
+    const reader = new FileReader();
+    reader.onload = async e => {
+      try {
+        const wb = XLSX.read(e.target.result, { type:'binary', cellDates:true });
+        let movN=0, cuentaN=0, contactoN=0;
+        const batch={}, errores=[];
+
+        if (wb.SheetNames.includes('Movimientos')) {
+          const rows = XLSX.utils.sheet_to_json(wb.Sheets['Movimientos'], { defval:'' });
+          rows.forEach((row,i) => {
+            const fecha = row.fecha ? String(row.fecha).slice(0,10) : '';
+            const tipo  = String(row.tipo||'').trim().toLowerCase();
+            const desc  = String(row.descripcion||'').trim();
+            const monto = parseFloat(row.monto);
+            if (!fecha||!['ingreso','gasto'].includes(tipo)||!desc||isNaN(monto)) {
+              errores.push(`Mov. fila ${i+2}: datos incompletos`); return;
+            }
+            const iva = row.iva_alicuota!==''&&row.iva_alicuota!=null ? parseFloat(row.iva_alicuota) : null;
+            const id = push(ref(db,`empresas/${empresaId}/movimientos`)).key;
+            batch[`empresas/${empresaId}/movimientos/${id}`] = {
+              type: tipo==='ingreso'?'income':'expense', description:desc, amount:monto,
+              category: String(row.categoria||'Otros gastos').trim(), date:fecha,
+              comprobante: String(row.comprobante||'').trim()||null,
+              notas: String(row.notas||'').trim()||null,
+              ivaAlicuota: iva, createdAt:Date.now()
+            }; movN++;
+          });
+        }
+
+        if (wb.SheetNames.includes('Cuentas')) {
+          const rows = XLSX.utils.sheet_to_json(wb.Sheets['Cuentas'], { defval:'' });
+          rows.forEach((row,i) => {
+            const nombre = String(row.nombre||'').trim();
+            if (!nombre) { errores.push(`Cuenta fila ${i+2}: falta nombre`); return; }
+            const id = push(ref(db,`empresas/${empresaId}/cuentas`)).key;
+            batch[`empresas/${empresaId}/cuentas/${id}`] = {
+              nombre, tipo:String(row.tipo||'banco').trim(),
+              saldoInicial:parseFloat(row.saldo_inicial)||0,
+              moneda:String(row.moneda||'ARS').trim().toUpperCase(),
+              notas:String(row.notas||'').trim()||null, createdAt:Date.now()
+            }; cuentaN++;
+          });
+        }
+
+        if (wb.SheetNames.includes('Contactos')) {
+          const rows = XLSX.utils.sheet_to_json(wb.Sheets['Contactos'], { defval:'' });
+          rows.forEach((row,i) => {
+            const nombre = String(row.nombre||'').trim();
+            if (!nombre) { errores.push(`Contacto fila ${i+2}: falta nombre`); return; }
+            const tipo = String(row.tipo||'cliente').trim().toLowerCase();
+            const id = push(ref(db,`empresas/${empresaId}/contactos`)).key;
+            batch[`empresas/${empresaId}/contactos/${id}`] = {
+              tipo:['cliente','proveedor'].includes(tipo)?tipo:'cliente', nombre,
+              cuit:String(row.cuit||'').trim()||null,
+              condicionIva:String(row.condicion_iva||'responsable_inscripto').trim(),
+              email:String(row.email||'').trim()||null,
+              telefono:String(row.telefono||'').trim()||null,
+              notas:String(row.notas||'').trim()||null, createdAt:Date.now()
+            }; contactoN++;
+          });
+        }
+
+        if (!movN&&!cuentaN&&!contactoN) {
+          alert('No se encontraron datos válidos.\nUsá el template de finHub Business con las hojas "Movimientos", "Cuentas" y/o "Contactos".');
+          return;
+        }
+        await update(ref(db), batch);
+        let msg = `✓ Importación completada:\n`;
+        if (movN)      msg += `• ${movN} movimientos\n`;
+        if (cuentaN)   msg += `• ${cuentaN} cuentas\n`;
+        if (contactoN) msg += `• ${contactoN} contactos\n`;
+        if (errores.length) msg += `\n⚠️ ${errores.length} filas ignoradas.`;
+        alert(msg);
+      } catch(err) {
+        alert('Error al procesar el archivo.\n' + err.message);
+      }
+    };
+    reader.readAsBinaryString(file);
+  }
 
   // ── DARK / FOCO ──
   window.toggleDark=(on)=>{document.body.classList.toggle('dark',on);localStorage.setItem('finhub-biz-dark',on?'1':'0');renderAll();renderCuentas();};
