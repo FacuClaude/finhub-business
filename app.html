@@ -200,6 +200,18 @@
     .coming-soon-title { font-family:'Plus Jakarta Sans',sans-serif; font-size:1.1rem; font-weight:600; color:var(--ink); margin-bottom:8px; }
     .coming-soon-sub { font-size:.82rem; color:var(--muted); line-height:1.7; max-width:320px; }
 
+    /* ── ACORDEÓN FAQ ── */
+    .faq-acordeon { border:1px solid var(--border); border-radius:6px; overflow:hidden; }
+    .faq-cat { border-bottom:1px solid var(--border); }
+    .faq-cat:last-child { border-bottom:none; }
+    .faq-cat-btn { display:flex; justify-content:space-between; align-items:center; width:100%; padding:11px 14px; background:var(--surface2); border:none; cursor:pointer; font-family:'DM Sans',sans-serif; font-size:.72rem; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--accent); text-align:left; transition:background .15s; }
+    .faq-cat-btn:hover { background:var(--accent-bg); }
+    .faq-cat-btn.open { background:var(--accent-bg); }
+    .faq-arrow { font-size:.8rem; transition:transform .2s; display:inline-block; color:var(--muted); }
+    .faq-cat-btn.open .faq-arrow { transform:rotate(180deg); color:var(--accent); }
+    .faq-cat-body { display:none; padding:4px 0; background:var(--surface); }
+    .faq-cat-body.open { display:block; }
+
     /* ── CONTADOR IA ── */
     .contador-faq-btn {
       display:block; width:100%; text-align:left; padding:8px 10px;
@@ -317,6 +329,10 @@
       <button class="nav-item" onclick="goTo('asesor')">
         <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
         Asesor Legal IA
+      </button>
+      <button class="nav-item" onclick="goTo('rrhh')">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        RRHH
       </button>
     </nav>
     <div class="sidebar-footer">
@@ -579,50 +595,17 @@
       <!-- Layout dos columnas -->
       <div style="display:grid;grid-template-columns:1fr 1.6fr;gap:24px;align-items:start;">
 
-        <!-- Columna izquierda: categorías de FAQs -->
+        <!-- Columna izquierda: categorías acordeón -->
         <div>
           <div style="font-size:.62rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:12px;">Preguntas frecuentes</div>
-
-          <!-- Categoría: Mi situación hoy -->
-          <div style="margin-bottom:8px;">
-            <div style="font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);padding:8px 0 6px;border-bottom:1px solid var(--border);margin-bottom:6px;">📊 Mi situación hoy</div>
-            <div class="contador-faq-list" id="faq-situacion"></div>
-          </div>
-
-          <!-- Categoría: IVA e impuestos -->
-          <div style="margin-bottom:8px;">
-            <div style="font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);padding:8px 0 6px;border-bottom:1px solid var(--border);margin-bottom:6px;">🧾 IVA e impuestos</div>
-            <div class="contador-faq-list" id="faq-impuestos"></div>
-          </div>
-
-          <!-- Categoría: Flujo y liquidez -->
-          <div style="margin-bottom:8px;">
-            <div style="font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);padding:8px 0 6px;border-bottom:1px solid var(--border);margin-bottom:6px;">💧 Flujo y liquidez</div>
-            <div class="contador-faq-list" id="faq-flujo"></div>
-          </div>
-
-          <!-- Categoría: Costos y rentabilidad -->
-          <div style="margin-bottom:8px;">
-            <div style="font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);padding:8px 0 6px;border-bottom:1px solid var(--border);margin-bottom:6px;">📈 Costos y rentabilidad</div>
-            <div class="contador-faq-list" id="faq-rentabilidad"></div>
-          </div>
-
-          <!-- Categoría: Monotributo / RI -->
-          <div style="margin-bottom:8px;">
-            <div style="font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);padding:8px 0 6px;border-bottom:1px solid var(--border);margin-bottom:6px;">🏛️ Monotributo / RI</div>
-            <div class="contador-faq-list" id="faq-regimen"></div>
-          </div>
-
-          <!-- Categoría: Vencimientos AFIP -->
-          <div style="margin-bottom:8px;">
-            <div style="font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);padding:8px 0 6px;border-bottom:1px solid var(--border);margin-bottom:6px;">📅 Vencimientos AFIP</div>
-            <div class="contador-faq-list" id="faq-vencimientos"></div>
-          </div>
-
-          <!-- Categoría: Declaraciones y trámites -->
-          <div>
-            <div style="font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);padding:8px 0 6px;border-bottom:1px solid var(--border);margin-bottom:6px;">📋 Declaraciones y trámites</div>
-            <div class="contador-faq-list" id="faq-tramites"></div>
+          <div class="faq-acordeon" id="acordeon-contador">
+            <div class="faq-cat"><button class="faq-cat-btn" onclick="toggleAcordeon(this)"><span>📊 Mi situación hoy</span><span class="faq-arrow">▾</span></button><div class="faq-cat-body" id="faq-situacion"></div></div>
+            <div class="faq-cat"><button class="faq-cat-btn" onclick="toggleAcordeon(this)"><span>🧾 IVA e impuestos</span><span class="faq-arrow">▾</span></button><div class="faq-cat-body" id="faq-impuestos"></div></div>
+            <div class="faq-cat"><button class="faq-cat-btn" onclick="toggleAcordeon(this)"><span>💧 Flujo y liquidez</span><span class="faq-arrow">▾</span></button><div class="faq-cat-body" id="faq-flujo"></div></div>
+            <div class="faq-cat"><button class="faq-cat-btn" onclick="toggleAcordeon(this)"><span>📈 Costos y rentabilidad</span><span class="faq-arrow">▾</span></button><div class="faq-cat-body" id="faq-rentabilidad"></div></div>
+            <div class="faq-cat"><button class="faq-cat-btn" onclick="toggleAcordeon(this)"><span>🏛️ Monotributo / RI</span><span class="faq-arrow">▾</span></button><div class="faq-cat-body" id="faq-regimen"></div></div>
+            <div class="faq-cat"><button class="faq-cat-btn" onclick="toggleAcordeon(this)"><span>📅 Vencimientos AFIP</span><span class="faq-arrow">▾</span></button><div class="faq-cat-body" id="faq-vencimientos"></div></div>
+            <div class="faq-cat"><button class="faq-cat-btn" onclick="toggleAcordeon(this)"><span>📋 Declaraciones y trámites</span><span class="faq-arrow">▾</span></button><div class="faq-cat-body" id="faq-tramites"></div></div>
           </div>
         </div>
 
@@ -657,37 +640,17 @@
 
       <div style="display:grid;grid-template-columns:1fr 1.6fr;gap:24px;align-items:start;">
 
-        <!-- Columna izquierda -->
+        <!-- Columna izquierda acordeón -->
         <div>
           <div style="font-size:.62rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:12px;">Consultas frecuentes</div>
-
-          <div style="margin-bottom:8px;">
-            <div style="font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);padding:8px 0 6px;border-bottom:1px solid var(--border);margin-bottom:6px;">👷 Derecho laboral</div>
-            <div class="contador-faq-list" id="lfaq-laboral"></div>
-          </div>
-          <div style="margin-bottom:8px;">
-            <div style="font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);padding:8px 0 6px;border-bottom:1px solid var(--border);margin-bottom:6px;">📝 Contratos comerciales</div>
-            <div class="contador-faq-list" id="lfaq-contratos"></div>
-          </div>
-          <div style="margin-bottom:8px;">
-            <div style="font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);padding:8px 0 6px;border-bottom:1px solid var(--border);margin-bottom:6px;">🏢 Societario</div>
-            <div class="contador-faq-list" id="lfaq-societario"></div>
-          </div>
-          <div style="margin-bottom:8px;">
-            <div style="font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);padding:8px 0 6px;border-bottom:1px solid var(--border);margin-bottom:6px;">🧾 Impositivo-legal</div>
-            <div class="contador-faq-list" id="lfaq-impositivo"></div>
-          </div>
-          <div style="margin-bottom:8px;">
-            <div style="font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);padding:8px 0 6px;border-bottom:1px solid var(--border);margin-bottom:6px;">🔒 Protección de datos</div>
-            <div class="contador-faq-list" id="lfaq-datos"></div>
-          </div>
-          <div style="margin-bottom:8px;">
-            <div style="font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);padding:8px 0 6px;border-bottom:1px solid var(--border);margin-bottom:6px;">💡 Propiedad intelectual</div>
-            <div class="contador-faq-list" id="lfaq-pi"></div>
-          </div>
-          <div>
-            <div style="font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);padding:8px 0 6px;border-bottom:1px solid var(--border);margin-bottom:6px;">⚖️ Relación con clientes</div>
-            <div class="contador-faq-list" id="lfaq-clientes"></div>
+          <div class="faq-acordeon" id="acordeon-asesor">
+            <div class="faq-cat"><button class="faq-cat-btn" onclick="toggleAcordeon(this)"><span>👷 Derecho laboral</span><span class="faq-arrow">▾</span></button><div class="faq-cat-body" id="lfaq-laboral"></div></div>
+            <div class="faq-cat"><button class="faq-cat-btn" onclick="toggleAcordeon(this)"><span>📝 Contratos comerciales</span><span class="faq-arrow">▾</span></button><div class="faq-cat-body" id="lfaq-contratos"></div></div>
+            <div class="faq-cat"><button class="faq-cat-btn" onclick="toggleAcordeon(this)"><span>🏢 Societario</span><span class="faq-arrow">▾</span></button><div class="faq-cat-body" id="lfaq-societario"></div></div>
+            <div class="faq-cat"><button class="faq-cat-btn" onclick="toggleAcordeon(this)"><span>🧾 Impositivo-legal</span><span class="faq-arrow">▾</span></button><div class="faq-cat-body" id="lfaq-impositivo"></div></div>
+            <div class="faq-cat"><button class="faq-cat-btn" onclick="toggleAcordeon(this)"><span>🔒 Protección de datos</span><span class="faq-arrow">▾</span></button><div class="faq-cat-body" id="lfaq-datos"></div></div>
+            <div class="faq-cat"><button class="faq-cat-btn" onclick="toggleAcordeon(this)"><span>💡 Propiedad intelectual</span><span class="faq-arrow">▾</span></button><div class="faq-cat-body" id="lfaq-pi"></div></div>
+            <div class="faq-cat"><button class="faq-cat-btn" onclick="toggleAcordeon(this)"><span>⚖️ Relación con clientes</span><span class="faq-arrow">▾</span></button><div class="faq-cat-body" id="lfaq-clientes"></div></div>
           </div>
         </div>
 
@@ -710,6 +673,17 @@
       </div>
     </div>
 
+
+    <!-- RRHH -->
+    <div class="page" id="page-rrhh">
+      <div class="page-title">RRHH</div>
+      <div class="page-sub">Gestión de personal, sueldos y liquidaciones</div>
+      <div class="coming-soon">
+        <div class="coming-soon-icon">👥</div>
+        <div class="coming-soon-title">Módulo RRHH en desarrollo</div>
+        <div class="coming-soon-sub">Próximamente: legajo de empleados, liquidación de sueldos, recibos, vacaciones, SAC, alertas de vencimientos y más.</div>
+      </div>
+    </div>
 
 <div class="mobile-overlay" id="mobile-overlay" onclick="closeMobileNav()"></div>
 <button class="hamburger" id="hamburger-btn" onclick="toggleMobileNav()">
@@ -2555,6 +2529,15 @@
     `;
   };
 
+  window.toggleAcordeon = function(btn) {
+    const body = btn.nextElementSibling;
+    const isOpen = body.classList.contains('open');
+    const acordeon = btn.closest('.faq-acordeon');
+    acordeon.querySelectorAll('.faq-cat-btn').forEach(b => b.classList.remove('open'));
+    acordeon.querySelectorAll('.faq-cat-body').forEach(b => b.classList.remove('open'));
+    if (!isOpen) { btn.classList.add('open'); body.classList.add('open'); }
+  };
+
   window.renderContador = function() {
     const CATS = {
       situacion:    'faq-situacion',
@@ -2571,6 +2554,9 @@
         `<button class="contador-faq-btn" onclick="mostrarRespuesta('${faq.id}',this)">${faq.q}</button>`
       ).join('');
     });
+    // Abrir la primera categoría por defecto
+    const firstBtn = document.querySelector('#acordeon-contador .faq-cat-btn');
+    if (firstBtn && !firstBtn.classList.contains('open')) firstBtn.click();
 
     // Alertas automáticas basadas en los datos
     const ctx = getContextoFinanciero();
@@ -2741,6 +2727,9 @@
         `<button class="contador-faq-btn" onclick="mostrarRespuestaLegal('${faq.id}',this)">${faq.q}</button>`
       ).join("");
     });
+    // Abrir la primera categoría por defecto
+    const firstBtn = document.querySelector('#acordeon-asesor .faq-cat-btn');
+    if (firstBtn && !firstBtn.classList.contains('open')) firstBtn.click();
   };
 
   const LEGAL_RESP = {
@@ -3020,6 +3009,7 @@
     if(section==='reportes')   { populateAnioSelect('pl-anio'); populateAnioSelect('flujo-anio'); renderPL(); }
     if(section==='contador')   renderContador();
     if(section==='asesor')     renderAsesor();
+    if(section==='rrhh')       { /* próximamente */ }
   };
 
   // ── DARK / FOCO ──
