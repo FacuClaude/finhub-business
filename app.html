@@ -200,6 +200,50 @@
     .coming-soon-title { font-family:'Plus Jakarta Sans',sans-serif; font-size:1.1rem; font-weight:600; color:var(--ink); margin-bottom:8px; }
     .coming-soon-sub { font-size:.82rem; color:var(--muted); line-height:1.7; max-width:320px; }
 
+    /* ── RRHH ── */
+    .emp-card { background:var(--surface); border:1px solid var(--border); padding:20px 22px; display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:10px; border-left:4px solid var(--accent); transition:box-shadow .2s; cursor:pointer; }
+    .emp-card:hover { box-shadow:0 4px 16px rgba(0,0,0,.08); }
+    .emp-card.egresado { border-left-color:var(--muted); opacity:.7; }
+    .emp-card.prueba { border-left-color:var(--accent2); }
+    .emp-card.suspendido { border-left-color:var(--red); }
+    .emp-nombre { font-size:.95rem; font-weight:600; color:var(--ink); margin-bottom:3px; }
+    .emp-meta { font-size:.72rem; color:var(--muted); line-height:1.6; }
+    .emp-sueldo { font-family:'Plus Jakarta Sans',sans-serif; font-size:1.15rem; font-weight:600; color:var(--accent); text-align:right; }
+    .emp-badge { display:inline-block; font-size:.58rem; font-weight:700; letter-spacing:.1em; text-transform:uppercase; padding:2px 8px; border-radius:3px; margin-left:8px; }
+    .emp-badge.activo { background:var(--green-bg); color:var(--green); }
+    .emp-badge.prueba { background:rgba(193,122,74,.12); color:var(--accent2); }
+    .emp-badge.egresado { background:var(--surface2); color:var(--muted); }
+    .emp-badge.suspendido { background:var(--red-bg); color:var(--red); }
+    /* Recibo de sueldo */
+    .recibo { background:white; color:#1a1a1a; border:1px solid #ddd; padding:32px; max-width:780px; margin:0 auto; font-family:'DM Sans',sans-serif; font-size:13px; }
+    body.dark .recibo { background:white; color:#1a1a1a; }
+    .recibo-header { display:flex; justify-content:space-between; align-items:flex-start; border-bottom:2px solid #1e4d8c; padding-bottom:16px; margin-bottom:16px; }
+    .recibo-empresa { font-size:1.1rem; font-weight:700; color:#1e4d8c; }
+    .recibo-titulo { font-size:.85rem; font-weight:700; text-transform:uppercase; letter-spacing:.1em; color:#1e4d8c; text-align:right; }
+    .recibo-periodo { font-size:.75rem; color:#666; text-align:right; }
+    .recibo-empleado { display:grid; grid-template-columns:1fr 1fr; gap:8px 24px; background:#f5f7fa; padding:12px 16px; margin-bottom:16px; font-size:.8rem; }
+    .recibo-emp-field { display:flex; gap:6px; }
+    .recibo-emp-label { color:#666; font-weight:600; white-space:nowrap; }
+    .recibo-table { width:100%; border-collapse:collapse; margin-bottom:16px; }
+    .recibo-table th { background:#1e4d8c; color:white; padding:8px 12px; text-align:left; font-size:.72rem; font-weight:600; letter-spacing:.08em; text-transform:uppercase; }
+    .recibo-table th:last-child { text-align:right; }
+    .recibo-table td { padding:7px 12px; border-bottom:1px solid #eee; font-size:.82rem; }
+    .recibo-table td:last-child { text-align:right; font-weight:500; }
+    .recibo-table tr.section-row td { background:#f0f4f8; font-weight:700; font-size:.72rem; text-transform:uppercase; letter-spacing:.08em; color:#666; padding:5px 12px; }
+    .recibo-table tr.total-row td { background:#1e4d8c; color:white; font-weight:700; font-size:.9rem; padding:10px 12px; }
+    .recibo-table tr.subtotal-row td { border-top:2px solid #1e4d8c; font-weight:700; }
+    .recibo-neto { text-align:right; background:#f0f8f0; border:2px solid #3d6b52; padding:16px; margin-top:12px; }
+    .recibo-neto-label { font-size:.72rem; font-weight:700; text-transform:uppercase; letter-spacing:.1em; color:#3d6b52; }
+    .recibo-neto-monto { font-size:2rem; font-weight:700; color:#3d6b52; font-family:'Plus Jakarta Sans',sans-serif; }
+    .recibo-firma { display:grid; grid-template-columns:1fr 1fr; gap:40px; margin-top:40px; }
+    .recibo-firma-box { border-top:1px solid #999; padding-top:8px; text-align:center; font-size:.72rem; color:#666; }
+    @media print {
+      body * { visibility:hidden; }
+      .recibo, .recibo * { visibility:visible; }
+      .recibo { position:fixed; left:0; top:0; width:100%; border:none; padding:20px; }
+      .no-print { display:none!important; }
+    }
+
     /* ── ACORDEÓN FAQ ── */
     .faq-acordeon { border:1px solid var(--border); border-radius:6px; overflow:hidden; }
     .faq-cat { border-bottom:1px solid var(--border); }
@@ -677,11 +721,196 @@
     <!-- RRHH -->
     <div class="page" id="page-rrhh">
       <div class="page-title">RRHH</div>
-      <div class="page-sub">Gestión de personal, sueldos y liquidaciones</div>
-      <div class="coming-soon">
-        <div class="coming-soon-icon">👥</div>
-        <div class="coming-soon-title">Módulo RRHH en desarrollo</div>
-        <div class="coming-soon-sub">Próximamente: legajo de empleados, liquidación de sueldos, recibos, vacaciones, SAC, alertas de vencimientos y más.</div>
+      <div class="page-sub">Legajos, sueldos, liquidaciones y recibos</div>
+
+      <!-- Tabs -->
+      <div style="display:flex;margin-bottom:28px;border:1px solid var(--border);width:fit-content;border-radius:4px;overflow:hidden;">
+        <button class="period-btn active" id="rrhh-tab-empleados" onclick="setRrhhTab('empleados',this)">👥 Empleados</button>
+        <button class="period-btn" id="rrhh-tab-liquidacion" onclick="setRrhhTab('liquidacion',this)">💰 Liquidación</button>
+        <button class="period-btn" id="rrhh-tab-config" onclick="setRrhhTab('config',this)">⚙️ Configuración</button>
+      </div>
+
+      <!-- ── EMPLEADOS ── -->
+      <div id="rrhh-empleados">
+        <!-- Alertas -->
+        <div id="rrhh-alertas" style="margin-bottom:20px;"></div>
+
+        <!-- KPIs nómina -->
+        <div class="cards-row" style="margin-bottom:24px;">
+          <div class="card" style="border-top:2px solid var(--accent);">
+            <div class="card-label">Total empleados activos</div>
+            <div class="card-value accent" style="font-size:1.8rem;" id="rrhh-total-emp">0</div>
+          </div>
+          <div class="card" style="border-top:2px solid var(--red);">
+            <div class="card-label">Masa salarial bruta</div>
+            <div class="card-value negative" style="font-size:1.8rem;" id="rrhh-masa-salarial">$0</div>
+            <div class="card-sub">Sueldos brutos del mes</div>
+          </div>
+          <div class="card" style="border-top:2px solid var(--accent2);">
+            <div class="card-label">Costo empleador total</div>
+            <div class="card-value" style="font-size:1.8rem;color:var(--accent2);" id="rrhh-costo-total">$0</div>
+            <div class="card-sub">Bruto + contribuciones</div>
+          </div>
+        </div>
+
+        <!-- Listado empleados -->
+        <div class="section-header">
+          <div class="section-title">Legajo de empleados</div>
+          <button class="btn-primary" onclick="openModal('empleado')">+ Nuevo empleado</button>
+        </div>
+        <div id="rrhh-empleados-lista"></div>
+      </div>
+
+      <!-- ── LIQUIDACIÓN ── -->
+      <div id="rrhh-liquidacion" style="display:none;">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:24px;flex-wrap:wrap;">
+          <select id="liq-empleado" style="width:auto;padding:8px 14px;font-size:.82rem;min-width:200px;" onchange="actualizarLiquidacion()">
+            <option value="">— Seleccioná un empleado —</option>
+          </select>
+          <select id="liq-tipo" style="width:auto;padding:8px 14px;font-size:.82rem;" onchange="actualizarLiquidacion()">
+            <option value="mensual">Sueldo mensual</option>
+            <option value="vacaciones">Vacaciones</option>
+            <option value="sac">SAC (Aguinaldo)</option>
+            <option value="despido_sc">Liquidación — Despido sin causa</option>
+            <option value="despido_cc">Liquidación — Despido con causa</option>
+            <option value="renuncia">Liquidación — Renuncia</option>
+          </select>
+          <input type="month" id="liq-periodo" style="width:auto;padding:8px 14px;font-size:.82rem;" onchange="actualizarLiquidacion()"/>
+        </div>
+
+        <!-- Recibo de sueldo -->
+        <div id="liq-recibo-wrap" style="display:none;">
+          <div style="display:flex;justify-content:flex-end;gap:8px;margin-bottom:12px;">
+            <button class="btn-export" onclick="imprimirRecibo()">🖨️ Imprimir / PDF</button>
+          </div>
+          <div id="liq-recibo"></div>
+        </div>
+        <div id="liq-empty" style="padding:48px;text-align:center;font-size:.82rem;color:var(--muted);background:var(--surface);border:1px solid var(--border);">
+          Seleccioná un empleado y período para generar el recibo.
+        </div>
+      </div>
+
+      <!-- ── CONFIGURACIÓN ── -->
+      <div id="rrhh-config" style="display:none;">
+        <div style="max-width:680px;">
+          <div style="font-size:.7rem;color:var(--muted2);margin-bottom:20px;line-height:1.6;background:var(--accent-bg);border:1px solid rgba(30,77,140,.15);padding:12px 16px;border-radius:4px;">
+            💡 Estos valores se usan para calcular aportes, contribuciones y liquidaciones. Podés editarlos para adaptarlos a tu convenio o actualizarlos cuando cambien los porcentajes.
+          </div>
+
+          <div style="font-size:.65rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:16px;">Aportes del trabajador (%)</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:24px;">
+            <div class="field"><label>Jubilación (SIPA)</label><input type="number" id="cfg-jubilacion-emp" value="11" step="0.01" min="0" max="100" onchange="guardarConfig()"/></div>
+            <div class="field"><label>Obra social</label><input type="number" id="cfg-obra-social-emp" value="3" step="0.01" min="0" max="100" onchange="guardarConfig()"/></div>
+            <div class="field"><label>PAMI (INSSJyP)</label><input type="number" id="cfg-pami-emp" value="3" step="0.01" min="0" max="100" onchange="guardarConfig()"/></div>
+            <div class="field"><label>Sindical (opcional)</label><input type="number" id="cfg-sindical" value="2" step="0.01" min="0" max="100" onchange="guardarConfig()"/></div>
+          </div>
+
+          <div style="font-size:.65rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:16px;">Contribuciones patronales (%)</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:24px;">
+            <div class="field"><label>Jubilación patronal</label><input type="number" id="cfg-jubilacion-pat" value="10.17" step="0.01" min="0" max="100" onchange="guardarConfig()"/></div>
+            <div class="field"><label>Obra social patronal</label><input type="number" id="cfg-obra-social-pat" value="6" step="0.01" min="0" max="100" onchange="guardarConfig()"/></div>
+            <div class="field"><label>PAMI patronal</label><input type="number" id="cfg-pami-pat" value="1.5" step="0.01" min="0" max="100" onchange="guardarConfig()"/></div>
+            <div class="field"><label>Asignaciones familiares</label><input type="number" id="cfg-asig-fam" value="2.41" step="0.01" min="0" max="100" onchange="guardarConfig()"/></div>
+            <div class="field"><label>ART (estimado)</label><input type="number" id="cfg-art" value="3" step="0.01" min="0" max="100" onchange="guardarConfig()"/></div>
+            <div class="field"><label>Fondo de desempleo</label><input type="number" id="cfg-desempleo" value="0.89" step="0.01" min="0" max="100" onchange="guardarConfig()"/></div>
+          </div>
+
+          <div style="font-size:.65rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:16px;">Parámetros generales</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:24px;">
+            <div class="field"><label>Adicional por antigüedad (%/año)</label><input type="number" id="cfg-antiguedad-pct" value="1" step="0.1" min="0" onchange="guardarConfig()"/></div>
+            <div class="field"><label>% Presentismo sobre básico</label><input type="number" id="cfg-presentismo-pct" value="1" step="0.1" min="0" onchange="guardarConfig()"/></div>
+            <div class="field"><label>Valor hora extra (x1.5)</label><input type="number" id="cfg-hora-extra-150" value="1.5" step="0.1" min="1" onchange="guardarConfig()"/></div>
+            <div class="field"><label>Valor hora extra (x2.0)</label><input type="number" id="cfg-hora-extra-200" value="2" step="0.1" min="1" onchange="guardarConfig()"/></div>
+          </div>
+
+          <div style="font-size:.65rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:16px;">Convenio colectivo</div>
+          <div class="field">
+            <label>Convenio base</label>
+            <select id="cfg-convenio" onchange="aplicarConvenio(this.value);guardarConfig()">
+              <option value="general">General / Sin convenio específico</option>
+              <option value="comercio">Comercio (130/75)</option>
+              <option value="construccion">Construcción (UOCRA)</option>
+              <option value="gastronomico">Gastronómico (UTHGRA)</option>
+              <option value="metalurgico">Metalúrgico (SMATA/UOM)</option>
+              <option value="textil">Textil</option>
+              <option value="transporte">Transporte</option>
+              <option value="personalizado">Personalizado (valores manuales)</option>
+            </select>
+          </div>
+          <div style="font-size:.7rem;color:var(--muted);margin-top:4px;">Al seleccionar un convenio se precargan los porcentajes típicos. Podés editarlos manualmente.</div>
+          <div style="margin-top:20px;">
+            <button class="btn-primary" onclick="guardarConfig();alert('Configuración guardada ✓')">Guardar configuración</button>
+            <button class="btn-secondary" style="margin-left:8px;" onclick="resetConfig()">Restaurar valores por defecto</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL: NUEVO/EDITAR EMPLEADO -->
+    <div class="overlay" id="modal-empleado" onclick="closeModal('empleado')">
+      <div class="modal" onclick="event.stopPropagation()" style="max-width:560px;">
+        <div class="modal-title" id="empleado-modal-title">Nuevo empleado</div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+          <div class="field" style="grid-column:1/-1;"><label>Nombre completo</label><input type="text" id="emp-nombre" placeholder="Apellido, Nombre"/></div>
+          <div class="field"><label>CUIL</label><input type="text" id="emp-cuil" placeholder="20-12345678-9" maxlength="13" oninput="formatCUIL(this)"/></div>
+          <div class="field"><label>DNI</label><input type="text" id="emp-dni" placeholder="12.345.678"/></div>
+          <div class="field"><label>Fecha de ingreso</label><input type="date" id="emp-ingreso"/></div>
+          <div class="field"><label>Estado</label>
+            <select id="emp-estado"><option value="activo">Activo</option><option value="suspendido">Suspendido</option><option value="egresado">Egresado</option></select>
+          </div>
+          <div class="field"><label>Categoría / Puesto</label><input type="text" id="emp-categoria" placeholder="Ej: Vendedor A, Gerente, Operario"/></div>
+          <div class="field"><label>Convenio</label>
+            <select id="emp-convenio">
+              <option value="general">General</option>
+              <option value="comercio">Comercio</option>
+              <option value="construccion">Construcción</option>
+              <option value="gastronomico">Gastronómico</option>
+              <option value="metalurgico">Metalúrgico</option>
+              <option value="textil">Textil</option>
+              <option value="transporte">Transporte</option>
+            </select>
+          </div>
+          <div class="field"><label>Tipo de contrato</label>
+            <select id="emp-contrato">
+              <option value="indefinido">Tiempo indeterminado</option>
+              <option value="plazo_fijo">Plazo fijo</option>
+              <option value="prueba">Período de prueba</option>
+              <option value="eventual">Trabajo eventual</option>
+            </select>
+          </div>
+          <div class="field"><label>Sueldo bruto mensual ($)</label><input type="number" id="emp-sueldo" placeholder="0" min="0" step="100"/></div>
+          <div class="field"><label>Modalidad de pago</label>
+            <select id="emp-pago-modal">
+              <option value="mensual">Mensual</option>
+              <option value="quincenal">Quincenal</option>
+              <option value="jornal">Por jornal/día</option>
+            </select>
+          </div>
+          <div class="field"><label>Banco / CBU (opcional)</label><input type="text" id="emp-cbu" placeholder="CBU o alias"/></div>
+          <div class="field"><label>Obra social</label><input type="text" id="emp-obra-social" placeholder="Ej: OSECAC, OSDE, Swiss Medical"/></div>
+          <div class="field" style="grid-column:1/-1;"><label>Email</label><input type="email" id="emp-email" placeholder="empleado@email.com"/></div>
+          <div class="field" style="grid-column:1/-1;"><label>Teléfono</label><input type="text" id="emp-telefono" placeholder="+54 11 1234-5678"/></div>
+          <div class="field" style="grid-column:1/-1;"><label>Domicilio</label><input type="text" id="emp-domicilio" placeholder="Dirección completa"/></div>
+          <div class="field" style="grid-column:1/-1;"><label>Notas (opcional)</label><textarea id="emp-notas" rows="2" style="resize:vertical;"></textarea></div>
+        </div>
+
+        <div class="modal-actions">
+          <button class="btn-secondary" onclick="closeModal('empleado')" style="flex:1">Cancelar</button>
+          <button class="btn-primary" onclick="saveEmpleado()" style="flex:2">Guardar</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL: DETALLE EMPLEADO -->
+    <div class="overlay" id="modal-empleado-detalle" onclick="closeModal('empleado-detalle')">
+      <div class="modal" onclick="event.stopPropagation()" style="max-width:540px;">
+        <div id="empleado-detalle-content"></div>
+        <div class="modal-actions">
+          <button class="btn-secondary" onclick="closeModal('empleado-detalle')" style="flex:1">Cerrar</button>
+          <button class="btn-export" onclick="editEmpFromDetalle()" style="flex:1">Editar</button>
+          <button class="btn-primary" style="flex:1;background:var(--accent);" onclick="liquidarEmpFromDetalle()">Liquidar</button>
+        </div>
       </div>
     </div>
 
@@ -880,6 +1109,7 @@
     loadTransactions();
     loadContactos();
     loadCuentas();
+    loadEmpleados();
   });
   window.logout = async () => { await signOut(auth); window.location.href = 'index.html'; };
 
@@ -1152,6 +1382,17 @@
       ['c-nombre','c-cuit','c-email','c-tel','c-notas'].forEach(id=>document.getElementById(id).value='');
       document.getElementById('c-iva').value='responsable_inscripto';
       setContactoType('cliente');
+    }
+    if(name==='empleado'){
+      editingEmpId=null;
+      document.getElementById('empleado-modal-title').textContent='Nuevo empleado';
+      ['emp-nombre','emp-cuil','emp-dni','emp-cbu','emp-obra-social','emp-email','emp-telefono','emp-domicilio','emp-notas'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+      const sueldoEl=document.getElementById('emp-sueldo');if(sueldoEl)sueldoEl.value='';
+      const ingresoEl=document.getElementById('emp-ingreso');if(ingresoEl)ingresoEl.value=new Date().toISOString().slice(0,10);
+      const estadoEl=document.getElementById('emp-estado');if(estadoEl)estadoEl.value='activo';
+      const convenioEl=document.getElementById('emp-convenio');if(convenioEl)convenioEl.value='general';
+      const contratoEl=document.getElementById('emp-contrato');if(contratoEl)contratoEl.value='indefinido';
+      const pagoEl=document.getElementById('emp-pago-modal');if(pagoEl)pagoEl.value='mensual';
     }
     document.getElementById('modal-'+name).classList.add('open');
   };
@@ -2991,6 +3232,493 @@
     buildExcelAndDownload(rows, `Flujo ${anio}`, `FlujoCaja-${anio}-finhub-business.xlsx`);
   };
 
+
+  // ══════════════════════════════════════════════════
+  // RRHH
+  // ══════════════════════════════════════════════════
+  let empleados = {};
+  let editingEmpId = null;
+  let detalleEmpId = null;
+
+  // Config default
+  const CFG_DEFAULT = {
+    jubilacion_emp: 11, obra_social_emp: 3, pami_emp: 3, sindical: 2,
+    jubilacion_pat: 10.17, obra_social_pat: 6, pami_pat: 1.5,
+    asig_fam: 2.41, art: 3, desempleo: 0.89,
+    antiguedad_pct: 1, presentismo_pct: 1,
+    hora_extra_150: 1.5, hora_extra_200: 2,
+    convenio: 'general'
+  };
+
+  const CONVENIOS_CONFIG = {
+    general:      { jubilacion_emp:11, obra_social_emp:3, pami_emp:3, sindical:2, jubilacion_pat:10.17, obra_social_pat:6, pami_pat:1.5, asig_fam:2.41, art:3, desempleo:0.89 },
+    comercio:     { jubilacion_emp:11, obra_social_emp:3, pami_emp:3, sindical:2, jubilacion_pat:10.17, obra_social_pat:6, pami_pat:1.5, asig_fam:2.41, art:2.5, desempleo:0.89 },
+    construccion: { jubilacion_emp:11, obra_social_emp:3, pami_emp:3, sindical:2, jubilacion_pat:10.17, obra_social_pat:6, pami_pat:1.5, asig_fam:2.41, art:5, desempleo:0.89 },
+    gastronomico: { jubilacion_emp:11, obra_social_emp:3, pami_emp:3, sindical:2.5, jubilacion_pat:10.17, obra_social_pat:6, pami_pat:1.5, asig_fam:2.41, art:3, desempleo:0.89 },
+    metalurgico:  { jubilacion_emp:11, obra_social_emp:3, pami_emp:3, sindical:2, jubilacion_pat:10.17, obra_social_pat:6, pami_pat:1.5, asig_fam:2.41, art:4, desempleo:0.89 },
+    textil:       { jubilacion_emp:11, obra_social_emp:3, pami_emp:3, sindical:2, jubilacion_pat:10.17, obra_social_pat:6, pami_pat:1.5, asig_fam:2.41, art:3.5, desempleo:0.89 },
+    transporte:   { jubilacion_emp:11, obra_social_emp:3, pami_emp:3, sindical:2, jubilacion_pat:10.17, obra_social_pat:6, pami_pat:1.5, asig_fam:2.41, art:4.5, desempleo:0.89 },
+    personalizado:{}
+  };
+
+  function getCfg() {
+    const saved = localStorage.getItem('finhub-rrhh-cfg');
+    return saved ? { ...CFG_DEFAULT, ...JSON.parse(saved) } : { ...CFG_DEFAULT };
+  }
+
+  window.guardarConfig = function() {
+    const cfg = {
+      jubilacion_emp:   parseFloat(document.getElementById('cfg-jubilacion-emp')?.value)||11,
+      obra_social_emp:  parseFloat(document.getElementById('cfg-obra-social-emp')?.value)||3,
+      pami_emp:         parseFloat(document.getElementById('cfg-pami-emp')?.value)||3,
+      sindical:         parseFloat(document.getElementById('cfg-sindical')?.value)||2,
+      jubilacion_pat:   parseFloat(document.getElementById('cfg-jubilacion-pat')?.value)||10.17,
+      obra_social_pat:  parseFloat(document.getElementById('cfg-obra-social-pat')?.value)||6,
+      pami_pat:         parseFloat(document.getElementById('cfg-pami-pat')?.value)||1.5,
+      asig_fam:         parseFloat(document.getElementById('cfg-asig-fam')?.value)||2.41,
+      art:              parseFloat(document.getElementById('cfg-art')?.value)||3,
+      desempleo:        parseFloat(document.getElementById('cfg-desempleo')?.value)||0.89,
+      antiguedad_pct:   parseFloat(document.getElementById('cfg-antiguedad-pct')?.value)||1,
+      presentismo_pct:  parseFloat(document.getElementById('cfg-presentismo-pct')?.value)||1,
+      hora_extra_150:   parseFloat(document.getElementById('cfg-hora-extra-150')?.value)||1.5,
+      hora_extra_200:   parseFloat(document.getElementById('cfg-hora-extra-200')?.value)||2,
+      convenio:         document.getElementById('cfg-convenio')?.value||'general',
+    };
+    localStorage.setItem('finhub-rrhh-cfg', JSON.stringify(cfg));
+  };
+
+  window.resetConfig = function() {
+    localStorage.removeItem('finhub-rrhh-cfg');
+    cargarConfigUI();
+    alert('Valores restaurados por defecto ✓');
+  };
+
+  window.aplicarConvenio = function(conv) {
+    const cfg = CONVENIOS_CONFIG[conv];
+    if (!cfg || Object.keys(cfg).length === 0) return;
+    Object.entries(cfg).forEach(([k,v]) => {
+      const el = document.getElementById('cfg-' + k.replace(/_/g,'-').replace('emp','emp').replace('pat','pat'));
+      if (el) el.value = v;
+    });
+    // Mapeo manual por si hay diferencias en IDs
+    const map = {
+      jubilacion_emp:'cfg-jubilacion-emp', obra_social_emp:'cfg-obra-social-emp',
+      pami_emp:'cfg-pami-emp', sindical:'cfg-sindical',
+      jubilacion_pat:'cfg-jubilacion-pat', obra_social_pat:'cfg-obra-social-pat',
+      pami_pat:'cfg-pami-pat', asig_fam:'cfg-asig-fam', art:'cfg-art', desempleo:'cfg-desempleo'
+    };
+    Object.entries(map).forEach(([k,id]) => {
+      const el = document.getElementById(id);
+      if (el && cfg[k] !== undefined) el.value = cfg[k];
+    });
+  };
+
+  function cargarConfigUI() {
+    const cfg = getCfg();
+    const map = {
+      'cfg-jubilacion-emp':'jubilacion_emp','cfg-obra-social-emp':'obra_social_emp',
+      'cfg-pami-emp':'pami_emp','cfg-sindical':'sindical',
+      'cfg-jubilacion-pat':'jubilacion_pat','cfg-obra-social-pat':'obra_social_pat',
+      'cfg-pami-pat':'pami_pat','cfg-asig-fam':'asig_fam','cfg-art':'art',
+      'cfg-desempleo':'desempleo','cfg-antiguedad-pct':'antiguedad_pct',
+      'cfg-presentismo-pct':'presentismo_pct','cfg-hora-extra-150':'hora_extra_150',
+      'cfg-hora-extra-200':'hora_extra_200','cfg-convenio':'convenio'
+    };
+    Object.entries(map).forEach(([id,key]) => {
+      const el = document.getElementById(id);
+      if (el) el.value = cfg[key];
+    });
+  }
+
+  function loadEmpleados() {
+    onValue(ref(db, `empresas/${uid}/empleados`), snap => {
+      empleados = snap.val() || {};
+      renderEmpleados();
+      populateEmpleadoSelect();
+    });
+  }
+
+  function getAntigüedad(fechaIngreso) {
+    if (!fechaIngreso) return 0;
+    const ingreso = new Date(fechaIngreso + 'T12:00:00');
+    const hoy = new Date();
+    let años = hoy.getFullYear() - ingreso.getFullYear();
+    if (hoy.getMonth() < ingreso.getMonth() || (hoy.getMonth() === ingreso.getMonth() && hoy.getDate() < ingreso.getDate())) años--;
+    return Math.max(0, años);
+  }
+
+  function calcularLiquidacion(emp, tipo, periodo) {
+    const cfg = getCfg();
+    const bruto = emp.sueldo || 0;
+    const años = getAntigüedad(emp.ingreso);
+
+    // Adicionales
+    const adicAntiguedad = bruto * (cfg.antiguedad_pct / 100) * años;
+    const adicPresentismo = bruto * (cfg.presentismo_pct / 100);
+    const totalRemunerativo = bruto + adicAntiguedad + adicPresentismo;
+
+    // Aportes del trabajador
+    const aJubilacion = totalRemunerativo * cfg.jubilacion_emp / 100;
+    const aObraSocial = totalRemunerativo * cfg.obra_social_emp / 100;
+    const aPami       = totalRemunerativo * cfg.pami_emp / 100;
+    const aSindical   = totalRemunerativo * cfg.sindical / 100;
+    const totalAportes = aJubilacion + aObraSocial + aPami + aSindical;
+
+    // Neto del empleado
+    const neto = totalRemunerativo - totalAportes;
+
+    // Contribuciones patronales
+    const cJubilacion  = totalRemunerativo * cfg.jubilacion_pat / 100;
+    const cObraSocial  = totalRemunerativo * cfg.obra_social_pat / 100;
+    const cPami        = totalRemunerativo * cfg.pami_pat / 100;
+    const cAsigFam     = totalRemunerativo * cfg.asig_fam / 100;
+    const cArt         = totalRemunerativo * cfg.art / 100;
+    const cDesempleo   = totalRemunerativo * cfg.desempleo / 100;
+    const totalContrib = cJubilacion + cObraSocial + cPami + cAsigFam + cArt + cDesempleo;
+    const costoTotal   = totalRemunerativo + totalContrib;
+
+    // Liquidaciones especiales
+    let conceptosEspeciales = [];
+    if (tipo === 'sac') {
+      const sacMonto = totalRemunerativo / 2;
+      conceptosEspeciales = [{ label: 'SAC (Aguinaldo) — 50% mayor remuneración', monto: sacMonto }];
+    }
+    if (tipo === 'vacaciones') {
+      const diasVac = años < 5 ? 14 : años < 10 ? 21 : años < 20 ? 28 : 35;
+      const valorDia = totalRemunerativo / 25;
+      conceptosEspeciales = [{ label: `Vacaciones (${diasVac} días × ${fmt(valorDia)}/día)`, monto: valorDia * diasVac }];
+    }
+    if (tipo === 'despido_sc') {
+      const indemnizacion = totalRemunerativo * Math.max(1, años);
+      const preaviso = años <= 5 ? totalRemunerativo : totalRemunerativo * 2;
+      const diasMes = new Date().getDate();
+      const integracion = totalRemunerativo / 30 * (30 - diasMes);
+      const sacProp = totalRemunerativo / 2 / 6 * (new Date().getMonth() % 6 + 1);
+      const vacProp = totalRemunerativo / 25 * (años < 5 ? 14 : años < 10 ? 21 : 28) / 12 * (new Date().getMonth() + 1);
+      conceptosEspeciales = [
+        { label: `Indemnización por antigüedad (${Math.max(1,años)} sueldo${años!==1?'s':''})`, monto: indemnizacion },
+        { label: `Preaviso (${años<=5?'1 mes':'2 meses'})`, monto: preaviso },
+        { label: 'Integración mes de despido', monto: integracion },
+        { label: 'SAC proporcional', monto: sacProp },
+        { label: 'Vacaciones proporcionales', monto: vacProp },
+      ];
+    }
+    if (tipo === 'renuncia') {
+      const sacProp = totalRemunerativo / 2 / 6 * (new Date().getMonth() % 6 + 1);
+      const vacProp = totalRemunerativo / 25 * (años < 5 ? 14 : años < 10 ? 21 : 28) / 12 * (new Date().getMonth() + 1);
+      conceptosEspeciales = [
+        { label: 'SAC proporcional', monto: sacProp },
+        { label: 'Vacaciones proporcionales', monto: vacProp },
+      ];
+    }
+
+    return {
+      bruto, adicAntiguedad, adicPresentismo, totalRemunerativo,
+      aJubilacion, aObraSocial, aPami, aSindical, totalAportes, neto,
+      cJubilacion, cObraSocial, cPami, cAsigFam, cArt, cDesempleo, totalContrib, costoTotal,
+      años, cfg, conceptosEspeciales, tipo, periodo
+    };
+  }
+
+  function generarHTMLRecibo(emp, liq, tipo, periodoStr) {
+    const f = (n) => '$' + Math.round(n).toLocaleString('es-AR');
+    const cfg = liq.cfg;
+    const tipoLabel = { mensual:'Recibo de sueldo', sac:'Liquidación SAC (Aguinaldo)', vacaciones:'Liquidación vacaciones', despido_sc:'Liquidación final — Despido sin causa', despido_cc:'Liquidación final — Despido con causa', renuncia:'Liquidación final — Renuncia' };
+    const esLiquidacion = ['despido_sc','despido_cc','renuncia','vacaciones','sac'].includes(tipo);
+
+    let filas = '';
+    // Haberes (solo si no es pura liquidación)
+    if (!['vacaciones','sac','despido_sc','despido_cc','renuncia'].includes(tipo)) {
+      filas += '<tr class="section-row"><td colspan="3">HABERES</td></tr>';
+      filas += `<tr><td>Sueldo básico</td><td></td><td>${f(liq.bruto)}</td></tr>`;
+      if (liq.adicAntiguedad > 0) filas += `<tr><td>Adicional antigüedad (${liq.años} años × ${cfg.antiguedad_pct}%)</td><td></td><td>${f(liq.adicAntiguedad)}</td></tr>`;
+      if (liq.adicPresentismo > 0) filas += `<tr><td>Presentismo (${cfg.presentismo_pct}%)</td><td></td><td>${f(liq.adicPresentismo)}</td></tr>`;
+      filas += `<tr class="subtotal-row"><td colspan="2"><strong>Total remunerativo</strong></td><td><strong>${f(liq.totalRemunerativo)}</strong></td></tr>`;
+    }
+
+    // Conceptos especiales (SAC, vacaciones, liquidaciones)
+    if (liq.conceptosEspeciales.length > 0) {
+      filas += '<tr class="section-row"><td colspan="3">CONCEPTOS DE LIQUIDACIÓN</td></tr>';
+      liq.conceptosEspeciales.forEach(c => {
+        filas += `<tr><td>${c.label}</td><td></td><td>${f(c.monto)}</td></tr>`;
+      });
+      const totalEsp = liq.conceptosEspeciales.reduce((s,c) => s+c.monto, 0);
+      filas += `<tr class="subtotal-row"><td colspan="2"><strong>Total liquidación</strong></td><td><strong>${f(totalEsp)}</strong></td></tr>`;
+    }
+
+    // Descuentos (solo recibo mensual)
+    if (!esLiquidacion) {
+      filas += '<tr class="section-row"><td colspan="3">DESCUENTOS (APORTES DEL TRABAJADOR)</td></tr>';
+      filas += `<tr><td>Jubilación (SIPA ${cfg.jubilacion_emp}%)</td><td></td><td style="color:#b85050;">-${f(liq.aJubilacion)}</td></tr>`;
+      filas += `<tr><td>Obra social (${cfg.obra_social_emp}%)</td><td></td><td style="color:#b85050;">-${f(liq.aObraSocial)}</td></tr>`;
+      filas += `<tr><td>PAMI (${cfg.pami_emp}%)</td><td></td><td style="color:#b85050;">-${f(liq.aPami)}</td></tr>`;
+      if (liq.aSindical > 0) filas += `<tr><td>Aporte sindical (${cfg.sindical}%)</td><td></td><td style="color:#b85050;">-${f(liq.aSindical)}</td></tr>`;
+      filas += `<tr class="subtotal-row"><td colspan="2"><strong>Total descuentos</strong></td><td style="color:#b85050;"><strong>-${f(liq.totalAportes)}</strong></td></tr>`;
+    }
+
+    const netoFinal = esLiquidacion
+      ? liq.conceptosEspeciales.reduce((s,c) => s+c.monto, 0)
+      : liq.neto;
+
+    // Contribuciones patronales (informativas)
+    let filaContrib = '';
+    if (!esLiquidacion) {
+      filaContrib = `
+        <div style="margin-top:16px;background:#f5f5f5;padding:14px 16px;border:1px solid #e0e0e0;">
+          <div style="font-size:.65rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#666;margin-bottom:8px;">Contribuciones patronales (informativo — no descuentan del neto)</div>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;font-size:.75rem;">
+            <div>Jubilación (${cfg.jubilacion_pat}%): <strong>${f(liq.cJubilacion)}</strong></div>
+            <div>Obra social (${cfg.obra_social_pat}%): <strong>${f(liq.cObraSocial)}</strong></div>
+            <div>PAMI (${cfg.pami_pat}%): <strong>${f(liq.cPami)}</strong></div>
+            <div>Asig. familiares (${cfg.asig_fam}%): <strong>${f(liq.cAsigFam)}</strong></div>
+            <div>ART (${cfg.art}%): <strong>${f(liq.cArt)}</strong></div>
+            <div>Fondo desempleo (${cfg.desempleo}%): <strong>${f(liq.cDesempleo)}</strong></div>
+          </div>
+          <div style="margin-top:8px;font-size:.8rem;font-weight:700;border-top:1px solid #ccc;padding-top:6px;">
+            Costo total para el empleador: <span style="color:#1e4d8c;">${f(liq.costoTotal)}</span>
+          </div>
+        </div>`;
+    }
+
+    return `<div class="recibo" id="recibo-imprimible">
+      <div class="recibo-header">
+        <div>
+          <div class="recibo-empresa">finHub Business</div>
+          <div style="font-size:.72rem;color:#666;margin-top:2px;">Sistema de gestión PyME</div>
+        </div>
+        <div>
+          <div class="recibo-titulo">${tipoLabel[tipo]||'Recibo'}</div>
+          <div class="recibo-periodo">${periodoStr}</div>
+        </div>
+      </div>
+      <div class="recibo-empleado">
+        <div class="recibo-emp-field"><span class="recibo-emp-label">Empleado:</span><span>${esc(emp.nombre||'')}</span></div>
+        <div class="recibo-emp-field"><span class="recibo-emp-label">CUIL:</span><span>${esc(emp.cuil||'—')}</span></div>
+        <div class="recibo-emp-field"><span class="recibo-emp-label">Categoría:</span><span>${esc(emp.categoria||'—')}</span></div>
+        <div class="recibo-emp-field"><span class="recibo-emp-label">Ingreso:</span><span>${emp.ingreso ? new Date(emp.ingreso+'T12:00:00').toLocaleDateString('es-AR') : '—'}</span></div>
+        <div class="recibo-emp-field"><span class="recibo-emp-label">Antigüedad:</span><span>${liq.años} año${liq.años!==1?'s':''}</span></div>
+        <div class="recibo-emp-field"><span class="recibo-emp-label">Obra social:</span><span>${esc(emp.obraSocial||'—')}</span></div>
+        <div class="recibo-emp-field"><span class="recibo-emp-label">Convenio:</span><span>${esc(emp.convenio||'General')}</span></div>
+        <div class="recibo-emp-field"><span class="recibo-emp-label">Contrato:</span><span>${emp.contrato==='indefinido'?'Tiempo indeterminado':emp.contrato||'—'}</span></div>
+      </div>
+      <table class="recibo-table">
+        <thead><tr><th>Concepto</th><th>Detalle</th><th>Importe</th></tr></thead>
+        <tbody>${filas}</tbody>
+      </table>
+      <div class="recibo-neto">
+        <div class="recibo-neto-label">${esLiquidacion ? 'Total a percibir' : 'Sueldo neto a cobrar'}</div>
+        <div class="recibo-neto-monto">${f(netoFinal)}</div>
+      </div>
+      ${filaContrib}
+      <div class="recibo-firma">
+        <div class="recibo-firma-box">Firma y sello empleador</div>
+        <div class="recibo-firma-box">Firma del empleado (aclaración)</div>
+      </div>
+      <div style="margin-top:16px;font-size:.68rem;color:#999;text-align:center;">
+        Generado por finHub Business · ${new Date().toLocaleDateString('es-AR')} · Los valores son estimativos y pueden no incluir todos los conceptos de tu convenio.
+      </div>
+    </div>`;
+  }
+
+  window.setRrhhTab = function(tab, btn) {
+    ['empleados','liquidacion','config'].forEach(t => {
+      const el = document.getElementById('rrhh-' + t);
+      if (el) el.style.display = t === tab ? 'block' : 'none';
+    });
+    document.querySelectorAll('#page-rrhh .period-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    if (tab === 'config') cargarConfigUI();
+    if (tab === 'liquidacion') { populateEmpleadoSelect(); const now = new Date(); document.getElementById('liq-periodo').value = now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0'); }
+    if (tab === 'empleados') renderEmpleados();
+  };
+
+  window.renderRRHH = function() {
+    cargarConfigUI();
+    renderEmpleados();
+    populateEmpleadoSelect();
+    const now = new Date();
+    const periodoEl = document.getElementById('liq-periodo');
+    if (periodoEl) periodoEl.value = now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0');
+  };
+
+  function renderEmpleados() {
+    const arr = Object.entries(empleados).map(([id,e]) => ({id,...e})).filter(e => e.estado !== 'egresado').concat(
+      Object.entries(empleados).map(([id,e]) => ({id,...e})).filter(e => e.estado === 'egresado')
+    );
+    const lista = document.getElementById('rrhh-empleados-lista');
+    const kpiEmp = document.getElementById('rrhh-total-emp');
+    const kpiMasa = document.getElementById('rrhh-masa-salarial');
+    const kpiCosto = document.getElementById('rrhh-costo-total');
+    const alertasEl = document.getElementById('rrhh-alertas');
+    if (!lista) return;
+
+    const activos = arr.filter(e => e.estado === 'activo' || e.estado === 'prueba');
+    const masaSalarial = activos.reduce((s,e) => s+(e.sueldo||0), 0);
+    const cfg = getCfg();
+    const pctContrib = (cfg.jubilacion_pat+cfg.obra_social_pat+cfg.pami_pat+cfg.asig_fam+cfg.art+cfg.desempleo)/100;
+    const costoTotal = masaSalarial * (1 + pctContrib);
+
+    if (kpiEmp) kpiEmp.textContent = activos.length;
+    if (kpiMasa) kpiMasa.textContent = fmt(masaSalarial);
+    if (kpiCosto) kpiCosto.textContent = fmt(costoTotal);
+
+    // Alertas de período de prueba
+    const alertas = [];
+    arr.filter(e => e.estado === 'activo' && e.contrato === 'prueba').forEach(e => {
+      const ingreso = new Date(e.ingreso + 'T12:00:00');
+      const finPrueba = new Date(ingreso); finPrueba.setMonth(finPrueba.getMonth() + 3);
+      const diasRestantes = Math.ceil((finPrueba - new Date()) / 86400000);
+      if (diasRestantes <= 30 && diasRestantes > 0) alertas.push(`⚠️ <strong>${esc(e.nombre)}</strong>: período de prueba vence en <strong>${diasRestantes} días</strong> (${finPrueba.toLocaleDateString('es-AR')})`);
+      if (diasRestantes <= 0) alertas.push(`🔴 <strong>${esc(e.nombre)}</strong>: período de prueba <strong>vencido</strong>. Confirmá o terminá la relación laboral.`);
+    });
+    if (alertasEl) alertasEl.innerHTML = alertas.map(a => `<div style="background:var(--red-bg);border-left:4px solid var(--red);padding:10px 16px;border-radius:0 4px 4px 0;margin-bottom:8px;font-size:.82rem;color:var(--ink2);">${a}</div>`).join('');
+
+    if (!arr.length) {
+      lista.innerHTML = '<div class="coming-soon"><div class="coming-soon-icon">👥</div><div class="coming-soon-title">No hay empleados cargados</div><div class="coming-soon-sub">Agregá el primer empleado con el botón + Nuevo empleado</div></div>';
+      return;
+    }
+
+    lista.innerHTML = arr.map(e => {
+      const años = getAntigüedad(e.ingreso);
+      const estadoLabel = {activo:'Activo', prueba:'En prueba', egresado:'Egresado', suspendido:'Suspendido'};
+      return `<div class="emp-card ${e.estado||'activo'}" onclick="openEmpleadoDetalle('${e.id}')">
+        <div>
+          <div class="emp-nombre">${esc(e.nombre||'Sin nombre')}<span class="emp-badge ${e.estado||'activo'}">${estadoLabel[e.estado]||e.estado}</span></div>
+          <div class="emp-meta">
+            ${e.categoria ? esc(e.categoria) + ' · ' : ''}
+            ${e.convenio ? esc(e.convenio) + ' · ' : ''}
+            ${e.ingreso ? 'Ingresó ' + new Date(e.ingreso+'T12:00:00').toLocaleDateString('es-AR') + ' · ' : ''}
+            Antigüedad: <strong>${años} año${años!==1?'s':''}</strong>
+          </div>
+          ${e.cuil ? `<div class="emp-meta">CUIL: ${esc(e.cuil)}</div>` : ''}
+        </div>
+        <div style="text-align:right;">
+          <div class="emp-sueldo">${fmt(e.sueldo||0)}</div>
+          <div style="font-size:.68rem;color:var(--muted);margin-top:2px;">Bruto mensual</div>
+          <button class="tx-btn-action edit" style="margin-top:8px;font-size:.6rem;padding:4px 10px;" onclick="event.stopPropagation();liquidarEmp('${e.id}')">💰 Liquidar</button>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  function populateEmpleadoSelect() {
+    const arr = Object.entries(empleados).map(([id,e]) => ({id,...e})).filter(e => e.estado !== 'egresado');
+    const sel = document.getElementById('liq-empleado');
+    if (!sel) return;
+    const cur = sel.value;
+    sel.innerHTML = '<option value="">— Seleccioná un empleado —</option>' + arr.map(e => `<option value="${e.id}" ${e.id===cur?'selected':''}>${esc(e.nombre||'Sin nombre')} — ${fmt(e.sueldo||0)}</option>`).join('');
+  }
+
+  window.actualizarLiquidacion = function() {
+    const empId = document.getElementById('liq-empleado').value;
+    const tipo  = document.getElementById('liq-tipo').value;
+    const periodo = document.getElementById('liq-periodo').value;
+    const wrap  = document.getElementById('liq-recibo-wrap');
+    const empty = document.getElementById('liq-empty');
+    if (!empId || !periodo) { wrap.style.display='none'; empty.style.display='block'; return; }
+    const emp = empleados[empId]; if (!emp) return;
+    const liq = calcularLiquidacion(emp, tipo, periodo);
+    const [año,mes] = periodo.split('-');
+    const periodoStr = new Date(+año, +mes-1, 1).toLocaleString('es-AR',{month:'long',year:'numeric'});
+    document.getElementById('liq-recibo').innerHTML = generarHTMLRecibo(emp, liq, tipo, periodoStr);
+    wrap.style.display = 'block'; empty.style.display = 'none';
+  };
+
+  window.imprimirRecibo = function() { window.print(); };
+
+  window.openEmpleadoDetalle = function(id) {
+    const e = empleados[id]; if (!e) return;
+    detalleEmpId = id;
+    const años = getAntigüedad(e.ingreso);
+    const liq = calcularLiquidacion(e, 'mensual', '');
+    const estadoLabel = {activo:'Activo',prueba:'En prueba',egresado:'Egresado',suspendido:'Suspendido'};
+    document.getElementById('empleado-detalle-content').innerHTML = `
+      <div style="display:flex;align-items:center;gap:14px;margin-bottom:20px;">
+        <div style="width:52px;height:52px;border-radius:50%;background:var(--accent-bg);display:flex;align-items:center;justify-content:center;font-family:'Plus Jakarta Sans',sans-serif;font-size:1.4rem;font-weight:700;color:var(--accent);">${(e.nombre||'?').charAt(0).toUpperCase()}</div>
+        <div><div style="font-size:1.1rem;font-weight:600;color:var(--ink);">${esc(e.nombre||'Sin nombre')}</div><div style="font-size:.75rem;color:var(--muted);">${estadoLabel[e.estado]||''} · ${esc(e.categoria||'')} · ${años} año${años!==1?'s':''} de antigüedad</div></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px;">
+        ${e.cuil?`<div style="background:var(--surface2);padding:10px 12px;border-radius:4px;"><div style="font-size:.6rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:3px;">CUIL</div><div style="font-size:.85rem;">${esc(e.cuil)}</div></div>`:''}
+        ${e.ingreso?`<div style="background:var(--surface2);padding:10px 12px;border-radius:4px;"><div style="font-size:.6rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:3px;">Fecha ingreso</div><div style="font-size:.85rem;">${new Date(e.ingreso+'T12:00:00').toLocaleDateString('es-AR')}</div></div>`:''}
+        ${e.convenio?`<div style="background:var(--surface2);padding:10px 12px;border-radius:4px;"><div style="font-size:.6rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:3px;">Convenio</div><div style="font-size:.85rem;">${esc(e.convenio)}</div></div>`:''}
+        ${e.obraSocial?`<div style="background:var(--surface2);padding:10px 12px;border-radius:4px;"><div style="font-size:.6rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:3px;">Obra social</div><div style="font-size:.85rem;">${esc(e.obraSocial)}</div></div>`:''}
+        ${e.email?`<div style="background:var(--surface2);padding:10px 12px;border-radius:4px;"><div style="font-size:.6rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:3px;">Email</div><div style="font-size:.82rem;word-break:break-all;">${esc(e.email)}</div></div>`:''}
+        ${e.telefono?`<div style="background:var(--surface2);padding:10px 12px;border-radius:4px;"><div style="font-size:.6rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:3px;">Teléfono</div><div style="font-size:.85rem;">${esc(e.telefono)}</div></div>`:''}
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px;">
+        <div style="background:var(--accent-bg);padding:12px;border-radius:4px;text-align:center;"><div style="font-size:.6rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:4px;">Bruto</div><div style="font-family:'Plus Jakarta Sans',sans-serif;font-size:1rem;font-weight:700;color:var(--accent);">${fmt(e.sueldo||0)}</div></div>
+        <div style="background:var(--red-bg);padding:12px;border-radius:4px;text-align:center;"><div style="font-size:.6rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--red);margin-bottom:4px;">Neto</div><div style="font-family:'Plus Jakarta Sans',sans-serif;font-size:1rem;font-weight:700;color:var(--red);">${fmt(liq.neto)}</div></div>
+        <div style="background:var(--surface2);padding:12px;border-radius:4px;text-align:center;"><div style="font-size:.6rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:4px;">Costo empresa</div><div style="font-family:'Plus Jakarta Sans',sans-serif;font-size:1rem;font-weight:700;color:var(--accent2);">${fmt(liq.costoTotal)}</div></div>
+      </div>
+      ${e.notas?`<div style="background:var(--surface2);padding:10px 12px;border-radius:4px;font-size:.82rem;color:var(--ink2);line-height:1.6;">${esc(e.notas)}</div>`:''}`;
+    document.getElementById('modal-empleado-detalle').classList.add('open');
+  };
+
+  window.editEmpFromDetalle = function() { closeModal('empleado-detalle'); openEditEmpleado(detalleEmpId); };
+  window.liquidarEmpFromDetalle = function() { closeModal('empleado-detalle'); liquidarEmp(detalleEmpId); };
+  window.liquidarEmp = function(id) {
+    const sel = document.getElementById('liq-empleado');
+    if (sel) { sel.value = id; }
+    setRrhhTab('liquidacion', document.getElementById('rrhh-tab-liquidacion'));
+    setTimeout(actualizarLiquidacion, 100);
+  };
+
+  window.openEditEmpleado = function(id) {
+    const e = empleados[id]; if (!e) return;
+    editingEmpId = id;
+    document.getElementById('empleado-modal-title').textContent = 'Editar empleado';
+    document.getElementById('emp-nombre').value = e.nombre||'';
+    document.getElementById('emp-cuil').value = e.cuil||'';
+    document.getElementById('emp-dni').value = e.dni||'';
+    document.getElementById('emp-ingreso').value = e.ingreso||'';
+    document.getElementById('emp-estado').value = e.estado||'activo';
+    document.getElementById('emp-categoria').value = e.categoria||'';
+    document.getElementById('emp-convenio').value = e.convenio||'general';
+    document.getElementById('emp-contrato').value = e.contrato||'indefinido';
+    document.getElementById('emp-sueldo').value = e.sueldo||'';
+    document.getElementById('emp-pago-modal').value = e.pagoModal||'mensual';
+    document.getElementById('emp-cbu').value = e.cbu||'';
+    document.getElementById('emp-obra-social').value = e.obraSocial||'';
+    document.getElementById('emp-email').value = e.email||'';
+    document.getElementById('emp-telefono').value = e.telefono||'';
+    document.getElementById('emp-domicilio').value = e.domicilio||'';
+    document.getElementById('emp-notas').value = e.notas||'';
+    document.getElementById('modal-empleado').classList.add('open');
+  };
+
+  window.saveEmpleado = async function() {
+    const nombre = document.getElementById('emp-nombre').value.trim();
+    if (!nombre) { alert('Ingresá el nombre del empleado.'); return; }
+    const data = {
+      nombre,
+      cuil:       document.getElementById('emp-cuil').value.trim()||null,
+      dni:        document.getElementById('emp-dni').value.trim()||null,
+      ingreso:    document.getElementById('emp-ingreso').value||null,
+      estado:     document.getElementById('emp-estado').value,
+      categoria:  document.getElementById('emp-categoria').value.trim()||null,
+      convenio:   document.getElementById('emp-convenio').value,
+      contrato:   document.getElementById('emp-contrato').value,
+      sueldo:     parseFloat(document.getElementById('emp-sueldo').value)||0,
+      pagoModal:  document.getElementById('emp-pago-modal').value,
+      cbu:        document.getElementById('emp-cbu').value.trim()||null,
+      obraSocial: document.getElementById('emp-obra-social').value.trim()||null,
+      email:      document.getElementById('emp-email').value.trim()||null,
+      telefono:   document.getElementById('emp-telefono').value.trim()||null,
+      domicilio:  document.getElementById('emp-domicilio').value.trim()||null,
+      notas:      document.getElementById('emp-notas').value.trim()||null,
+      updatedAt:  Date.now(),
+    };
+    closeModal('empleado');
+    if (editingEmpId) {
+      await update(ref(db, `empresas/${uid}/empleados/${editingEmpId}`), data);
+      editingEmpId = null;
+    } else {
+      data.createdAt = Date.now();
+      await push(ref(db, `empresas/${uid}/empleados`), data);
+    }
+  };
+
+
   // ── NAV ──
   window.goTo=function(section){
     document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
@@ -3009,7 +3737,7 @@
     if(section==='reportes')   { populateAnioSelect('pl-anio'); populateAnioSelect('flujo-anio'); renderPL(); }
     if(section==='contador')   renderContador();
     if(section==='asesor')     renderAsesor();
-    if(section==='rrhh')       { /* próximamente */ }
+    if(section==='rrhh')       renderRRHH();
   };
 
   // ── DARK / FOCO ──
