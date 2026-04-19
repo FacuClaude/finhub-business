@@ -287,6 +287,14 @@
       .no-print { display:none!important; }
     }
 
+    .nav-sub-item { font-size:.74rem; padding:7px 18px; color:rgba(255,255,255,.7); }
+    .nav-sub-item:hover { color:white; background:rgba(255,255,255,.08); }
+    .nav-sub-item.active { color:white; border-left-color:white; background:rgba(255,255,255,.12); font-weight:500; }
+    body.dark .nav-sub-item { color:#aaa; }
+    body.dark .nav-sub-item:hover { color:#e8e8e8; }
+    body.dark .nav-sub-item.active { color:white; background:rgba(106,174,232,.15); border-left-color:#6aaee8; }
+    .nav-group-toggle.admin-open { background:rgba(255,255,255,.08); color:white; }
+
     /* ── ACORDEÓN FAQ ── */
     .faq-acordeon { border:1px solid var(--border); border-radius:6px; overflow:hidden; }
     .faq-cat { border-bottom:1px solid var(--border); }
@@ -516,35 +524,48 @@
         <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>
         Cuentas
       </button>
+
       <div class="nav-section">Empresa</div>
       <button class="nav-item" onclick="goTo('contactos')">
         <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
         Contactos
       </button>
       <button class="nav-item" onclick="goTo('iva')">
-        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/></svg>
         IVA
       </button>
       <button class="nav-item" onclick="goTo('reportes')">
         <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
         Reportes
       </button>
-      <button class="nav-item" onclick="goTo('contador')">
-        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
-        Contador IA
+
+      <!-- ── ADMIN (submenú colapsable) ── -->
+      <div class="nav-section" style="margin-top:4px;">Admin</div>
+      <button class="nav-item nav-group-toggle" id="admin-toggle" onclick="toggleAdminMenu()" style="justify-content:space-between;">
+        <span style="display:flex;align-items:center;gap:10px;">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/><path d="M18 8l2 2 4-4" stroke-width="1.8"/></svg>
+          Admin
+        </span>
+        <svg id="admin-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="transition:transform .2s;opacity:.6;flex-shrink:0;"><polyline points="6 9 12 15 18 9"/></svg>
       </button>
-      <button class="nav-item" onclick="goTo('asesor')">
-        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-        Asesor Legal IA
-      </button>
-      <button class="nav-item" onclick="goTo('rrhh')">
-        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-        RRHH
-      </button>
-      <button class="nav-item" id="nav-usuarios" onclick="goTo('usuarios')" style="display:none;">
-        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-        Usuarios
-      </button>
+      <div id="admin-submenu" style="display:none;background:rgba(0,0,0,.12);border-left:2px solid rgba(255,255,255,.12);margin-left:18px;">
+        <button class="nav-item nav-sub-item" onclick="goTo('contador')">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+          Contador IA
+        </button>
+        <button class="nav-item nav-sub-item" onclick="goTo('asesor')">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          Asesor Legal IA
+        </button>
+        <button class="nav-item nav-sub-item" onclick="goTo('rrhh')">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+          RRHH
+        </button>
+        <button class="nav-item nav-sub-item" id="nav-usuarios" onclick="goTo('usuarios')">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+          Usuarios
+        </button>
+      </div>
     </nav>
     <div class="sidebar-footer">
       <div class="theme-toggle"><span class="theme-label">Privacidad</span><label class="switch"><input type="checkbox" id="foco-toggle" onchange="toggleFoco(this.checked)"><span class="slider"></span></label></div>
@@ -4469,19 +4490,47 @@
   }
 
   // ── NAV ──
+  const ADMIN_SECTIONS = ['contador','asesor','rrhh','usuarios'];
+
+  window.toggleAdminMenu = function() {
+    const menu   = document.getElementById('admin-submenu');
+    const arrow  = document.getElementById('admin-arrow');
+    const toggle = document.getElementById('admin-toggle');
+    if (!menu) return;
+    const isOpen = menu.style.display !== 'none';
+    menu.style.display    = isOpen ? 'none' : 'block';
+    if(arrow)  arrow.style.transform = isOpen ? '' : 'rotate(180deg)';
+    if(toggle) toggle.classList.toggle('admin-open', !isOpen);
+  };
+
   window.goTo=function(section){
     document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
     document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
     document.getElementById('page-'+section)?.classList.add('active');
     document.querySelectorAll('.nav-item').forEach(n=>{if(n.getAttribute('onclick')?.includes("'"+section+"'"))n.classList.add('active');});
     document.getElementById('main-content').scrollTop=0;
+
+    // Abrir submenú admin automáticamente si la sección pertenece a él
+    if(ADMIN_SECTIONS.includes(section)){
+      const menu=document.getElementById('admin-submenu');
+      const arrow=document.getElementById('admin-arrow');
+      const toggle=document.getElementById('admin-toggle');
+      if(menu&&menu.style.display==='none'){
+        menu.style.display='block';
+        if(arrow)  arrow.style.transform='rotate(180deg)';
+        if(toggle) toggle.classList.add('admin-open');
+      }
+    }
+
     // Header mobile
-    const titleMap = {dashboard:'Dashboard',movimientos:'Movimientos',cuentas:'Cuentas',contactos:'Contactos',iva:'IVA',reportes:'Reportes',contador:'Contador IA',asesor:'Asesor Legal IA',rrhh:'RRHH',busqueda:'Búsqueda'};
-    const mTitle = document.getElementById('mobile-header-title');
-    if(mTitle) mTitle.textContent = titleMap[section]||section;
+    const titleMap={dashboard:'Dashboard',movimientos:'Movimientos',cuentas:'Cuentas',contactos:'Contactos',iva:'IVA',reportes:'Reportes',contador:'Contador IA',asesor:'Asesor Legal IA',rrhh:'RRHH',usuarios:'Usuarios',busqueda:'Búsqueda'};
+    const mTitle=document.getElementById('mobile-header-title');
+    if(mTitle) mTitle.textContent=titleMap[section]||section;
+
     // Limpiar búsqueda global al navegar
-    const gsInput = document.getElementById('global-search');
-    if(gsInput&&section!=='busqueda'){gsInput.value='';document.getElementById('global-search-clear').style.display='none';}
+    const gsInput=document.getElementById('global-search');
+    if(gsInput&&section!=='busqueda'){gsInput.value='';const clr=document.getElementById('global-search-clear');if(clr)clr.style.display='none';}
+
     closeMobileNav();
     if(section==='movimientos') renderTxList();
     if(section==='contactos')  renderContactos();
@@ -4491,7 +4540,7 @@
     if(section==='contador')   renderContador();
     if(section==='asesor')     renderAsesor();
     if(section==='rrhh')       renderRRHH();
-    if(section==='usuarios')   { renderUsuarios(); }
+    if(section==='usuarios')   renderUsuarios();
   };
 
   // ── DARK / FOCO ──
