@@ -489,6 +489,7 @@
         </span>
       </div>
       <div class="wordmark-badge">Business</div>
+      <div id="empresa-nombre" style="font-size:.65rem;color:rgba(255,255,255,.5);margin-top:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"></div>
     </div>
 
     <!-- BÚSQUEDA GLOBAL -->
@@ -539,6 +540,10 @@
       <button class="nav-item" onclick="goTo('rrhh')">
         <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
         RRHH
+      </button>
+      <button class="nav-item" id="nav-usuarios" onclick="goTo('usuarios')" style="display:none;">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        Usuarios
       </button>
     </nav>
     <div class="sidebar-footer">
@@ -1080,7 +1085,105 @@
       </div>
     </div>
 
-<!-- MODAL: INSTRUCTIVO -->
+    <!-- USUARIOS -->
+    <div class="page" id="page-usuarios">
+      <div class="page-title">Usuarios</div>
+      <div class="page-sub">Gestión de accesos y permisos de tu empresa</div>
+
+      <!-- Info empresa -->
+      <div style="background:var(--surface);border:1px solid var(--border);border-top:3px solid var(--accent);padding:20px 24px;margin-bottom:28px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;">
+          <div>
+            <div style="font-size:.62rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:4px;">Empresa activa</div>
+            <div style="font-family:'Plus Jakarta Sans',sans-serif;font-size:1.1rem;font-weight:600;color:var(--ink);" id="usuarios-empresa-nombre">—</div>
+            <div style="font-size:.72rem;color:var(--muted);margin-top:2px;" id="usuarios-empresa-id"></div>
+          </div>
+          <button class="btn-secondary" onclick="openModal('editar-empresa')">✏️ Editar nombre</button>
+        </div>
+      </div>
+
+      <!-- Lista de usuarios -->
+      <div class="section-header">
+        <div class="section-title">Usuarios con acceso</div>
+        <button class="btn-primary" onclick="openModal('invitar-usuario')">+ Agregar usuario</button>
+      </div>
+      <div id="usuarios-lista" style="margin-bottom:28px;"></div>
+
+      <!-- Roles predefinidos (referencia) -->
+      <div class="section-header"><div class="section-title">Roles predefinidos (referencia)</div></div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;">
+        <div class="card" style="border-top:3px solid var(--accent);">
+          <div class="card-label">Admin</div>
+          <div style="font-size:.78rem;color:var(--ink2);line-height:1.7;">Acceso total. Puede gestionar usuarios, configurar la empresa y editar todo.</div>
+        </div>
+        <div class="card" style="border-top:3px solid var(--accent2);">
+          <div class="card-label">Contador</div>
+          <div style="font-size:.78rem;color:var(--ink2);line-height:1.7;">Solo lectura + exportar. No puede editar movimientos ni configuración.</div>
+        </div>
+        <div class="card" style="border-top:3px solid var(--green);">
+          <div class="card-label">Operador</div>
+          <div style="font-size:.78rem;color:var(--ink2);line-height:1.7;">Puede cargar movimientos y gestionar cuentas y contactos. Sin reportes ni RRHH.</div>
+        </div>
+        <div class="card" style="border-top:3px solid var(--muted2);">
+          <div class="card-label">Visualizador</div>
+          <div style="font-size:.78rem;color:var(--ink2);line-height:1.7;">Solo lectura. Ve todo pero no puede editar nada ni exportar.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL: INVITAR USUARIO -->
+    <div class="overlay" id="modal-invitar-usuario" onclick="closeModal('invitar-usuario')">
+      <div class="modal" onclick="event.stopPropagation()" style="max-width:480px;">
+        <div class="modal-title">Agregar usuario</div>
+        <div class="field"><label>Email del usuario</label><input type="email" id="inv-email" placeholder="usuario@email.com"/></div>
+        <div class="field"><label>Nombre (opcional)</label><input type="text" id="inv-nombre" placeholder="Ej: María González"/></div>
+        <div class="field">
+          <label>Rol base</label>
+          <select id="inv-rol" onchange="aplicarRolBase(this.value)">
+            <option value="admin">Admin — acceso total</option>
+            <option value="contador" selected>Contador — solo lectura + exportar</option>
+            <option value="operador">Operador — carga movimientos</option>
+            <option value="visualizador">Visualizador — solo lectura</option>
+            <option value="personalizado">Personalizado — definir manualmente</option>
+          </select>
+        </div>
+        <div id="permisos-custom" style="background:var(--surface2);padding:16px;border-radius:6px;margin-top:4px;">
+          <div style="font-size:.62rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:12px;">Permisos</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+            <label style="display:flex;align-items:center;gap:8px;font-size:.78rem;color:var(--ink2);cursor:pointer;text-transform:none;letter-spacing:0;font-weight:400;"><input type="checkbox" id="perm-verTodo" style="accent-color:var(--accent)"> Ver todo</label>
+            <label style="display:flex;align-items:center;gap:8px;font-size:.78rem;color:var(--ink2);cursor:pointer;text-transform:none;letter-spacing:0;font-weight:400;"><input type="checkbox" id="perm-editarMovimientos" style="accent-color:var(--accent)"> Editar movimientos</label>
+            <label style="display:flex;align-items:center;gap:8px;font-size:.78rem;color:var(--ink2);cursor:pointer;text-transform:none;letter-spacing:0;font-weight:400;"><input type="checkbox" id="perm-editarCuentas" style="accent-color:var(--accent)"> Editar cuentas</label>
+            <label style="display:flex;align-items:center;gap:8px;font-size:.78rem;color:var(--ink2);cursor:pointer;text-transform:none;letter-spacing:0;font-weight:400;"><input type="checkbox" id="perm-editarContactos" style="accent-color:var(--accent)"> Editar contactos</label>
+            <label style="display:flex;align-items:center;gap:8px;font-size:.78rem;color:var(--ink2);cursor:pointer;text-transform:none;letter-spacing:0;font-weight:400;"><input type="checkbox" id="perm-verReportes" style="accent-color:var(--accent)"> Ver reportes</label>
+            <label style="display:flex;align-items:center;gap:8px;font-size:.78rem;color:var(--ink2);cursor:pointer;text-transform:none;letter-spacing:0;font-weight:400;"><input type="checkbox" id="perm-exportar" style="accent-color:var(--accent)"> Exportar datos</label>
+            <label style="display:flex;align-items:center;gap:8px;font-size:.78rem;color:var(--ink2);cursor:pointer;text-transform:none;letter-spacing:0;font-weight:400;"><input type="checkbox" id="perm-verRRHH" style="accent-color:var(--accent)"> Ver RRHH</label>
+            <label style="display:flex;align-items:center;gap:8px;font-size:.78rem;color:var(--ink2);cursor:pointer;text-transform:none;letter-spacing:0;font-weight:400;"><input type="checkbox" id="perm-editarRRHH" style="accent-color:var(--accent)"> Editar RRHH</label>
+            <label style="display:flex;align-items:center;gap:8px;font-size:.78rem;color:var(--ink2);cursor:pointer;text-transform:none;letter-spacing:0;font-weight:400;"><input type="checkbox" id="perm-configurar" style="accent-color:var(--accent)"> Configurar</label>
+            <label style="display:flex;align-items:center;gap:8px;font-size:.78rem;color:var(--ink2);cursor:pointer;text-transform:none;letter-spacing:0;font-weight:400;"><input type="checkbox" id="perm-gestionarUsuarios" style="accent-color:var(--accent)"> Gestionar usuarios</label>
+          </div>
+        </div>
+        <div style="background:var(--accent-bg);border:1px solid rgba(30,77,140,.15);padding:12px 14px;border-radius:4px;margin-top:16px;font-size:.75rem;color:var(--ink2);line-height:1.6;">
+          📧 El usuario recibirá acceso la próxima vez que inicie sesión con este email en finHub Business. No se envía email automático — compartí la URL de la app con el usuario.
+        </div>
+        <div class="modal-actions">
+          <button class="btn-secondary" onclick="closeModal('invitar-usuario')" style="flex:1">Cancelar</button>
+          <button class="btn-primary" onclick="guardarUsuario()" style="flex:2">Agregar acceso</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL: EDITAR EMPRESA -->
+    <div class="overlay" id="modal-editar-empresa" onclick="closeModal('editar-empresa')">
+      <div class="modal" onclick="event.stopPropagation()" style="max-width:420px;">
+        <div class="modal-title">Editar empresa</div>
+        <div class="field"><label>Nombre de la empresa</label><input type="text" id="edit-empresa-nombre" placeholder="Ej: Distribuidora López S.A."/></div>
+        <div class="field"><label>CUIT (opcional)</label><input type="text" id="edit-empresa-cuit" placeholder="30-12345678-9"/></div>
+        <div class="modal-actions">
+          <button class="btn-secondary" onclick="closeModal('editar-empresa')" style="flex:1">Cancelar</button>
+          <button class="btn-primary" onclick="guardarEmpresa()" style="flex:2">Guardar</button>
+        </div>
+      </div>
+    </div>
 <div class="inst-overlay" id="modal-instructivo" onclick="cerrarInstructivo(event)">
   <div class="inst-modal" onclick="event.stopPropagation()">
 
@@ -1440,28 +1543,132 @@
   const auth = getAuth(app);
   const db   = getDatabase(app);
 
-  let uid = null, transactions = {}, contacts = {}, accounts = {};
+  let uid = null, empresaId = null, miRol = null;
+  let transactions = {}, contacts = {}, accounts = {};
   let activeFilter = 'all', currentType = 'income', activePeriod = 'month';
   let editingTxId = null, editCurrentType = 'income';
   let editingCuentaId = null;
   let editingContactoId = null, currentContactoType = 'cliente', activeContactoTab = 'clientes';
   let chartMonthly = null, chartCats = null;
 
+  // Permisos por defecto según rol
+  const PERMISOS_DEFAULT = {
+    admin:       { verTodo:true,  editarMovimientos:true,  editarCuentas:true,  editarContactos:true,  verReportes:true,  exportar:true,  verRRHH:true,  editarRRHH:true,  gestionarUsuarios:true,  configurar:true  },
+    contador:    { verTodo:true,  editarMovimientos:false, editarCuentas:false, editarContactos:false, verReportes:true,  exportar:true,  verRRHH:true,  editarRRHH:false, gestionarUsuarios:false, configurar:false },
+    operador:    { verTodo:false, editarMovimientos:true,  editarCuentas:true,  editarContactos:true,  verReportes:false, exportar:false, verRRHH:false, editarRRHH:false, gestionarUsuarios:false, configurar:false },
+    visualizador:{ verTodo:true,  editarMovimientos:false, editarCuentas:false, editarContactos:false, verReportes:true,  exportar:false, verRRHH:false, editarRRHH:false, gestionarUsuarios:false, configurar:false },
+  };
+
+  function puedo(permiso) {
+    if (!miRol) return false;
+    return miRol[permiso] === true;
+  }
+
   // ── AUTH ──
-  onAuthStateChanged(auth, user => {
+  onAuthStateChanged(auth, async user => {
     if (!user) { window.location.href = 'index.html'; return; }
     uid = user.uid;
+
+    // Buscar empresas a las que tiene acceso este usuario
+    onValue(ref(db, `usuarios/${uid}/empresas`), async snap => {
+      const misEmpresas = snap.val() || {};
+      const ids = Object.keys(misEmpresas);
+
+      if (ids.length === 0) {
+        // Usuario nuevo — crear su empresa automáticamente
+        empresaId = push(ref(db, 'empresas')).key;
+        const rolAdmin = { ...PERMISOS_DEFAULT.admin, tipoRol: 'admin', nombre: user.email, email: user.email };
+        const batch = {};
+        batch[`empresas/${empresaId}/info`] = { nombre: 'Mi empresa', createdAt: Date.now(), ownerUid: uid };
+        batch[`usuarios/${uid}/empresas/${empresaId}`] = rolAdmin;
+        batch[`usuarios/${uid}/info`] = { email: user.email, nombre: user.email, createdAt: Date.now() };
+        await update(ref(db), batch);
+        miRol = rolAdmin;
+        iniciarApp(user);
+      } else if (ids.length === 1) {
+        // Un solo acceso — entrar directo
+        empresaId = ids[0];
+        miRol = misEmpresas[empresaId];
+        iniciarApp(user);
+      } else {
+        // Múltiples empresas — mostrar selector
+        mostrarSelectorEmpresa(misEmpresas, user);
+      }
+    }, { onlyOnce: true });
+  });
+
+  function iniciarApp(user) {
     document.getElementById('user-email').textContent = user.email;
+    verificarInvitacionesPendientes(user);
+    // Cargar nombre de empresa
+    onValue(ref(db, `empresas/${empresaId}/info`), snap => {
+      const info = snap.val() || {};
+      const nombreEl = document.getElementById('empresa-nombre');
+      if (nombreEl) nombreEl.textContent = info.nombre || 'Mi empresa';
+    }, { onlyOnce: true });
+    aplicarPermisos();
     loadTransactions();
     loadContactos();
     loadCuentas();
     loadEmpleados();
-  });
+  }
+
+  function mostrarSelectorEmpresa(misEmpresas, user) {
+    // Overlay de selección de empresa
+    const overlay = document.createElement('div');
+    overlay.style.cssText = 'position:fixed;inset:0;background:var(--bg);z-index:9999;display:flex;align-items:center;justify-content:center;';
+    overlay.innerHTML = `
+      <div style="background:var(--surface);border:1px solid var(--border);padding:32px;border-radius:8px;max-width:400px;width:90%;box-shadow:0 24px 60px rgba(0,0,0,.15);">
+        <div style="font-family:'Plus Jakarta Sans',sans-serif;font-size:1.2rem;font-weight:700;color:var(--ink);margin-bottom:6px;">Seleccioná una empresa</div>
+        <div style="font-size:.78rem;color:var(--muted);margin-bottom:20px;">${user.email} tiene acceso a múltiples empresas</div>
+        <div id="empresa-lista"></div>
+      </div>`;
+    document.body.appendChild(overlay);
+    const lista = overlay.querySelector('#empresa-lista');
+    Object.entries(misEmpresas).forEach(([empId, rol]) => {
+      onValue(ref(db, `empresas/${empId}/info`), snap => {
+        const info = snap.val() || {};
+        const btn = document.createElement('button');
+        btn.style.cssText = 'display:block;width:100%;text-align:left;padding:14px 16px;margin-bottom:8px;background:var(--bg);border:1px solid var(--border);border-radius:6px;cursor:pointer;font-family:"DM Sans",sans-serif;font-size:.88rem;color:var(--ink);transition:border-color .15s;';
+        btn.innerHTML = `<strong>${esc(info.nombre||empId)}</strong><span style="font-size:.7rem;color:var(--muted);margin-left:8px;">${rol.tipoRol||'usuario'}</span>`;
+        btn.onmouseover = () => btn.style.borderColor = 'var(--accent)';
+        btn.onmouseout  = () => btn.style.borderColor = 'var(--border)';
+        btn.onclick = () => {
+          empresaId = empId; miRol = rol;
+          document.body.removeChild(overlay);
+          iniciarApp(user);
+        };
+        lista.appendChild(btn);
+      }, { onlyOnce: true });
+    });
+  }
+
+  function aplicarPermisos() {
+    // Ocultar elementos de edición según rol
+    const puedeEditar = puedo('editarMovimientos');
+    const puedeConfig  = puedo('configurar');
+    const puedeUsuarios= puedo('gestionarUsuarios');
+    const puedeRRHH    = puedo('verRRHH');
+
+    // Botón + Movimiento
+    document.querySelectorAll('[onclick*="openModal(\'tx\')"]').forEach(el => { if(!puedeEditar) el.style.display='none'; });
+    // Importar
+    document.querySelectorAll('[onclick*="openModal(\'import\')"]').forEach(el => { if(!puedeEditar) el.style.display='none'; });
+    // Botones editar/eliminar en listas — se aplica al renderizar con puedo()
+    // Nav RRHH
+    if (!puedeRRHH) {
+      document.querySelectorAll('[onclick*="goTo(\'rrhh\')"]').forEach(el => el.style.display='none');
+    }
+    // Nav Usuarios (siempre visible para admin)
+    const navUsuarios = document.getElementById('nav-usuarios');
+    if (navUsuarios) navUsuarios.style.display = puedeUsuarios ? 'flex' : 'none';
+  }
+
   window.logout = async () => { await signOut(auth); window.location.href = 'index.html'; };
 
   // ── LOAD ──
   function loadTransactions() {
-    onValue(ref(db, `empresas/${uid}/movimientos`), snap => {
+    onValue(ref(db, `empresas/${empresaId}/movimientos`), snap => {
       transactions = snap.val() || {};
       renderAll();
       renderCuentas();
@@ -1469,14 +1676,14 @@
     });
   }
   function loadContactos() {
-    onValue(ref(db, `empresas/${uid}/contactos`), snap => {
+    onValue(ref(db, `empresas/${empresaId}/contactos`), snap => {
       contacts = snap.val() || {};
       renderContactos();
       populateContactoSelects();
     });
   }
   function loadCuentas() {
-    onValue(ref(db, `empresas/${uid}/cuentas`), snap => { accounts = snap.val() || {}; renderCuentas(); populateCuentaSelects(); });
+    onValue(ref(db, `empresas/${empresaId}/cuentas`), snap => { accounts = snap.val() || {}; renderCuentas(); populateCuentaSelects(); });
   }
 
   // ── UTILS ──
@@ -1729,7 +1936,14 @@
       document.getElementById('c-iva').value='responsable_inscripto';
       setContactoType('cliente');
     }
-    if(name==='empleado'){
+    if(name==='invitar-usuario'){
+      editandoUsuarioUid = null;
+      document.querySelector('#modal-invitar-usuario .modal-title').textContent = 'Agregar usuario';
+      document.getElementById('inv-email').value = '';
+      document.getElementById('inv-nombre').value = '';
+      document.getElementById('inv-rol').value = 'contador';
+      aplicarRolBase('contador');
+    }
       editingEmpId=null;
       document.getElementById('empleado-modal-title').textContent='Nuevo empleado';
       ['emp-nombre','emp-cuil','emp-dni','emp-cbu','emp-obra-social','emp-email','emp-telefono','emp-domicilio','emp-notas'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
@@ -1755,7 +1969,7 @@
     const date=document.getElementById('tx-date').value;
     if(!desc||!amount||!date){alert('Completá los campos obligatorios.');return;}
     const tieneIva=document.getElementById('tx-tiene-iva').checked;
-    await push(ref(db,`empresas/${uid}/movimientos`),{
+    await push(ref(db,`empresas/${empresaId}/movimientos`),{
       type:currentType, description:desc, amount, category:document.getElementById('tx-cat').value, date,
       cuentaId:   document.getElementById('tx-cuenta').value||null,
       contactoId: document.getElementById('tx-contacto').value||null,
@@ -1795,7 +2009,7 @@
     const date=document.getElementById('edit-tx-date').value;
     if(!desc||!amount||!date){alert('Completá los campos obligatorios.');return;}
     const ti=document.getElementById('edit-tx-tiene-iva').checked;
-    await update(ref(db,`empresas/${uid}/movimientos/${editingTxId}`),{
+    await update(ref(db,`empresas/${empresaId}/movimientos/${editingTxId}`),{
       type:editCurrentType, description:desc, amount, category:document.getElementById('edit-tx-cat').value, date,
       cuentaId:   document.getElementById('edit-tx-cuenta').value||null,
       contactoId: document.getElementById('edit-tx-contacto').value||null,
@@ -1808,7 +2022,7 @@
   };
 
   // ── DELETE TX ──
-  window.deleteTx = async function(id){if(!confirm('¿Eliminar este movimiento?'))return;await remove(ref(db,`empresas/${uid}/movimientos/${id}`));};
+  window.deleteTx = async function(id){if(!confirm('¿Eliminar este movimiento?'))return;await remove(ref(db,`empresas/${empresaId}/movimientos/${id}`));};
 
   // ── EXPORT CSV ──
   window.exportTxCSV=function(){
@@ -1845,8 +2059,8 @@
           const fechaStr=typeof fecha==='object'?fecha.toISOString().slice(0,10):fecha.toString().trim();
           const ivaRaw=(row['tiene_iva']||'').toString().toUpperCase().trim();
           const ivaAl=ivaRaw==='SI'?parseFloat(row['iva_alicuota']||21):null;
-          const newId=push(ref(db,`empresas/${uid}/movimientos`)).key;
-          batch[`empresas/${uid}/movimientos/${newId}`]={
+          const newId=push(ref(db,`empresas/${empresaId}/movimientos`)).key;
+          batch[`empresas/${empresaId}/movimientos/${newId}`]={
             type:tipo==='ingreso'?'income':'expense', description:desc, amount:Math.abs(monto),
             category:(row['categoria']||row['Categoria']||row['categoría']||'Otros gastos').toString().trim(),
             date:fechaStr, comprobante:(row['comprobante']||'').toString().trim()||null,
@@ -2080,8 +2294,8 @@
     if(!nombre){alert('Ingresá un nombre.');return;}
     const data={tipo:document.getElementById('c-tipo').value,nombre,saldoInicial:parseFloat(document.getElementById('c-saldo-inicial').value)||0,moneda:document.getElementById('c-moneda').value,notas:document.getElementById('c-notas-cuenta').value.trim()||null,updatedAt:Date.now()};
     closeModal('cuenta');
-    if(editingCuentaId){await update(ref(db,`empresas/${uid}/cuentas/${editingCuentaId}`),data);editingCuentaId=null;}
-    else{data.createdAt=Date.now();await push(ref(db,`empresas/${uid}/cuentas`),data);}
+    if(editingCuentaId){await update(ref(db,`empresas/${empresaId}/cuentas/${editingCuentaId}`),data);editingCuentaId=null;}
+    else{data.createdAt=Date.now();await push(ref(db,`empresas/${empresaId}/cuentas`),data);}
   };
 
   window.saveTransferencia=async function(){
@@ -2094,11 +2308,11 @@
     if(origen===destino){alert('Origen y destino no pueden ser la misma cuenta.');return;}
     if(!monto||monto<=0){alert('Ingresá un monto válido.');return;}
     if(!fecha){alert('Seleccioná una fecha.');return;}
-    const idS=push(ref(db,`empresas/${uid}/movimientos`)).key;
-    const idE=push(ref(db,`empresas/${uid}/movimientos`)).key;
+    const idS=push(ref(db,`empresas/${empresaId}/movimientos`)).key;
+    const idE=push(ref(db,`empresas/${empresaId}/movimientos`)).key;
     const batch={};
-    batch[`empresas/${uid}/movimientos/${idS}`]={type:'transferencia',description:desc,amount:monto,category:'Transferencia',date:fecha,cuentaId:origen,cuentaDestinoId:destino,createdAt:Date.now()};
-    batch[`empresas/${uid}/movimientos/${idE}`]={type:'transferencia',description:desc,amount:monto,category:'Transferencia',date:fecha,cuentaId:destino,cuentaOrigenId:origen,esEntrada:true,createdAt:Date.now()};
+    batch[`empresas/${empresaId}/movimientos/${idS}`]={type:'transferencia',description:desc,amount:monto,category:'Transferencia',date:fecha,cuentaId:origen,cuentaDestinoId:destino,createdAt:Date.now()};
+    batch[`empresas/${empresaId}/movimientos/${idE}`]={type:'transferencia',description:desc,amount:monto,category:'Transferencia',date:fecha,cuentaId:destino,cuentaOrigenId:origen,esEntrada:true,createdAt:Date.now()};
     await update(ref(db),batch);
     closeModal('transferencia');
     ['transf-monto','transf-desc'].forEach(id=>document.getElementById(id).value='');
@@ -2174,7 +2388,7 @@
   };
 
   window.editContactoFromDetalle=function(){const id=document.getElementById('modal-contacto-detalle').dataset.contactoId;closeModal('contacto-detalle');openEditContacto(id);};
-  window.deleteContactoFromDetalle=async function(){const id=document.getElementById('modal-contacto-detalle').dataset.contactoId;if(!confirm('¿Eliminar este contacto?'))return;await remove(ref(db,`empresas/${uid}/contactos/${id}`));closeModal('contacto-detalle');};
+  window.deleteContactoFromDetalle=async function(){const id=document.getElementById('modal-contacto-detalle').dataset.contactoId;if(!confirm('¿Eliminar este contacto?'))return;await remove(ref(db,`empresas/${empresaId}/contactos/${id}`));closeModal('contacto-detalle');};
 
   function openEditContacto(id){
     const c=contacts[id]; if(!c) return;
@@ -2201,8 +2415,8 @@
     if(!nombre){alert('Ingresá un nombre.');return;}
     const data={tipo:currentContactoType,nombre,cuit:document.getElementById('c-cuit').value.trim()||null,condicionIva:document.getElementById('c-iva').value,email:document.getElementById('c-email').value.trim()||null,telefono:document.getElementById('c-tel').value.trim()||null,notas:document.getElementById('c-notas').value.trim()||null,updatedAt:Date.now()};
     closeModal('contacto'); // cerrar antes del await para respuesta inmediata
-    if(editingContactoId){await update(ref(db,`empresas/${uid}/contactos/${editingContactoId}`),data);editingContactoId=null;}
-    else{data.createdAt=Date.now();await push(ref(db,`empresas/${uid}/contactos`),data);}
+    if(editingContactoId){await update(ref(db,`empresas/${empresaId}/contactos/${editingContactoId}`),data);editingContactoId=null;}
+    else{data.createdAt=Date.now();await push(ref(db,`empresas/${empresaId}/contactos`),data);}
   };
 
   // ══════════════════════════════════════════════════
@@ -3677,7 +3891,7 @@
   }
 
   function loadEmpleados() {
-    onValue(ref(db, `empresas/${uid}/empleados`), snap => {
+    onValue(ref(db, `empresas/${empresaId}/empleados`), snap => {
       empleados = snap.val() || {};
       renderEmpleados();
       populateEmpleadoSelect();
@@ -4056,14 +4270,159 @@
     };
     closeModal('empleado');
     if (editingEmpId) {
-      await update(ref(db, `empresas/${uid}/empleados/${editingEmpId}`), data);
+      await update(ref(db, `empresas/${empresaId}/empleados/${editingEmpId}`), data);
       editingEmpId = null;
     } else {
       data.createdAt = Date.now();
-      await push(ref(db, `empresas/${uid}/empleados`), data);
+      await push(ref(db, `empresas/${empresaId}/empleados`), data);
     }
   };
 
+
+  // ══════════════════════════════════════════════════
+  // USUARIOS
+  // ══════════════════════════════════════════════════
+  let usuariosEmpresa = {};
+  let editandoUsuarioUid = null;
+
+  window.renderUsuarios = function() {
+    // Cargar info empresa
+    onValue(ref(db, `empresas/${empresaId}/info`), snap => {
+      const info = snap.val() || {};
+      const n = document.getElementById('usuarios-empresa-nombre');
+      const id = document.getElementById('usuarios-empresa-id');
+      if (n) n.textContent = info.nombre || '—';
+      if (id) id.textContent = `ID: ${empresaId}`;
+      // Precargar modal editar empresa
+      const inp = document.getElementById('edit-empresa-nombre');
+      const inp2 = document.getElementById('edit-empresa-cuit');
+      if (inp) inp.value = info.nombre || '';
+      if (inp2) inp2.value = info.cuit || '';
+    }, { onlyOnce: true });
+
+    // Cargar usuarios de la empresa
+    onValue(ref(db, `usuariosDeEmpresa/${empresaId}`), snap => {
+      usuariosEmpresa = snap.val() || {};
+      renderListaUsuarios();
+    }, { onlyOnce: true });
+  };
+
+  function renderListaUsuarios() {
+    const lista = document.getElementById('usuarios-lista');
+    if (!lista) return;
+    const arr = Object.entries(usuariosEmpresa);
+    if (!arr.length) {
+      lista.innerHTML = '<div style="padding:32px;text-align:center;font-size:.82rem;color:var(--muted);background:var(--surface);border:1px solid var(--border);">No hay usuarios adicionales. Solo vos tenés acceso.</div>';
+      return;
+    }
+    const rolColors = { admin:'var(--accent)', contador:'var(--accent2)', operador:'var(--green)', visualizador:'var(--muted)', personalizado:'var(--ink2)' };
+    lista.innerHTML = arr.map(([userUid, u]) => `
+      <div style="background:var(--surface);border:1px solid var(--border);padding:16px 20px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;gap:12px;border-left:4px solid ${rolColors[u.tipoRol]||'var(--muted)'};">
+        <div>
+          <div style="font-size:.88rem;font-weight:600;color:var(--ink);">${esc(u.nombre||u.email||userUid)}</div>
+          <div style="font-size:.72rem;color:var(--muted);margin-top:2px;">${esc(u.email||'')} · <span style="color:${rolColors[u.tipoRol]||'var(--muted)'};">${u.tipoRol||'personalizado'}</span></div>
+        </div>
+        <div style="display:flex;gap:8px;">
+          ${userUid !== uid ? `<button class="tx-btn-action edit" onclick="editarUsuario('${userUid}')">Editar</button>
+          <button class="tx-btn-action del" onclick="eliminarUsuario('${userUid}')">Quitar</button>` : '<span style="font-size:.68rem;color:var(--muted);">Vos</span>'}
+        </div>
+      </div>`).join('');
+  }
+
+  window.aplicarRolBase = function(rol) {
+    const perms = PERMISOS_DEFAULT[rol] || {};
+    const campos = ['verTodo','editarMovimientos','editarCuentas','editarContactos','verReportes','exportar','verRRHH','editarRRHH','configurar','gestionarUsuarios'];
+    campos.forEach(p => {
+      const el = document.getElementById('perm-' + p);
+      if (el) el.checked = perms[p] === true;
+    });
+  };
+
+  window.guardarUsuario = async function() {
+    const email = document.getElementById('inv-email').value.trim().toLowerCase();
+    const nombre = document.getElementById('inv-nombre').value.trim();
+    const tipoRol = document.getElementById('inv-rol').value;
+    if (!email) { alert('Ingresá el email del usuario.'); return; }
+
+    // Construir objeto de permisos
+    const campos = ['verTodo','editarMovimientos','editarCuentas','editarContactos','verReportes','exportar','verRRHH','editarRRHH','configurar','gestionarUsuarios'];
+    const permisos = { tipoRol, email, nombre: nombre || email };
+    campos.forEach(p => { permisos[p] = document.getElementById('perm-'+p)?.checked || false; });
+
+    // Buscar si el usuario ya tiene cuenta en Firebase
+    // Guardamos por email como clave temporal — cuando el usuario inicie sesión
+    // Firebase buscará su UID y lo linkea
+    const emailKey = email.replace(/\./g, '_').replace(/@/g, '__at__');
+    const batch = {};
+    batch[`invitacionesPendientes/${empresaId}/${emailKey}`] = { ...permisos, createdAt: Date.now(), creadoPor: uid };
+    // También guardar en usuariosDeEmpresa para mostrar en lista
+    batch[`usuariosDeEmpresa/${empresaId}/${emailKey}`] = { ...permisos };
+    await update(ref(db), batch);
+    closeModal('invitar-usuario');
+    renderUsuarios();
+    alert(`✓ Acceso configurado para ${email}.\nLa próxima vez que ese usuario inicie sesión en finHub Business con ese email, tendrá acceso automáticamente.`);
+  };
+
+  window.editarUsuario = function(userUid) {
+    editandoUsuarioUid = userUid;
+    const u = usuariosEmpresa[userUid];
+    if (!u) return;
+    document.getElementById('inv-email').value = u.email || '';
+    document.getElementById('inv-nombre').value = u.nombre || '';
+    document.getElementById('inv-rol').value = u.tipoRol || 'personalizado';
+    aplicarRolBase(u.tipoRol || 'personalizado');
+    // Aplicar permisos guardados
+    const campos = ['verTodo','editarMovimientos','editarCuentas','editarContactos','verReportes','exportar','verRRHH','editarRRHH','configurar','gestionarUsuarios'];
+    campos.forEach(p => { const el = document.getElementById('perm-'+p); if(el) el.checked = u[p]===true; });
+    openModal('invitar-usuario');
+    document.querySelector('#modal-invitar-usuario .modal-title').textContent = 'Editar permisos';
+  };
+
+  window.eliminarUsuario = async function(userUid) {
+    if (!confirm('¿Quitar el acceso de este usuario?')) return;
+    const batch = {};
+    batch[`usuariosDeEmpresa/${empresaId}/${userUid}`] = null;
+    batch[`invitacionesPendientes/${empresaId}/${userUid}`] = null;
+    // Si tiene UID real, también remover de usuarios/${uid}/empresas
+    batch[`usuarios/${userUid}/empresas/${empresaId}`] = null;
+    await update(ref(db), batch);
+    renderUsuarios();
+  };
+
+  window.guardarEmpresa = async function() {
+    const nombre = document.getElementById('edit-empresa-nombre').value.trim();
+    const cuit   = document.getElementById('edit-empresa-cuit').value.trim();
+    if (!nombre) { alert('Ingresá el nombre de la empresa.'); return; }
+    await update(ref(db, `empresas/${empresaId}/info`), { nombre, cuit: cuit||null, updatedAt: Date.now() });
+    closeModal('editar-empresa');
+    renderUsuarios();
+    // Actualizar nombre en sidebar
+    const nombreEl = document.getElementById('empresa-nombre');
+    if (nombreEl) nombreEl.textContent = nombre;
+  };
+
+  // Al iniciar sesión, verificar invitaciones pendientes por email
+  async function verificarInvitacionesPendientes(user) {
+    const emailKey = user.email.replace(/\./g,'_').replace(/@/g,'__at__');
+    // Buscar en todas las empresas si hay invitación para este email
+    onValue(ref(db, 'invitacionesPendientes'), async snap => {
+      const todas = snap.val() || {};
+      const batch = {};
+      let encontro = false;
+      Object.entries(todas).forEach(([empId, invs]) => {
+        if (invs[emailKey]) {
+          const permisos = invs[emailKey];
+          // Mover de invitación pendiente a acceso real por UID
+          batch[`usuarios/${user.uid}/empresas/${empId}`] = permisos;
+          batch[`usuariosDeEmpresa/${empId}/${user.uid}`] = permisos;
+          batch[`invitacionesPendientes/${empId}/${emailKey}`] = null;
+          batch[`usuariosDeEmpresa/${empId}/${emailKey}`] = null;
+          encontro = true;
+        }
+      });
+      if (encontro) await update(ref(db), batch);
+    }, { onlyOnce: true });
+  }
 
   // ── NAV ──
   window.goTo=function(section){
@@ -4088,6 +4447,7 @@
     if(section==='contador')   renderContador();
     if(section==='asesor')     renderAsesor();
     if(section==='rrhh')       renderRRHH();
+    if(section==='usuarios')   { renderUsuarios(); }
   };
 
   // ── DARK / FOCO ──
