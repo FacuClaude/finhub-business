@@ -4807,76 +4807,64 @@
     if(section==='usuarios')   renderUsuarios();
   };
 
-  // ── IMPORTAR / EXPORTAR DATOS (EXCEL) ──
+  // ── IMPORTAR / EXPORTAR — SECCIÓN USUARIOS ──
   window.descargarTemplateEmpresas = function() {
     if (!window.XLSX) {
       const s = document.createElement('script');
       s.src = 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
-      s.onload = _generarTemplateEmpresas;
+      s.onload = _generarTemplateEmpresaUsuarios;
       document.head.appendChild(s);
-    } else { _generarTemplateEmpresas(); }
+    } else { _generarTemplateEmpresaUsuarios(); }
   };
 
-  function _generarTemplateEmpresas() {
+  function _generarTemplateEmpresaUsuarios() {
     const wb = XLSX.utils.book_new();
 
-    const movData = [
-      ['fecha','tipo','descripcion','monto','categoria','comprobante','notas','iva_alicuota'],
-      ['2024-01-15','ingreso','Venta a cliente ABC','150000','Ventas','FC-0001','','21'],
-      ['2024-01-18','gasto','Alquiler oficina enero','80000','Alquiler','RC-0045','',''],
-      ['2024-01-20','gasto','Servicio de luz','12500','Servicios (luz, gas, internet)','','',''],
-      ['2024-01-22','ingreso','Consultoría enero','200000','Servicios prestados','FC-0002','Cliente nuevo','21'],
-      ['2024-01-25','gasto','Proveedor materiales','45000','Proveedores','FC-B-0012','','10.5'],
+    // Hoja 1: Datos de empresa
+    const empData = [
+      ['campo', 'valor'],
+      ['nombre_empresa', 'Sidersa S.A.'],
+      ['cuit', '30-12345678-9'],
     ];
-    const wsM = XLSX.utils.aoa_to_sheet(movData);
-    wsM['!cols'] = [{wch:14},{wch:10},{wch:35},{wch:12},{wch:28},{wch:14},{wch:20},{wch:12}];
-    XLSX.utils.book_append_sheet(wb, wsM, 'Movimientos');
+    const wsE = XLSX.utils.aoa_to_sheet(empData);
+    wsE['!cols'] = [{wch:20},{wch:40}];
+    XLSX.utils.book_append_sheet(wb, wsE, 'Empresa');
 
-    const cuentaData = [
-      ['nombre','tipo','saldo_inicial','moneda','notas'],
-      ['Caja chica','caja','50000','ARS','Efectivo en oficina'],
-      ['Banco Nación CC','banco','250000','ARS','CBU 011-456789'],
-      ['Mercado Pago','digital','35000','ARS','Alias: miempresa.mp'],
-      ['Dólares efectivo','caja','1500','USD','Billete físico'],
+    // Hoja 2: Usuarios
+    const usrData = [
+      ['email','nombre','rol'],
+      ['contador@estudio.com','Estudio Contable García','contador'],
+      ['operador@miempresa.com','Laura Martínez','operador'],
+      ['socio@miempresa.com','Roberto Álvarez','admin'],
     ];
-    const wsC = XLSX.utils.aoa_to_sheet(cuentaData);
-    wsC['!cols'] = [{wch:22},{wch:14},{wch:14},{wch:10},{wch:28}];
-    XLSX.utils.book_append_sheet(wb, wsC, 'Cuentas');
+    const wsU = XLSX.utils.aoa_to_sheet(usrData);
+    wsU['!cols'] = [{wch:30},{wch:28},{wch:16}];
+    XLSX.utils.book_append_sheet(wb, wsU, 'Usuarios');
 
-    const contactoData = [
-      ['tipo','nombre','cuit','condicion_iva','email','telefono','notas'],
-      ['cliente','Distribuidora Pérez S.A.','30-71234567-8','responsable_inscripto','compras@perez.com.ar','011-4567-8901','Cliente frecuente'],
-      ['cliente','Juan Rodríguez','20-35678901-2','monotributista','juan.r@gmail.com','011-1523-4567',''],
-      ['proveedor','Papelería Martínez','27-28901234-5','responsable_inscripto','ventas@papeleria.com','011-4789-0123','30 días de pago'],
-      ['proveedor','Servicios IT SRL','30-56789012-3','responsable_inscripto','admin@serviciosit.com','011-5678-9012','Soporte técnico'],
+    // Hoja 3: Instrucciones
+    const instr = [
+      ['INSTRUCCIONES — Importar empresa y usuarios'],
+      [''],
+      ['HOJA: Empresa'],
+      ['nombre_empresa', 'Nombre comercial o razón social. Se actualizará en tu empresa activa.'],
+      ['cuit', 'CUIT con guiones (ej: 30-12345678-9). Opcional.'],
+      [''],
+      ['HOJA: Usuarios'],
+      ['email', 'Email del usuario a invitar. OBLIGATORIO.'],
+      ['nombre', 'Nombre o razón social del usuario. Opcional.'],
+      ['rol', 'Rol a asignar. Valores válidos: admin / contador / operador / visualizador'],
+      [''],
+      ['ROLES DISPONIBLES'],
+      ['admin', 'Acceso total — puede gestionar usuarios y configuración'],
+      ['contador', 'Solo lectura + exportar — no puede editar datos'],
+      ['operador', 'Puede cargar movimientos, cuentas y contactos — sin reportes ni RRHH'],
+      ['visualizador', 'Solo lectura — no puede exportar ni editar nada'],
     ];
-    const wsCo = XLSX.utils.aoa_to_sheet(contactoData);
-    wsCo['!cols'] = [{wch:12},{wch:28},{wch:16},{wch:22},{wch:28},{wch:16},{wch:24}];
-    XLSX.utils.book_append_sheet(wb, wsCo, 'Contactos');
-
-    const instrData = [
-      ['INSTRUCCIONES — finHub Business'],[''],
-      ['HOJA: Movimientos'],
-      ['fecha','YYYY-MM-DD (ej: 2024-01-15)'],
-      ['tipo','ingreso  ó  gasto'],
-      ['monto','Número sin signo (ej: 150000)'],
-      ['iva_alicuota','Opcional: 21, 10.5, 27 ó 0'],[''],
-      ['HOJA: Cuentas'],
-      ['tipo','caja / banco / corriente / digital / inversion'],
-      ['moneda','ARS ó USD'],[''],
-      ['HOJA: Contactos'],
-      ['tipo','cliente ó proveedor'],
-      ['condicion_iva','responsable_inscripto / monotributista / exento / consumidor_final'],[''],
-      ['CATEGORÍAS DE MOVIMIENTOS'],
-      ['Ingresos:','Ventas / Servicios prestados / Cobranzas / Anticipos / Otros ingresos'],
-      ['Gastos:','Nómina / Sueldos / Alquiler / Proveedores / Servicios (luz, gas, internet) / Impuestos y tasas'],
-      ['','Marketing y publicidad / Logística y flete / Materias primas / Honorarios profesionales / Mantenimiento / Otros gastos'],
-    ];
-    const wsI = XLSX.utils.aoa_to_sheet(instrData);
-    wsI['!cols'] = [{wch:22},{wch:65}];
+    const wsI = XLSX.utils.aoa_to_sheet(instr);
+    wsI['!cols'] = [{wch:20},{wch:60}];
     XLSX.utils.book_append_sheet(wb, wsI, 'Instrucciones');
 
-    XLSX.writeFile(wb, 'finhub_template.xlsx');
+    XLSX.writeFile(wb, 'finhub_template_empresa.xlsx');
   }
 
   window.importarEmpresasExcel = function(input) {
@@ -4885,85 +4873,76 @@
     if (!window.XLSX) {
       const s = document.createElement('script');
       s.src = 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
-      s.onload = () => _procesarImportExcel(file);
+      s.onload = () => _procesarImportEmpresaUsuarios(file);
       document.head.appendChild(s);
-    } else { _procesarImportExcel(file); }
+    } else { _procesarImportEmpresaUsuarios(file); }
   };
 
-  async function _procesarImportExcel(file) {
+  async function _procesarImportEmpresaUsuarios(file) {
     const reader = new FileReader();
     reader.onload = async e => {
       try {
-        const wb = XLSX.read(e.target.result, { type:'binary', cellDates:true });
-        let movN=0, cuentaN=0, contactoN=0;
-        const batch={}, errores=[];
+        const wb = XLSX.read(e.target.result, { type:'binary' });
+        const batch = {};
+        let empresaActualizada = false;
+        let usuariosImportados = 0;
+        const errores = [];
 
-        if (wb.SheetNames.includes('Movimientos')) {
-          const rows = XLSX.utils.sheet_to_json(wb.Sheets['Movimientos'], { defval:'' });
-          rows.forEach((row,i) => {
-            const fecha = row.fecha ? String(row.fecha).slice(0,10) : '';
-            const tipo  = String(row.tipo||'').trim().toLowerCase();
-            const desc  = String(row.descripcion||'').trim();
-            const monto = parseFloat(row.monto);
-            if (!fecha||!['ingreso','gasto'].includes(tipo)||!desc||isNaN(monto)) {
-              errores.push(`Mov. fila ${i+2}: datos incompletos`); return;
+        // ── Empresa ──
+        if (wb.SheetNames.includes('Empresa')) {
+          const rows = XLSX.utils.sheet_to_json(wb.Sheets['Empresa'], { defval:'' });
+          const datos = {};
+          rows.forEach(row => {
+            const campo = String(row.campo||'').trim().toLowerCase();
+            const valor = String(row.valor||'').trim();
+            if (campo && valor) datos[campo] = valor;
+          });
+          const nombre = datos['nombre_empresa'] || datos['nombre'] || '';
+          const cuit   = datos['cuit'] || '';
+          if (nombre) {
+            batch[`empresas/${empresaId}/info/nombre`] = nombre;
+            if (cuit) batch[`empresas/${empresaId}/info/cuit`] = cuit;
+            batch[`empresas/${empresaId}/info/updatedAt`] = Date.now();
+            // Actualizar el switcher en tiempo real
+            const el = document.getElementById('empresa-nombre');
+            if (el) el.textContent = nombre;
+            empresaActualizada = true;
+          }
+        }
+
+        // ── Usuarios ──
+        if (wb.SheetNames.includes('Usuarios')) {
+          const rows = XLSX.utils.sheet_to_json(wb.Sheets['Usuarios'], { defval:'' });
+          rows.forEach((row, i) => {
+            const email = String(row.email||'').trim().toLowerCase();
+            const nombre = String(row.nombre||'').trim();
+            const tipoRol = String(row.rol||'visualizador').trim().toLowerCase();
+            if (!email || !email.includes('@')) {
+              errores.push(`Usuarios fila ${i+2}: email inválido`); return;
             }
-            const iva = row.iva_alicuota!==''&&row.iva_alicuota!=null ? parseFloat(row.iva_alicuota) : null;
-            const id = push(ref(db,`empresas/${empresaId}/movimientos`)).key;
-            batch[`empresas/${empresaId}/movimientos/${id}`] = {
-              type: tipo==='ingreso'?'income':'expense', description:desc, amount:monto,
-              category: String(row.categoria||'Otros gastos').trim(), date:fecha,
-              comprobante: String(row.comprobante||'').trim()||null,
-              notas: String(row.notas||'').trim()||null,
-              ivaAlicuota: iva, createdAt:Date.now()
-            }; movN++;
+            const rolValido = ['admin','contador','operador','visualizador'].includes(tipoRol) ? tipoRol : 'visualizador';
+            const permisos = { ...PERMISOS_DEFAULT[rolValido], tipoRol: rolValido, email, nombre: nombre || email };
+            const emailKey = email.replace(/\./g,'_').replace(/@/g,'__at__');
+            batch[`invitacionesPendientes/${empresaId}/${emailKey}`] = { ...permisos, createdAt: Date.now(), creadoPor: uid };
+            batch[`usuariosDeEmpresa/${empresaId}/${emailKey}`] = { ...permisos };
+            usuariosImportados++;
           });
         }
 
-        if (wb.SheetNames.includes('Cuentas')) {
-          const rows = XLSX.utils.sheet_to_json(wb.Sheets['Cuentas'], { defval:'' });
-          rows.forEach((row,i) => {
-            const nombre = String(row.nombre||'').trim();
-            if (!nombre) { errores.push(`Cuenta fila ${i+2}: falta nombre`); return; }
-            const id = push(ref(db,`empresas/${empresaId}/cuentas`)).key;
-            batch[`empresas/${empresaId}/cuentas/${id}`] = {
-              nombre, tipo:String(row.tipo||'banco').trim(),
-              saldoInicial:parseFloat(row.saldo_inicial)||0,
-              moneda:String(row.moneda||'ARS').trim().toUpperCase(),
-              notas:String(row.notas||'').trim()||null, createdAt:Date.now()
-            }; cuentaN++;
-          });
-        }
-
-        if (wb.SheetNames.includes('Contactos')) {
-          const rows = XLSX.utils.sheet_to_json(wb.Sheets['Contactos'], { defval:'' });
-          rows.forEach((row,i) => {
-            const nombre = String(row.nombre||'').trim();
-            if (!nombre) { errores.push(`Contacto fila ${i+2}: falta nombre`); return; }
-            const tipo = String(row.tipo||'cliente').trim().toLowerCase();
-            const id = push(ref(db,`empresas/${empresaId}/contactos`)).key;
-            batch[`empresas/${empresaId}/contactos/${id}`] = {
-              tipo:['cliente','proveedor'].includes(tipo)?tipo:'cliente', nombre,
-              cuit:String(row.cuit||'').trim()||null,
-              condicionIva:String(row.condicion_iva||'responsable_inscripto').trim(),
-              email:String(row.email||'').trim()||null,
-              telefono:String(row.telefono||'').trim()||null,
-              notas:String(row.notas||'').trim()||null, createdAt:Date.now()
-            }; contactoN++;
-          });
-        }
-
-        if (!movN&&!cuentaN&&!contactoN) {
-          alert('No se encontraron datos válidos.\nUsá el template de finHub Business con las hojas "Movimientos", "Cuentas" y/o "Contactos".');
+        if (!empresaActualizada && !usuariosImportados) {
+          alert('No se encontraron datos válidos.\nUsá el template con las hojas "Empresa" y/o "Usuarios".');
           return;
         }
+
         await update(ref(db), batch);
-        let msg = `✓ Importación completada:\n`;
-        if (movN)      msg += `• ${movN} movimientos\n`;
-        if (cuentaN)   msg += `• ${cuentaN} cuentas\n`;
-        if (contactoN) msg += `• ${contactoN} contactos\n`;
+        renderUsuarios();
+
+        let msg = '✓ Importación completada:\n';
+        if (empresaActualizada) msg += '• Datos de empresa actualizados\n';
+        if (usuariosImportados) msg += `• ${usuariosImportados} usuario${usuariosImportados!==1?'s':''} importado${usuariosImportados!==1?'s':''}\n`;
         if (errores.length) msg += `\n⚠️ ${errores.length} filas ignoradas.`;
         alert(msg);
+
       } catch(err) {
         alert('Error al procesar el archivo.\n' + err.message);
       }
