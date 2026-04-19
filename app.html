@@ -200,6 +200,27 @@
     .coming-soon-title { font-family:'Plus Jakarta Sans',sans-serif; font-size:1.1rem; font-weight:600; color:var(--ink); margin-bottom:8px; }
     .coming-soon-sub { font-size:.82rem; color:var(--muted); line-height:1.7; max-width:320px; }
 
+    /* ── CONTADOR IA ── */
+    .contador-faq-btn {
+      display:block; width:100%; text-align:left; padding:8px 10px;
+      background:transparent; border:none; border-radius:4px;
+      font-family:'DM Sans',sans-serif; font-size:.78rem; color:var(--ink2);
+      cursor:pointer; transition:background .15s,color .15s; line-height:1.4;
+    }
+    .contador-faq-btn:hover { background:var(--accent-bg); color:var(--accent); }
+    .contador-faq-btn.active { background:var(--accent-bg); color:var(--accent); font-weight:500; }
+    .resp-title { font-family:'Plus Jakarta Sans',sans-serif; font-size:1rem; font-weight:600; color:var(--ink); margin-bottom:12px; }
+    .resp-body { font-size:.85rem; color:var(--ink2); line-height:1.75; }
+    .resp-body strong { color:var(--ink); font-weight:600; }
+    .resp-body .resp-num { font-family:'Plus Jakarta Sans',sans-serif; font-size:1.3rem; font-weight:700; color:var(--accent); display:block; margin:8px 0; }
+    .resp-body .resp-num.neg { color:var(--red); }
+    .resp-body .resp-num.warn { color:var(--accent2); }
+    .resp-body ul { padding-left:18px; margin:8px 0; }
+    .resp-body li { margin-bottom:4px; }
+    .resp-alert { background:rgba(193,122,74,.08); border-left:3px solid var(--accent2); padding:10px 14px; border-radius:0 4px 4px 0; margin-top:14px; font-size:.78rem; color:var(--ink2); line-height:1.6; }
+    .resp-ok    { background:var(--green-bg); border-left:3px solid var(--green); padding:10px 14px; border-radius:0 4px 4px 0; margin-top:14px; font-size:.78rem; color:var(--ink2); line-height:1.6; }
+    .resp-disclaimer { font-size:.7rem; color:var(--muted); margin-top:16px; padding-top:12px; border-top:1px solid var(--border); font-style:italic; }
+
     /* ── TABLA P&L ── */
     .pl-table { width:100%; border-collapse:collapse; font-size:.8rem; }
     .pl-table th { background:var(--accent); color:white; padding:10px 14px; text-align:right; font-size:.65rem; font-weight:600; letter-spacing:.08em; text-transform:uppercase; white-space:nowrap; }
@@ -546,16 +567,84 @@
     <!-- CONTADOR IA -->
     <div class="page" id="page-contador">
       <div class="page-title">Contador IA</div>
-      <div class="page-sub">Asesoramiento contable y fiscal para tu PyME</div>
-      <div class="coming-soon">
-        <div class="coming-soon-icon">🧮</div>
-        <div class="coming-soon-title">Módulo Contador en desarrollo</div>
-        <div class="coming-soon-sub">Próximamente: asesoramiento fiscal, alertas impositivas, recomendaciones basadas en tus datos, guía de obligaciones AFIP y más.</div>
+      <div class="page-sub">Asesoramiento contable y fiscal basado en los datos reales de tu empresa</div>
+
+      <!-- Alertas automáticas -->
+      <div id="contador-alertas" style="margin-bottom:24px;"></div>
+
+      <!-- Layout dos columnas -->
+      <div style="display:grid;grid-template-columns:1fr 1.6fr;gap:24px;align-items:start;">
+
+        <!-- Columna izquierda: categorías de FAQs -->
+        <div>
+          <div style="font-size:.62rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:12px;">Preguntas frecuentes</div>
+
+          <!-- Categoría: Mi situación hoy -->
+          <div style="margin-bottom:8px;">
+            <div style="font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);padding:8px 0 6px;border-bottom:1px solid var(--border);margin-bottom:6px;">📊 Mi situación hoy</div>
+            <div class="contador-faq-list" id="faq-situacion"></div>
+          </div>
+
+          <!-- Categoría: IVA e impuestos -->
+          <div style="margin-bottom:8px;">
+            <div style="font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);padding:8px 0 6px;border-bottom:1px solid var(--border);margin-bottom:6px;">🧾 IVA e impuestos</div>
+            <div class="contador-faq-list" id="faq-impuestos"></div>
+          </div>
+
+          <!-- Categoría: Flujo y liquidez -->
+          <div style="margin-bottom:8px;">
+            <div style="font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);padding:8px 0 6px;border-bottom:1px solid var(--border);margin-bottom:6px;">💧 Flujo y liquidez</div>
+            <div class="contador-faq-list" id="faq-flujo"></div>
+          </div>
+
+          <!-- Categoría: Costos y rentabilidad -->
+          <div style="margin-bottom:8px;">
+            <div style="font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);padding:8px 0 6px;border-bottom:1px solid var(--border);margin-bottom:6px;">📈 Costos y rentabilidad</div>
+            <div class="contador-faq-list" id="faq-rentabilidad"></div>
+          </div>
+
+          <!-- Categoría: Monotributo / RI -->
+          <div style="margin-bottom:8px;">
+            <div style="font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);padding:8px 0 6px;border-bottom:1px solid var(--border);margin-bottom:6px;">🏛️ Monotributo / RI</div>
+            <div class="contador-faq-list" id="faq-regimen"></div>
+          </div>
+
+          <!-- Categoría: Vencimientos AFIP -->
+          <div style="margin-bottom:8px;">
+            <div style="font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);padding:8px 0 6px;border-bottom:1px solid var(--border);margin-bottom:6px;">📅 Vencimientos AFIP</div>
+            <div class="contador-faq-list" id="faq-vencimientos"></div>
+          </div>
+
+          <!-- Categoría: Declaraciones y trámites -->
+          <div>
+            <div style="font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);padding:8px 0 6px;border-bottom:1px solid var(--border);margin-bottom:6px;">📋 Declaraciones y trámites</div>
+            <div class="contador-faq-list" id="faq-tramites"></div>
+          </div>
+        </div>
+
+        <!-- Columna derecha: respuesta + campo libre -->
+        <div>
+          <!-- Respuesta activa -->
+          <div id="contador-respuesta" style="background:var(--surface);border:1px solid var(--border);border-left:4px solid var(--accent);padding:24px;margin-bottom:20px;min-height:200px;">
+            <div style="font-size:.78rem;color:var(--muted);text-align:center;padding:40px 0;">
+              Seleccioná una pregunta de la izquierda o escribí tu consulta abajo.
+            </div>
+          </div>
+
+          <!-- Campo libre -->
+          <div style="background:var(--surface);border:1px solid var(--border);padding:20px;">
+            <div style="font-size:.65rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;">Consulta libre</div>
+            <textarea id="contador-input" rows="3" placeholder="Ej: ¿Cuánto debería facturar para cubrir mis costos fijos este mes? ¿Me conviene recategorizar en el monotributo?" style="resize:vertical;margin-bottom:10px;"></textarea>
+            <button class="btn-primary" style="width:100%;" onclick="responderContador()">Analizar →</button>
+            <div style="font-size:.68rem;color:var(--muted2);margin-top:10px;line-height:1.5;">
+              Las respuestas se generan con los datos reales de tu empresa. Para decisiones importantes, consultá con un contador matriculado.
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
-  </main>
-</div>
+
 
 <!-- MOBILE -->
 <div class="mobile-overlay" id="mobile-overlay" onclick="closeMobileNav()"></div>
@@ -1365,9 +1454,9 @@
     const nombre=document.getElementById('c-nombre-cuenta').value.trim();
     if(!nombre){alert('Ingresá un nombre.');return;}
     const data={tipo:document.getElementById('c-tipo').value,nombre,saldoInicial:parseFloat(document.getElementById('c-saldo-inicial').value)||0,moneda:document.getElementById('c-moneda').value,notas:document.getElementById('c-notas-cuenta').value.trim()||null,updatedAt:Date.now()};
+    closeModal('cuenta');
     if(editingCuentaId){await update(ref(db,`empresas/${uid}/cuentas/${editingCuentaId}`),data);editingCuentaId=null;}
     else{data.createdAt=Date.now();await push(ref(db,`empresas/${uid}/cuentas`),data);}
-    closeModal('cuenta');
   };
 
   window.saveTransferencia=async function(){
@@ -1486,9 +1575,9 @@
     const nombre=document.getElementById('c-nombre').value.trim();
     if(!nombre){alert('Ingresá un nombre.');return;}
     const data={tipo:currentContactoType,nombre,cuit:document.getElementById('c-cuit').value.trim()||null,condicionIva:document.getElementById('c-iva').value,email:document.getElementById('c-email').value.trim()||null,telefono:document.getElementById('c-tel').value.trim()||null,notas:document.getElementById('c-notas').value.trim()||null,updatedAt:Date.now()};
+    closeModal('contacto'); // cerrar antes del await para respuesta inmediata
     if(editingContactoId){await update(ref(db,`empresas/${uid}/contactos/${editingContactoId}`),data);editingContactoId=null;}
     else{data.createdAt=Date.now();await push(ref(db,`empresas/${uid}/contactos`),data);}
-    closeModal('contacto');
   };
 
   // ══════════════════════════════════════════════════
@@ -1780,7 +1869,662 @@
   };
 
   // ══════════════════════════════════════════════════
-  // BÚSQUEDA GLOBAL
+  // CONTADOR IA
+  // ══════════════════════════════════════════════════
+
+  function getContextoFinanciero() {
+    const txArr = Object.entries(transactions).map(([id,t])=>({id,...t})).filter(t=>t.type!=='transferencia');
+    const now = new Date();
+    const mesActual = now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0');
+    const mesAnterior = new Date(now.getFullYear(),now.getMonth()-1,1);
+    const keyAnt = mesAnterior.getFullYear()+'-'+String(mesAnterior.getMonth()+1).padStart(2,'0');
+    const anio = now.getFullYear().toString();
+
+    const txMes  = txArr.filter(t=>t.date?.startsWith(mesActual));
+    const txAnt  = txArr.filter(t=>t.date?.startsWith(keyAnt));
+    const txAnio = txArr.filter(t=>t.date?.startsWith(anio));
+
+    const ing  = v => v.filter(t=>t.type==='income').reduce((s,t)=>s+t.amount,0);
+    const gas  = v => v.filter(t=>t.type==='expense').reduce((s,t)=>s+t.amount,0);
+    const ivaD = v => v.filter(t=>t.type==='income' &&t.ivaAlicuota).reduce((s,t)=>s+(t.amount*t.ivaAlicuota/100),0);
+    const ivaC = v => v.filter(t=>t.type==='expense'&&t.ivaAlicuota).reduce((s,t)=>s+(t.amount*t.ivaAlicuota/100),0);
+
+    // Costos fijos = categorías típicamente fijas
+    const CAT_FIJAS = ['Nómina / Sueldos','Alquiler','Servicios (luz, gas, internet)','Honorarios profesionales','Mantenimiento'];
+    const costosFijos = gas(txMes.filter(t=>CAT_FIJAS.includes(t.category)));
+    const costosVar   = gas(txMes) - costosFijos;
+
+    // Categorías de gastos del mes
+    const catGas = {};
+    txMes.filter(t=>t.type==='expense').forEach(t=>{catGas[t.category||'Otros']=(catGas[t.category||'Otros']||0)+t.amount;});
+    const topGasto = Object.entries(catGas).sort((a,b)=>b[1]-a[1])[0];
+
+    // Últimos 3 meses con datos para promedios
+    const ultMeses = [];
+    for(let i=1;i<=3;i++){const d=new Date(now.getFullYear(),now.getMonth()-i,1);ultMeses.push(d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0'));}
+    const avgIng3 = ultMeses.map(m=>ing(txArr.filter(t=>t.date?.startsWith(m)))).reduce((s,v)=>s+v,0)/3;
+    const avgGas3 = ultMeses.map(m=>gas(txArr.filter(t=>t.date?.startsWith(m)))).reduce((s,v)=>s+v,0)/3;
+
+    // Saldo total de cuentas
+    const saldoTotal = Object.keys(accounts).reduce((s,id)=>s+calcSaldoCuenta(id),0);
+
+    return {
+      mesActual, keyAnt, anio,
+      ingMes: ing(txMes), gasMes: gas(txMes), resMes: ing(txMes)-gas(txMes),
+      ingAnt: ing(txAnt), gasAnt: gas(txAnt), resAnt: ing(txAnt)-gas(txAnt),
+      ingAnio: ing(txAnio), gasAnio: gas(txAnio),
+      ivaDMes: ivaD(txMes), ivaCMes: ivaC(txMes),
+      ivaDAnio: ivaD(txAnio), ivaCAnio: ivaC(txAnio),
+      costosFijos, costosVar, topGasto,
+      avgIng3, avgGas3,
+      saldoTotal,
+      margenMes: ing(txMes)>0 ? (((ing(txMes)-gas(txMes))/ing(txMes))*100).toFixed(1) : null,
+      cantMovMes: txMes.length,
+      txArr, txMes, txAnio
+    };
+  }
+
+  const FAQS_CONTADOR = {
+    situacion: [
+      { q: '¿Cómo está mi negocio este mes?',           id: 'resumen_mes' },
+      { q: '¿Cuál es mi margen de ganancia actual?',    id: 'margen' },
+      { q: '¿Cuánto gané o perdí este año?',            id: 'resultado_anio' },
+      { q: '¿Cómo me fue vs el mes anterior?',          id: 'comparativa_mes' },
+      { q: '¿Cuánto tengo disponible en caja/banco?',   id: 'liquidez' },
+      { q: '¿En qué estoy gastando más?',               id: 'top_gastos' },
+    ],
+    impuestos: [
+      { q: '¿Cuánto IVA debo pagar este mes?',          id: 'iva_mes' },
+      { q: '¿Cómo está mi posición de IVA en el año?',  id: 'iva_anio' },
+      { q: '¿Qué es el IVA débito y crédito?',          id: 'iva_concepto' },
+      { q: '¿Qué impuestos debo declarar como PyME?',   id: 'impuestos_pyme' },
+      { q: '¿Qué es el Impuesto a las Ganancias?',      id: 'ganancias' },
+      { q: '¿Qué son los Ingresos Brutos?',             id: 'iibb' },
+    ],
+    flujo: [
+      { q: '¿Cuánto tiempo me duran los fondos actuales?', id: 'runway' },
+      { q: '¿Cuándo me quedo sin liquidez?',             id: 'punto_quiebre' },
+      { q: '¿Cuánto debería facturar para cubrir costos?', id: 'punto_equilibrio' },
+      { q: '¿Mis gastos fijos son sostenibles?',         id: 'gastos_fijos' },
+      { q: '¿Tengo un buen flujo de caja?',              id: 'flujo_analisis' },
+    ],
+    rentabilidad: [
+      { q: '¿Qué categoría de gasto puedo reducir?',    id: 'reducir_gastos' },
+      { q: '¿Cuánto debería ahorrar por mes?',          id: 'ahorro_recomendado' },
+      { q: '¿Mi negocio es rentable?',                   id: 'rentabilidad' },
+      { q: '¿Cómo mejorar mi margen de ganancia?',      id: 'mejorar_margen' },
+      { q: '¿Qué % de mis ingresos van a gastos fijos?', id: 'pct_fijos' },
+    ],
+    regimen: [
+      { q: '¿Soy monotributista o RI?',                  id: 'mi_regimen' },
+      { q: '¿Debo recategorizarme en el monotributo?',   id: 'recategorizacion' },
+      { q: '¿Cuándo conviene pasarme a Resp. Inscripto?',id: 'cuando_ri' },
+      { q: '¿Qué pago como Responsable Inscripto?',      id: 'obligaciones_ri' },
+      { q: '¿Qué pago como Monotributista?',             id: 'obligaciones_mono' },
+      { q: '¿Qué pasa si excedo la categoría del monotributo?', id: 'exceso_mono' },
+    ],
+    vencimientos: [
+      { q: '¿Cuándo vencen mis obligaciones AFIP?',      id: 'vencimientos_afip' },
+      { q: '¿Cuándo vence el monotributo?',              id: 'vence_mono' },
+      { q: '¿Cuándo vence la declaración de IVA (RI)?',  id: 'vence_iva' },
+      { q: '¿Cuándo vence Ganancias?',                   id: 'vence_ganancias' },
+      { q: '¿Qué pasa si no pago a tiempo?',             id: 'mora_afip' },
+    ],
+    tramites: [
+      { q: '¿Cómo cargo el monotributo en ARCA?',        id: 'como_mono_arca' },
+      { q: '¿Cómo hago una declaración de IVA en ARCA?', id: 'como_iva_arca' },
+      { q: '¿Cómo me inscribo en AFIP?',                 id: 'inscripcion_afip' },
+      { q: '¿Cómo emito facturas electrónicas?',         id: 'factura_electronica' },
+      { q: '¿Qué es el Formulario 572?',                 id: 'f572' },
+      { q: '¿Cómo funciona el plan de pagos en AFIP?',   id: 'plan_pagos' },
+    ],
+  };
+
+  function respuestaContador(id) {
+    const ctx = getContextoFinanciero();
+    const f = fmt;
+    const mesLabel = getMonthLabel(ctx.mesActual);
+    const mesAntLabel = getMonthLabel(ctx.keyAnt);
+
+    const R = {
+      resumen_mes: () => {
+        const estado = ctx.resMes >= 0 ? '✅ positivo' : '⚠️ negativo';
+        return { title: `Resumen de ${mesLabel}`,
+          body: `Tu negocio tuvo un resultado <strong>${estado}</strong> este mes.
+            <span class="resp-num ${ctx.resMes<0?'neg':''}">${f(ctx.resMes)}</span>
+            <strong>Ingresos:</strong> ${f(ctx.ingMes)} · <strong>Gastos:</strong> ${f(ctx.gasMes)}<br><br>
+            ${ctx.margenMes !== null ? `Tu margen neto es del <strong>${ctx.margenMes}%</strong>. ` : ''}
+            ${ctx.topGasto ? `El mayor gasto del mes fue <strong>${ctx.topGasto[0]}</strong> con ${f(ctx.topGasto[1])}.` : ''}
+            ${ctx.resMes < 0 ? '<div class="resp-alert">⚠️ Tus gastos superan tus ingresos este mes. Revisá las categorías de mayor impacto y evaluá si podés diferir o reducir algún costo.</div>' : '<div class="resp-ok">✅ Estás en resultado positivo. Buen momento para constituir una reserva de liquidez.</div>'}`,
+          disclaimer: true };
+      },
+      margen: () => ({
+        title: 'Margen de ganancia',
+        body: ctx.ingMes > 0
+          ? `Tu margen neto de ${mesLabel} es:
+            <span class="resp-num ${parseFloat(ctx.margenMes)<0?'neg':parseFloat(ctx.margenMes)<20?'warn':''}">${ctx.margenMes}%</span>
+            <strong>Referencia orientativa:</strong>
+            <ul><li>Menor a 10% → margen muy ajustado, riesgo alto</li><li>10%–25% → margen moderado, viable</li><li>25%–40% → margen saludable</li><li>Mayor a 40% → margen excelente para PyME</li></ul>
+            ${parseFloat(ctx.margenMes) < 15 ? '<div class="resp-alert">⚠️ Tu margen es bajo. Analizá si podés aumentar precios o reducir costos variables.</div>' : '<div class="resp-ok">✅ Tu margen está en un rango saludable.</div>'}`
+          : 'No hay ingresos registrados este mes para calcular el margen.',
+        disclaimer: true
+      }),
+      resultado_anio: () => {
+        const res = ctx.ingAnio - ctx.gasAnio;
+        return { title: `Resultado del año ${ctx.anio}`,
+          body: `<strong>Ingresos totales ${ctx.anio}:</strong> ${f(ctx.ingAnio)}<br>
+            <strong>Gastos totales ${ctx.anio}:</strong> ${f(ctx.gasAnio)}<br>
+            <strong>Resultado neto:</strong>
+            <span class="resp-num ${res<0?'neg':''}">${f(res)}</span>
+            ${res < 0 ? '<div class="resp-alert">⚠️ El año está en resultado negativo. Si esta tendencia continúa, revisá tu estructura de costos con un contador.</div>' : '<div class="resp-ok">✅ El año cierra en positivo.</div>'}`,
+          disclaimer: true };
+      },
+      comparativa_mes: () => {
+        const diffIng = ctx.ingMes - ctx.ingAnt;
+        const diffGas = ctx.gasMes - ctx.gasAnt;
+        const diffRes = ctx.resMes - ctx.resAnt;
+        return { title: `${mesLabel} vs ${mesAntLabel}`,
+          body: `<strong>Ingresos:</strong> ${f(ctx.ingMes)} ${diffIng>=0?'▲ +':'▼ '}${f(Math.abs(diffIng))} vs mes anterior<br>
+            <strong>Gastos:</strong> ${f(ctx.gasMes)} ${diffGas>=0?'▲ +':'▼ '}${f(Math.abs(diffGas))} vs mes anterior<br>
+            <strong>Resultado:</strong> ${f(ctx.resMes)} ${diffRes>=0?'▲ mejor':'▼ peor'} que ${mesAntLabel}
+            ${diffIng < 0 && diffGas > 0 ? '<div class="resp-alert">⚠️ Los ingresos bajaron y los gastos subieron. Tendencia negativa, revisá con urgencia.</div>' : diffIng > 0 ? '<div class="resp-ok">✅ Los ingresos crecieron respecto al mes anterior.</div>' : ''}`,
+          disclaimer: true };
+      },
+      liquidez: () => ({
+        title: 'Disponible en caja y cuentas',
+        body: Object.keys(accounts).length
+          ? `Saldo consolidado de tus cuentas:
+            <span class="resp-num ${ctx.saldoTotal<0?'neg':''}">${f(ctx.saldoTotal)}</span>
+            ${Object.entries(accounts).map(([id,a])=>`<strong>${a.nombre}:</strong> ${f(calcSaldoCuenta(id))} (${a.moneda||'ARS'})`).join('<br>')}
+            ${ctx.saldoTotal < ctx.costosFijos ? '<div class="resp-alert">⚠️ Tu saldo total es menor a tus costos fijos mensuales. Riesgo de iliquidez en el corto plazo.</div>' : '<div class="resp-ok">✅ Tu saldo cubre los costos fijos del mes.</div>'}`
+          : 'No tenés cuentas registradas. Agregá tus cuentas en el módulo Cuentas para ver tu posición de liquidez.',
+        disclaimer: true
+      }),
+      top_gastos: () => {
+        const catGas = {};
+        ctx.txMes.filter(t=>t.type==='expense').forEach(t=>{catGas[t.category||'Otros']=(catGas[t.category||'Otros']||0)+t.amount;});
+        const sorted = Object.entries(catGas).sort((a,b)=>b[1]-a[1]);
+        return { title: `Dónde gastás más — ${mesLabel}`,
+          body: sorted.length
+            ? sorted.map(([cat,val],i)=>`<strong>${i+1}. ${cat}:</strong> ${f(val)} (${ctx.gasMes>0?((val/ctx.gasMes)*100).toFixed(1):0}%)`).join('<br>')
+            : 'Sin gastos registrados este mes.',
+          disclaimer: false };
+      },
+      iva_mes: () => {
+        const saldoIVA = ctx.ivaDMes - ctx.ivaCMes;
+        return { title: `Posición IVA — ${mesLabel}`,
+          body: `<strong>IVA Débito</strong> (de tus ventas): ${f(ctx.ivaDMes)}<br>
+            <strong>IVA Crédito</strong> (de tus compras): ${f(ctx.ivaCMes)}<br>
+            <strong>Saldo a ${saldoIVA>=0?'pagar a AFIP':'favor tuyo'}:</strong>
+            <span class="resp-num ${saldoIVA<0?'':''}" style="${saldoIVA>=0?'color:var(--accent2)':'color:var(--green)'}">${f(Math.abs(saldoIVA))}</span>
+            ${saldoIVA > 0 ? `<div class="resp-alert">🧾 Tenés ${f(saldoIVA)} a pagar a AFIP por IVA. Recordá declarar antes del vencimiento (día 18–22 del mes siguiente, según CUIT).</div>` : `<div class="resp-ok">✅ Tu IVA crédito supera al débito. Tenés saldo a favor de ${f(Math.abs(saldoIVA))} que podés imputar al próximo período.</div>`}
+            <br><em>Nota: estos montos surgen de los movimientos cargados con IVA en la app. No incluye ajustes manuales ni retenciones.</em>`,
+          disclaimer: true };
+      },
+      iva_anio: () => {
+        const saldo = ctx.ivaDAnio - ctx.ivaCAnio;
+        return { title: `Posición IVA — Año ${ctx.anio}`,
+          body: `<strong>IVA Débito acumulado ${ctx.anio}:</strong> ${f(ctx.ivaDAnio)}<br>
+            <strong>IVA Crédito acumulado ${ctx.anio}:</strong> ${f(ctx.ivaCAnio)}<br>
+            <strong>Saldo neto del año:</strong>
+            <span class="resp-num" style="${saldo>=0?'color:var(--accent2)':'color:var(--green)'}">${f(Math.abs(saldo))} ${saldo>=0?'a pagar':'a favor'}</span>
+            Promedio mensual de IVA débito: <strong>${f(ctx.ivaDAnio/12)}</strong>`,
+          disclaimer: true };
+      },
+      iva_concepto: () => ({
+        title: '¿Qué es el IVA débito y crédito?',
+        body: `El <strong>IVA Débito Fiscal</strong> es el IVA que cobrás a tus clientes en cada venta o servicio gravado. Lo recaudás en nombre de AFIP.<br><br>
+          El <strong>IVA Crédito Fiscal</strong> es el IVA que te cobran a vos tus proveedores en las compras vinculadas a tu actividad. Lo podés descontar del débito.<br><br>
+          <strong>La diferencia (Débito − Crédito)</strong> es lo que efectivamente pagás a AFIP. Si el crédito supera al débito, tenés un saldo a favor que se acumula para el mes siguiente.<br><br>
+          <strong>Alícuotas vigentes en Argentina:</strong>
+          <ul><li><strong>21%</strong> — tasa general (la mayoría de bienes y servicios)</li><li><strong>10,5%</strong> — tasa reducida (medicamentos, libros, algunos alimentos, construcción, etc.)</li><li><strong>27%</strong> — servicios públicos (luz, gas, telecomunicaciones) cuando el receptor es RI</li><li><strong>Exento / No gravado</strong> — exportaciones, algunos servicios de salud, educación</li></ul>`,
+        disclaimer: false
+      }),
+      impuestos_pyme: () => ({
+        title: '¿Qué impuestos declara una PyME argentina?',
+        body: `Depende del régimen:<br><br>
+          <strong>Monotributista:</strong>
+          <ul><li>Cuota mensual de monotributo (incluye impuesto + obra social + jubilación)</li><li>No declara IVA ni Ganancias por separado</li><li>Ingresos Brutos provincial (si corresponde según actividad)</li></ul>
+          <strong>Responsable Inscripto:</strong>
+          <ul><li><strong>IVA:</strong> declaración mensual (F2002), vence días 18-22 según CUIT</li><li><strong>Ganancias:</strong> anticipos mensuales + DDJJ anual (vence según CUIT, abril-junio)</li><li><strong>Ingresos Brutos:</strong> mensual o bimestral según provincia</li><li><strong>Bienes Personales:</strong> si el patrimonio supera el mínimo no imponible</li><li><strong>Contribuciones patronales</strong> si tenés empleados</li></ul>
+          <div class="resp-alert">📋 Importante: las fechas de vencimiento varían según el último dígito de tu CUIT. Consultá el calendario impositivo de ARCA (antes AFIP).</div>`,
+        disclaimer: true
+      }),
+      ganancias: () => ({
+        title: '¿Qué es el Impuesto a las Ganancias?',
+        body: `Grava la renta (ganancia) de personas y empresas. Para una PyME:<br><br>
+          <strong>Personas físicas (autónomos / RI):</strong> tributan sobre la utilidad neta del año (ingresos menos gastos deducibles). La tasa es progresiva, del 5% al 35% según el tramo de ganancia neta.<br><br>
+          <strong>Sociedades (SRL, SA, SAS):</strong> alícuota del 25% o 35% sobre la utilidad neta, dependiendo de si distribuyen dividendos.<br><br>
+          <strong>Mínimo no imponible y cargas de familia</strong> reducen la base imponible. Es fundamental llevar un registro correcto de todos los gastos deducibles.<br><br>
+          <strong>Anticipos:</strong> durante el año pagás anticipos mensuales calculados sobre el impuesto del año anterior. Se ajustan en la declaración anual.<br><br>
+          <div class="resp-alert">📋 Gastos típicamente deducibles: honorarios, alquileres del local, servicios, seguros, amortizaciones, sueldos. Tu contador define qué aplica a tu caso específico.</div>`,
+        disclaimer: true
+      }),
+      iibb: () => ({
+        title: '¿Qué son los Ingresos Brutos?',
+        body: `Es un impuesto provincial (cada provincia tiene su propio régimen) que grava el ejercicio habitual de una actividad económica con fines de lucro.<br><br>
+          <strong>Lo pagás sobre el total de tus ingresos brutos</strong> (sin restar gastos), de ahí el nombre. La alícuota varía según:<br>
+          <ul><li>La provincia donde ejercés la actividad</li><li>El tipo de actividad (comercio, servicios, industria)</li><li>Tu nivel de facturación</li></ul>
+          <strong>Régimen Simplificado:</strong> para pequeños contribuyentes, cuota fija mensual. <br>
+          <strong>Régimen General:</strong> declaración mensual sobre los ingresos reales.<br><br>
+          <strong>Convenio Multilateral:</strong> si operás en más de una provincia, tus ingresos se distribuyen entre ellas según coeficientes de ventas y gastos.<br><br>
+          <div class="resp-alert">📋 CABA tiene AGIP, Buenos Aires tiene ARBA. Cada organismo tiene su propio sistema de pagos y calendario.</div>`,
+        disclaimer: true
+      }),
+      runway: () => {
+        const avgGas = ctx.avgGas3 || ctx.gasMes;
+        const meses = avgGas > 0 ? (ctx.saldoTotal / avgGas).toFixed(1) : null;
+        return { title: '¿Cuánto tiempo duran mis fondos?',
+          body: Object.keys(accounts).length
+            ? `Con tu saldo actual de <strong>${f(ctx.saldoTotal)}</strong> y un gasto promedio mensual de <strong>${f(avgGas)}</strong> (promedio últimos 3 meses):
+              <span class="resp-num ${parseFloat(meses)<2?'neg':parseFloat(meses)<4?'warn':''}">${meses ? meses+' meses' : '—'}</span>
+              ${parseFloat(meses) < 2 ? '<div class="resp-alert">🚨 Tenés menos de 2 meses de runway. Priorizá la cobranza y evaluá opciones de financiamiento.</div>' : parseFloat(meses) < 4 ? '<div class="resp-alert">⚠️ Tu runway es ajustado. Mantené el foco en la cobranza y no te comprometás con gastos nuevos.</div>' : '<div class="resp-ok">✅ Tu runway es saludable. Considerá invertir el excedente en activos productivos.</div>'}`
+            : 'Registrá tus cuentas en el módulo Cuentas para calcular tu runway.',
+          disclaimer: true };
+      },
+      punto_quiebre: () => {
+        const avgGas = ctx.avgGas3 || ctx.gasMes;
+        const avgIng = ctx.avgIng3 || ctx.ingMes;
+        const flujoProm = avgIng - avgGas;
+        return { title: '¿Cuándo me quedo sin liquidez?',
+          body: ctx.saldoTotal > 0 && flujoProm < 0
+            ? `Con tu flujo mensual promedio de <strong>${f(flujoProm)}</strong> (negativo) y saldo de <strong>${f(ctx.saldoTotal)}</strong>, en aproximadamente:
+              <span class="resp-num neg">${Math.abs(ctx.saldoTotal/flujoProm).toFixed(1)} meses</span>
+              agotarías tu liquidez si la tendencia continúa.<div class="resp-alert">🚨 Tu flujo promedio es negativo. Necesitás aumentar ingresos o reducir gastos urgentemente.</div>`
+            : flujoProm >= 0
+            ? `<div class="resp-ok">✅ Tu flujo promedio mensual es positivo (${f(flujoProm)}). No hay riesgo de quiebre de liquidez con la tendencia actual.</div>`
+            : 'Necesitás más datos de meses anteriores para calcular esta proyección.',
+          disclaimer: true };
+      },
+      punto_equilibrio: () => {
+        const costosFijosAnuales = ctx.costosFijos;
+        const pctVar = ctx.ingMes > 0 ? ctx.costosVar / ctx.ingMes : 0.3;
+        const puntoeq = costosFijosAnuales / (1 - pctVar);
+        return { title: '¿Cuánto debo facturar para cubrir costos?',
+          body: `<strong>Costos fijos del mes:</strong> ${f(ctx.costosFijos)}<br>
+            <strong>Costos variables estimados:</strong> ${f(ctx.costosVar)} (${(pctVar*100).toFixed(1)}% de los ingresos)<br><br>
+            Para cubrir todos tus costos necesitás facturar al menos:
+            <span class="resp-num">${f(puntoeq)}</span>
+            por mes. Tu facturación actual es <strong>${f(ctx.ingMes)}</strong> — ${ctx.ingMes >= puntoeq ? '✅ superás el punto de equilibrio.' : '⚠️ estás por debajo del punto de equilibrio.'}
+            ${ctx.ingMes < puntoeq ? `<div class="resp-alert">Necesitás facturar <strong>${f(puntoeq - ctx.ingMes)} más</strong> para cubrir todos tus costos.</div>` : ''}`,
+          disclaimer: true };
+      },
+      gastos_fijos: () => {
+        const pctFijos = ctx.gasMes > 0 ? (ctx.costosFijos/ctx.gasMes*100).toFixed(1) : 0;
+        const mesesCubiertos = ctx.ingMes > 0 ? (ctx.ingMes/ctx.costosFijos).toFixed(1) : 0;
+        return { title: '¿Mis costos fijos son sostenibles?',
+          body: `<strong>Costos fijos del mes:</strong> ${f(ctx.costosFijos)} (${pctFijos}% de tus gastos totales)<br>
+            Tus ingresos cubren <strong>${mesesCubiertos}x</strong> los costos fijos.<br><br>
+            <strong>Referencia:</strong>
+            <ul><li>Menos de 1x → tus ingresos no cubren los fijos (riesgo crítico)</li><li>1x–1.5x → muy ajustado, sin margen de error</li><li>1.5x–2.5x → saludable para una PyME</li><li>Más de 2.5x → excelente cobertura</li></ul>
+            ${parseFloat(mesesCubiertos) < 1.5 ? '<div class="resp-alert">⚠️ Tu cobertura de costos fijos es baja. Considerá renegociar contratos o diversificar ingresos.</div>' : '<div class="resp-ok">✅ Tus costos fijos están bien cubiertos por los ingresos.</div>'}`,
+          disclaimer: true };
+      },
+      flujo_analisis: () => ({
+        title: 'Análisis de flujo de caja',
+        body: `<strong>Mes actual:</strong><br>
+          Ingresos: ${f(ctx.ingMes)} · Gastos: ${f(ctx.gasMes)} · Flujo: ${f(ctx.resMes)}<br><br>
+          <strong>Promedio últimos 3 meses:</strong><br>
+          Ingresos prom.: ${f(ctx.avgIng3)} · Gastos prom.: ${f(ctx.avgGas3)} · Flujo prom.: ${f(ctx.avgIng3-ctx.avgGas3)}<br><br>
+          <strong>Recomendaciones generales:</strong>
+          <ul><li>Mantené siempre un colchón de 2–3 meses de gastos fijos en liquidez</li><li>Cobrá antes de pagar: intentá acortar el plazo de cobranza a clientes</li><li>Negociá plazos de pago con proveedores: 30–60 días te da oxígeno</li><li>Facturá puntualmente: una factura emitida tarde es un flujo que se pierde</li></ul>`,
+        disclaimer: true
+      }),
+      reducir_gastos: () => {
+        const catGas = {};
+        ctx.txMes.filter(t=>t.type==='expense').forEach(t=>{catGas[t.category||'Otros']=(catGas[t.category||'Otros']||0)+t.amount;});
+        const sorted = Object.entries(catGas).sort((a,b)=>b[1]-a[1]);
+        const CAT_VAR = ['Marketing y publicidad','Logística y flete','Materias primas','Mantenimiento','Otros gastos'];
+        const reducibles = sorted.filter(([cat])=>CAT_VAR.includes(cat));
+        return { title: '¿Qué categoría de gasto podés reducir?',
+          body: reducibles.length
+            ? `Los gastos con mayor potencial de reducción (variables) son:<br><br>
+              ${reducibles.map(([cat,val])=>`<strong>${cat}:</strong> ${f(val)} · Reducir un 20% ahorraría <strong>${f(val*0.2)}/mes</strong>`).join('<br>')}<br><br>
+              <strong>Estrategias concretas:</strong>
+              <ul><li>Marketing: revisá el ROI de cada canal, pausá los que no convierten</li><li>Logística: negociá tarifas con transportistas o buscá alternativas</li><li>Proveedores: pedí descuento por pago al contado o volumen</li></ul>`
+            : 'No hay suficientes datos de gastos variables este mes para identificar oportunidades de reducción.',
+          disclaimer: true };
+      },
+      ahorro_recomendado: () => {
+        const ahorro20 = ctx.ingMes * 0.20;
+        const ahorro10 = ctx.ingMes * 0.10;
+        return { title: '¿Cuánto debería ahorrar por mes?',
+          body: `La regla general para PyMEs es destinar entre el <strong>10% y 20%</strong> de los ingresos a reservas.<br><br>
+            Sobre tus ingresos de ${f(ctx.ingMes)}:
+            <ul><li><strong>Reserva mínima (10%):</strong> ${f(ahorro10)}</li><li><strong>Reserva óptima (20%):</strong> ${f(ahorro20)}</li></ul>
+            <strong>¿Para qué sirve la reserva?</strong>
+            <ul><li>Cubrir meses de bajos ingresos (estacionalidad)</li><li>Pagar vencimientos impositivos sin descapitalizarte</li><li>Invertir en crecimiento cuando aparezca la oportunidad</li><li>Fondo de emergencia ante imprevistos</li></ul>
+            ${ctx.resMes < ahorro10 ? '<div class="resp-alert">⚠️ Tu resultado actual no alcanza ni la reserva mínima recomendada. Priorizá reducir gastos antes de planear ahorros.</div>' : '<div class="resp-ok">✅ Tenés margen para constituir reservas. ¡Hacelo automáticamente al cobrar!</div>'}`,
+          disclaimer: true };
+      },
+      rentabilidad: () => {
+        const margen = parseFloat(ctx.margenMes);
+        const nivel = margen < 0 ? 'en pérdida' : margen < 10 ? 'barely rentable' : margen < 25 ? 'moderadamente rentable' : 'muy rentable';
+        return { title: '¿Mi negocio es rentable?',
+          body: `Basado en el mes actual, tu negocio está <strong>${nivel}</strong>.<br><br>
+            <strong>Resultado neto:</strong> ${f(ctx.resMes)}<br>
+            <strong>Margen neto:</strong>
+            <span class="resp-num ${margen<0?'neg':margen<15?'warn':''}">${ctx.margenMes !== null ? ctx.margenMes+'%' : 'N/D'}</span>
+            <strong>Rentabilidad a largo plazo:</strong> un solo mes no define si el negocio es rentable. Lo ideal es analizar el promedio de 6–12 meses para filtrar la estacionalidad.<br><br>
+            <div class="${margen >= 15 ? 'resp-ok' : 'resp-alert'}">${margen >= 15 ? '✅ Tu margen actual es saludable. Mantené el control de costos para sostenerlo.' : '⚠️ Tu margen es bajo o negativo. Revisá precios, estructura de costos y mix de productos/servicios.'}</div>`,
+          disclaimer: true };
+      },
+      mejorar_margen: () => ({
+        title: '¿Cómo mejorar mi margen de ganancia?',
+        body: `Hay dos palancas para mejorar el margen: <strong>subir ingresos</strong> o <strong>bajar costos</strong>. Lo más efectivo es trabajar ambas simultáneamente.<br><br>
+          <strong>Para aumentar ingresos:</strong>
+          <ul><li>Revisá tus precios: ¿los actualizaste por inflación? Una suba del 10% en precios puede duplicar el margen</li><li>Focalizate en los productos/servicios más rentables</li><li>Reducí el tiempo de cobranza para mejorar el flujo</li><li>Buscá ingresos recurrentes (suscripciones, contratos anuales)</li></ul>
+          <strong>Para reducir costos:</strong>
+          <ul><li>Renegociá con proveedores (precio, plazo, volumen)</li><li>Eliminá gastos que no generan retorno directo</li><li>Automatizá procesos para reducir tiempo y mano de obra</li><li>Comprá en volumen cuando el flujo lo permita</li></ul>`,
+        disclaimer: true
+      }),
+      pct_fijos: () => {
+        const pct = ctx.ingMes > 0 ? (ctx.costosFijos/ctx.ingMes*100).toFixed(1) : null;
+        return { title: '¿Qué % de mis ingresos van a costos fijos?',
+          body: pct !== null
+            ? `Tus costos fijos (${f(ctx.costosFijos)}) representan el <strong>${pct}%</strong> de tus ingresos del mes (${f(ctx.ingMes)}).
+              <span class="resp-num ${parseFloat(pct)>70?'neg':parseFloat(pct)>50?'warn':''}">${pct}%</span>
+              <strong>Referencia:</strong>
+              <ul><li>Menos de 40% → estructura liviana, flexible</li><li>40%–60% → normal para PyME de servicios</li><li>60%–80% → estructura pesada, poco margen de maniobra</li><li>Más de 80% → riesgo alto ante caída de ingresos</li></ul>`
+            : 'Sin ingresos registrados este mes.',
+          disclaimer: true };
+      },
+      mi_regimen: () => ({
+        title: '¿Cómo sé si soy monotributista o RI?',
+        body: `Tu régimen lo elegís al inscribirte en AFIP, pero tiene reglas automáticas:<br><br>
+          <strong>Podés ser Monotributista si:</strong>
+          <ul><li>Tus ingresos brutos anuales no superan el tope de la categoría más alta del monotributo (se actualiza periódicamente — verificá en ARCA)</li><li>No tenés más de 3 sucursales/locales</li><li>No empleás más de la cantidad máxima de dependientes según categoría</li></ul>
+          <strong>Debés ser Responsable Inscripto si:</strong>
+          <ul><li>Superaste el tope del monotributo</li><li>Sos una sociedad comercial (SRL, SA, SAS)</li><li>Elegís serlo voluntariamente (puede convenir en algunas actividades)</li></ul>
+          <div class="resp-alert">📋 La situación de cada contribuyente es individual. Consultá con un contador para confirmar tu régimen óptimo.</div>`,
+        disclaimer: true
+      }),
+      recategorizacion: () => {
+        const ingAnual = ctx.ingAnio;
+        return { title: '¿Debo recategorizarme en el monotributo?',
+          body: `La recategorización del monotributo se realiza <strong>dos veces al año</strong>: en enero (por el período julio–diciembre del año anterior) y en julio (por enero–junio del año en curso).<br><br>
+            <strong>Tus ingresos del año ${ctx.anio}:</strong> ${f(ingAnual)}<br><br>
+            Para determinar si debés recategorizarte, compará tus ingresos acumulados en el semestre con los topes de cada categoría vigentes en ARCA.<br><br>
+            <strong>¿Qué pasa si no me recategorizo?</strong>
+            <ul><li>AFIP puede excluirte del monotributo de oficio</li><li>Podés recibir una deuda por la diferencia</li><li>Puede generarte intereses y multas</li></ul>
+            <div class="resp-alert">📅 Verificá los topes actualizados en arca.gob.ar ya que se actualizan periódicamente por inflación.</div>`,
+          disclaimer: true };
+      },
+      cuando_ri: () => ({
+        title: '¿Cuándo conviene pasarme a Responsable Inscripto?',
+        body: `Conviene evaluar el pasaje a RI cuando:<br><br>
+          <strong>Por necesidad (obligatorio):</strong>
+          <ul><li>Superás el tope máximo del monotributo</li><li>Constituís una sociedad</li></ul>
+          <strong>Por conveniencia (puede convenir):</strong>
+          <ul><li>Vendés principalmente a otras empresas RI que necesitan factura A para computar crédito fiscal</li><li>Tenés muchos gastos con IVA (crédito fiscal alto que genera saldo a favor)</li><li>Tus clientes te exigen factura A</li></ul>
+          <strong>Cuándo NO conviene:</strong>
+          <ul><li>Vendés principalmente a consumidores finales (no pueden usar el crédito fiscal)</li><li>Tus gastos son bajos (poco crédito fiscal que recuperar)</li><li>Preferís la simplicidad del monotributo</li></ul>
+          <div class="resp-alert">📋 El análisis costo-beneficio es muy personal. Un contador puede calcular el impacto exacto para tu situación.</div>`,
+        disclaimer: true
+      }),
+      obligaciones_ri: () => ({
+        title: '¿Qué pago como Responsable Inscripto?',
+        body: `<strong>Mensualmente:</strong>
+          <ul><li><strong>IVA:</strong> declaración F2002 + pago (débito menos crédito). Vence días 18–22 según último dígito CUIT</li><li><strong>Anticipos de Ganancias:</strong> 10 cuotas anuales (feb–nov). Monto = impuesto del año anterior / 10 × 0.8</li><li><strong>Ingresos Brutos:</strong> mensual o bimestral según provincia y régimen</li><li><strong>Contribuciones patronales</strong> si tenés empleados</li></ul>
+          <strong>Anualmente:</strong>
+          <ul><li><strong>Declaración Jurada de Ganancias:</strong> vence entre abril y junio según CUIT</li><li><strong>Bienes Personales:</strong> si el patrimonio supera el MNI</li></ul>
+          <div class="resp-alert">📅 Las fechas exactas varían según el último dígito de tu CUIT y el período. Consultá el calendario en arca.gob.ar</div>`,
+        disclaimer: true
+      }),
+      obligaciones_mono: () => ({
+        title: '¿Qué pago como Monotributista?',
+        body: `El monotributo es un régimen simplificado que unifica varios impuestos en una sola cuota mensual:<br><br>
+          <strong>La cuota incluye:</strong>
+          <ul><li><strong>Impuesto integrado</strong> (reemplaza IVA + Ganancias)</li><li><strong>Aporte jubilatorio</strong> (SIPA)</li><li><strong>Obra social</strong> (elegís la que querés)</li></ul>
+          <strong>Vencimiento:</strong> el día 20 de cada mes (o día hábil siguiente).<br><br>
+          <strong>Además, según tu actividad, podés tener:</strong>
+          <ul><li>Ingresos Brutos provincial</li><li>Aportes adicionales si tenés empleados (sos empleador aunque seas mono)</li></ul>
+          <strong>Categorías:</strong> A a K para servicios, A a H para venta de cosas muebles. La categoría depende de tus ingresos brutos anuales, superficie, energía eléctrica y alquileres.<br><br>
+          <div class="resp-ok">✅ Ventaja del mono: una sola cuota, sin declaraciones de IVA ni Ganancias mensuales.</div>`,
+        disclaimer: true
+      }),
+      exceso_mono: () => ({
+        title: '¿Qué pasa si excedo el monotributo?',
+        body: `Si tus ingresos superan el tope máximo del monotributo:<br><br>
+          <strong>Consecuencias automáticas:</strong>
+          <ul><li>Quedás excluido del régimen de pleno derecho</li><li>Debés inscribirte como Responsable Inscripto en IVA y Ganancias</li><li>La exclusión opera desde el momento en que superaste el tope</li></ul>
+          <strong>Qué hacer:</strong>
+          <ol><li>Inscribite en IVA y Ganancias en ARCA</li><li>Comenzá a emitir facturas A o B según corresponda</li><li>Presentá las declaraciones juradas correspondientes</li></ol>
+          <strong>Período de gracia:</strong> tenés hasta el último día del mes siguiente a la exclusión para inscribirte, pero la obligación retroactiva ya opera.<br><br>
+          <div class="resp-alert">🚨 No ignorar la exclusión: AFIP detecta el exceso en los sistemas y puede iniciar fiscalización. Consultá con un contador para regularizar.</div>`,
+        disclaimer: true
+      }),
+      vencimientos_afip: () => ({
+        title: 'Calendario de vencimientos AFIP / ARCA',
+        body: `<strong>Vencimientos según último dígito de CUIT:</strong><br><br>
+          <strong>Monotributo</strong> — día 20 de cada mes (igual para todos)<br><br>
+          <strong>IVA (RI) — mes vencido:</strong>
+          <ul><li>CUIT terminado en 0 o 1 → día 18</li><li>CUIT terminado en 2 o 3 → día 19</li><li>CUIT terminado en 4 o 5 → día 20</li><li>CUIT terminado en 6 o 7 → día 21</li><li>CUIT terminado en 8 o 9 → día 22</li></ul>
+          <strong>Anticipos de Ganancias</strong> — mismas fechas que IVA, febrero a noviembre<br><br>
+          <strong>Ingresos Brutos</strong> — varía por provincia, generalmente entre los días 10 y 20<br><br>
+          <div class="resp-alert">📅 Verificá siempre el calendario exacto en arca.gob.ar ya que puede haber postergaciones por feriados o disposiciones especiales.</div>`,
+        disclaimer: true
+      }),
+      vence_mono: () => ({
+        title: '¿Cuándo vence el monotributo?',
+        body: `El monotributo vence el <strong>día 20 de cada mes</strong>. Si el 20 cae sábado, domingo o feriado, el vencimiento se corre al día hábil siguiente.<br><br>
+          <strong>¿Cómo pagarlo?</strong>
+          <ul><li>Ingresá a <strong>arca.gob.ar</strong> con CUIT y clave fiscal</li><li>Módulo Monotributo → Pagar</li><li>Podés pagar con débito automático, Mercado Pago, PagoMisCuentas, o en bancos habilitados</li></ul>
+          <strong>¿Qué pasa si me atraso?</strong>
+          Se generan intereses resarcitorios (actualmente ~3% mensual) y podés quedar en estado "incumplimiento" lo que genera problemas para obtener constancias.<br><br>
+          <div class="resp-ok">💡 Tip: configurá el débito automático para no olvidarte nunca.</div>`,
+        disclaimer: false
+      }),
+      vence_iva: () => ({
+        title: '¿Cuándo vence la declaración de IVA?',
+        body: `La declaración de IVA (para Responsables Inscriptos) vence entre los días <strong>18 y 22 del mes siguiente</strong> al período declarado, según el último dígito de tu CUIT:<br><br>
+          <ul><li>0 o 1 → día 18</li><li>2 o 3 → día 19</li><li>4 o 5 → día 20</li><li>6 o 7 → día 21</li><li>8 o 9 → día 22</li></ul>
+          <strong>¿Cómo hacerlo?</strong>
+          <ol><li>Entrá a arca.gob.ar con clave fiscal</li><li>Módulo Presentación de DDJJ → IVA → Formulario 2002</li><li>Cargá el débito fiscal (ventas) y crédito fiscal (compras)</li><li>Pagá la diferencia si es positiva</li></ol>
+          <div class="resp-alert">📋 Necesitás el detalle de todas tus facturas emitidas y recibidas del mes. Tu módulo IVA en finHub Business tiene esa información.</div>`,
+        disclaimer: true
+      }),
+      vence_ganancias: () => ({
+        title: '¿Cuándo vence Ganancias?',
+        body: `<strong>DDJJ Anual:</strong> vence entre abril y junio del año siguiente, según el último dígito del CUIT.<br><br>
+          <strong>Anticipos mensuales (personas físicas RI):</strong> 10 cuotas, de febrero a noviembre. El monto es el 20% del impuesto determinado el año anterior, dividido en 10 cuotas. Mismas fechas que IVA según CUIT.<br><br>
+          <strong>Anticipos (sociedades):</strong> 10 anticipos del 25% sobre el impuesto del ejercicio anterior.<br><br>
+          <strong>¿Qué pasa si no tengo suficiente para pagar?</strong>
+          Podés pedir reducción de anticipos si estimás que tu ganancia del año será menor a la del año anterior. Se hace por ARCA con el F.931.<br><br>
+          <div class="resp-alert">📋 Los vencimientos exactos se publican en el calendario impositivo de ARCA cada año. Verificá siempre ahí.</div>`,
+        disclaimer: true
+      }),
+      mora_afip: () => ({
+        title: '¿Qué pasa si no pago a tiempo a AFIP?',
+        body: `<strong>Consecuencias inmediatas:</strong>
+          <ul><li>Intereses resarcitorios: actualmente la tasa que fija AFIP (~3–4% mensual)</li><li>Restricciones para obtener Certificado de No Retención</li><li>Problemas para tramitar habilitaciones y subsidios</li></ul>
+          <strong>Si la deuda escala:</strong>
+          <ul><li>AFIP puede iniciar un proceso de ejecución fiscal</li><li>Embargo de cuentas bancarias</li><li>Inhibición general de bienes</li></ul>
+          <strong>Opciones para regularizar:</strong>
+          <ul><li><strong>Pago espontáneo con intereses</strong>: lo más simple, pagás capital + intereses devengados</li><li><strong>Plan de facilidades de pago</strong>: ARCA ofrece planes de hasta 24–60 cuotas según el tipo de deuda</li><li><strong>Moratoria</strong>: si hay una moratoria vigente, permite regularizar con quita de intereses</li></ul>
+          <div class="resp-alert">📋 Nunca ignorar una deuda con AFIP: los intereses se acumulan rápidamente y la situación empeora con el tiempo.</div>`,
+        disclaimer: true
+      }),
+      como_mono_arca: () => ({
+        title: '¿Cómo pago el monotributo en ARCA?',
+        body: `<strong>Pasos para pagar el monotributo en ARCA (arca.gob.ar):</strong><br><br>
+          <ol><li>Ingresá a <strong>arca.gob.ar</strong></li><li>Accedé con CUIT y clave fiscal (nivel 3)</li><li>Menú principal → <strong>Monotributo</strong></li><li>Opción <strong>"Pagar"</strong> o <strong>"Mis obligaciones"</strong></li><li>Seleccioná el período a pagar</li><li>Elegí el medio de pago:<br>
+            • Débito automático<br>
+            • Mercado Pago<br>
+            • PagoMisCuentas (Interbanking)<br>
+            • Transferencia bancaria (CBU de AFIP)<br>
+            • Pago en banco habilitado (con VEP)</li></ol>
+          <strong>Para el débito automático</strong> (recomendado): activalo desde el mismo módulo. Se debita el día 20 automáticamente.<br><br>
+          <div class="resp-alert">💡 Si querés recategorizarte, usá el módulo "Recategorización" en la misma sección de Monotributo en ARCA. Solo podés hacerlo en enero y julio.</div>`,
+        disclaimer: false
+      }),
+      como_iva_arca: () => ({
+        title: '¿Cómo hago una declaración de IVA en ARCA?',
+        body: `<strong>Pasos para presentar el F.2002 (IVA) en ARCA:</strong><br><br>
+          <ol><li>Ingresá a <strong>arca.gob.ar</strong> con CUIT y clave fiscal nivel 3</li><li>Menú → <strong>"Presentación de DDJJ y Pagos"</strong></li><li>Seleccioná <strong>Formulario 2002 - IVA</strong></li><li>Elegí el período (mes que declarás)</li><li>Ingresá:<br>
+            • <strong>Débito fiscal:</strong> suma del IVA de todas tus facturas emitidas del mes<br>
+            • <strong>Crédito fiscal:</strong> IVA de las compras vinculadas a la actividad<br>
+            • Retenciones y percepciones sufridas (si corresponde)</li><li>El sistema calcula el saldo. Si es positivo, generá el VEP para pagar.</li><li>Pagá antes del vencimiento (día 18–22 según CUIT)</li></ol>
+          <strong>Tu módulo IVA en finHub Business</strong> te da el detalle de débito y crédito por alícuota que necesitás para completar esta declaración.<br><br>
+          <div class="resp-alert">📋 Necesitás tener al día el libro de IVA (compras y ventas). Exportá el Excel de tu módulo IVA para tener todo organizado.</div>`,
+        disclaimer: true
+      }),
+      inscripcion_afip: () => ({
+        title: '¿Cómo me inscribo en AFIP / ARCA?',
+        body: `<strong>Pasos para inscribirse por primera vez:</strong><br><br>
+          <ol><li>Obtené tu <strong>CUIT</strong>: si sos persona física, presentate en la AFIP más cercana con DNI. Para sociedades, tramitalo con el Estatuto Social.</li><li>Creá tu <strong>Clave Fiscal</strong> en arca.gob.ar → "Administrador de Relaciones" → alta de clave. Necesitás DNI con chip o ir personalmente.</li><li>Activá nivel 3 de clave fiscal para acceder a todos los servicios.</li><li>Ingresá al servicio <strong>"Sistema Registral"</strong> → inscripción en impuestos:<br>
+            • Monotributo: elegí la categoría según tus ingresos estimados<br>
+            • RI: alta en IVA (impuesto 030) y Ganancias (impuesto 011)</li><li>Activá el servicio de <strong>Facturación Electrónica</strong> para emitir facturas.</li></ol>
+          <div class="resp-alert">📋 Para constituir una sociedad (SRL, SA, SAS), primero registrala en el Registro Público de Comercio de tu provincia, luego inscribila en AFIP.</div>`,
+        disclaimer: true
+      }),
+      factura_electronica: () => ({
+        title: '¿Cómo emito facturas electrónicas?',
+        body: `<strong>Opciones para emitir facturas electrónicas en Argentina:</strong><br><br>
+          <strong>1. Portal de ARCA (gratuito)</strong>
+          <ul><li>Ingresá a arca.gob.ar → Comprobantes en línea</li><li>Completá los datos del comprobante y autorizá</li><li>Descargá el PDF con el CAE</li></ul>
+          <strong>2. Sistema de Facturación propio (con WebService)</strong>
+          <ul><li>Requiere certificado digital de AFIP</li><li>Se integra a tu sistema de gestión</li><li>Necesitás un desarrollador para la integración</li></ul>
+          <strong>3. Apps de facturación (Factura.com, QuickBilling, Alegra, etc.)</strong>
+          <ul><li>Interfaz amigable, algunas gratuitas hasta cierto volumen</li><li>Se conectan automáticamente a AFIP</li></ul>
+          <strong>Tipos de comprobante:</strong>
+          <ul><li><strong>Factura A:</strong> cuando ambos son RI</li><li><strong>Factura B:</strong> cuando vendés a consumidor final o mono</li><li><strong>Factura C:</strong> cuando emitís siendo monotributista</li></ul>`,
+        disclaimer: false
+      }),
+      f572: () => ({
+        title: '¿Qué es el Formulario 572?',
+        body: `El <strong>Formulario 572</strong> (F.572 Web o SIRADIG) es la declaración que presentan los empleados en relación de dependencia a su empleador para informar:<br><br>
+          <ul><li>Cargas de familia (cónyuge, hijos) que reducen la base imponible de Ganancias</li><li>Gastos deducibles (alquiler, cuota médica, seguros de vida, donaciones)</li><li>Otros ingresos del año (para el cálculo anual)</li></ul>
+          <strong>¿Quién lo usa?</strong> Empleados que trabajan en relación de dependencia y ganan por encima del MNI de Ganancias (4ª categoría).<br><br>
+          <strong>Como empleador:</strong> debés retener el impuesto calculado en base al F.572 que te presentó cada empleado, y depositarlo en AFIP mensualmente.<br><br>
+          <strong>¿Dónde se carga?</strong> En arca.gob.ar → SIRADIG (Sistema de Registro de Deducciones del Impuesto a las Ganancias).<br><br>
+          <div class="resp-alert">📋 Si tenés empleados, el módulo RRHH de finHub Business (próximamente) te ayudará a gestionar estas retenciones automáticamente.</div>`,
+        disclaimer: true
+      }),
+      plan_pagos: () => ({
+        title: '¿Cómo funciona el plan de pagos en AFIP?',
+        body: `ARCA ofrece planes de facilidades de pago para regularizar deudas impositivas:<br><br>
+          <strong>Plan General (Resolución vigente):</strong>
+          <ul><li>Requiere CUIT activo y clave fiscal</li><li>Podés incluir deudas vencidas e intereses</li><li>Cuotas: hasta 24 o 60 dependiendo del tipo de deuda y si sos PyME</li><li>Tasa: tasa pasiva del BCRA + un spread (verificar condición vigente)</li></ul>
+          <strong>¿Cómo acceder?</strong>
+          <ol><li>Ingresá a arca.gob.ar</li><li>Módulo "Mis Facilidades"</li><li>Seleccioná el plan que corresponda</li><li>El sistema calcula automáticamente la deuda consolidada</li><li>Aceptás las condiciones y generás el plan</li></ol>
+          <strong>Condición:</strong> para adherirte no debés tener planes de pago anteriores caducos por incumplimiento.<br><br>
+          <div class="resp-alert">📋 Si hay una moratoria vigente (suelen dictarse periódicamente) puede ser más conveniente que el plan general. Consultá con un contador.</div>`,
+        disclaimer: true
+      }),
+    };
+
+    const resp = R[id];
+    if (!resp) return { title: 'Sin respuesta', body: 'Pregunta no encontrada.', disclaimer: false };
+    return typeof resp === 'function' ? resp() : resp;
+  }
+
+  window.mostrarRespuesta = function(id, btnEl) {
+    // Marcar activo
+    document.querySelectorAll('.contador-faq-btn').forEach(b=>b.classList.remove('active'));
+    if (btnEl) btnEl.classList.add('active');
+    // Limpiar input libre
+    const input = document.getElementById('contador-input');
+    if (input) input.value = '';
+
+    const { title, body, disclaimer } = respuestaContador(id);
+    document.getElementById('contador-respuesta').innerHTML = `
+      <div class="resp-title">${title}</div>
+      <div class="resp-body">${body}</div>
+      ${disclaimer ? '<div class="resp-disclaimer">Esta información es orientativa y se basa en los datos cargados en tu empresa. No reemplaza el asesoramiento de un contador matriculado. Para decisiones importantes, consultá con un profesional.</div>' : ''}
+    `;
+    document.getElementById('main-content').scrollTop = 0;
+  }
+
+  window.responderContador = function() {
+    const q = document.getElementById('contador-input')?.value.trim().toLowerCase();
+    if (!q) return;
+    const ctx = getContextoFinanciero();
+    const f = fmt;
+
+    // Intentar matchear con keywords de las FAQs
+    const keywords = {
+      'iva': 'iva_mes', 'impuesto valor': 'iva_mes', 'cuanto iva': 'iva_mes',
+      'margen': 'margen', 'ganancia': 'margen', 'rentab': 'rentabilidad',
+      'resultado': 'resumen_mes', 'como me fue': 'resumen_mes', 'situación': 'resumen_mes',
+      'flujo': 'flujo_analisis', 'liquidez': 'liquidez', 'efectivo': 'liquidez',
+      'caja': 'liquidez', 'banco': 'liquidez', 'saldo': 'liquidez',
+      'vencim': 'vencimientos_afip', 'cuándo pago': 'vencimientos_afip', 'cuando vence': 'vence_mono',
+      'monotrib': 'obligaciones_mono', 'categoría mono': 'recategorizacion', 'recategor': 'recategorizacion',
+      'responsable inscript': 'cuando_ri', 'pasarme a ri': 'cuando_ri', 'ri o mono': 'cuando_ri',
+      'factur': 'factura_electronica', 'comprobante': 'factura_electronica',
+      'inscrib': 'inscripcion_afip', 'afip': 'vencimientos_afip', 'arca': 'como_mono_arca',
+      'ganancias': 'ganancias', 'ingresos brutos': 'iibb', 'iibb': 'iibb',
+      'costos fijos': 'gastos_fijos', 'punto equilibrio': 'punto_equilibrio', 'cubrir costos': 'punto_equilibrio',
+      'cuanto debo facturar': 'punto_equilibrio', 'ahorr': 'ahorro_recomendado',
+      'run': 'runway', 'cuánto tiempo': 'runway', 'alcanza': 'runway',
+      'gasto': 'top_gastos', 'categoria gasto': 'top_gastos', 'reducir': 'reducir_gastos',
+      'plan de pago': 'plan_pagos', 'deuda afip': 'mora_afip', 'mora': 'mora_afip',
+      'anual': 'resultado_anio', 'año': 'resultado_anio',
+      'comparar': 'comparativa_mes', 'vs mes': 'comparativa_mes', 'anterior': 'comparativa_mes',
+    };
+
+    let matchId = null;
+    for (const [kw, id] of Object.entries(keywords)) {
+      if (q.includes(kw)) { matchId = id; break; }
+    }
+
+    if (matchId) {
+      mostrarRespuesta(matchId, null);
+      return;
+    }
+
+    // Respuesta genérica con los números de la empresa
+    document.getElementById('contador-respuesta').innerHTML = `
+      <div class="resp-title">Resumen de tu empresa — ${getMonthLabel(ctx.mesActual)}</div>
+      <div class="resp-body">
+        No encontré una respuesta específica para tu consulta, pero acá está el resumen actual de tu empresa:<br><br>
+        <strong>Ingresos del mes:</strong> ${f(ctx.ingMes)}<br>
+        <strong>Gastos del mes:</strong> ${f(ctx.gasMes)}<br>
+        <strong>Resultado:</strong> ${f(ctx.resMes)}<br>
+        <strong>Margen:</strong> ${ctx.margenMes !== null ? ctx.margenMes+'%' : 'N/D'}<br>
+        <strong>IVA débito:</strong> ${f(ctx.ivaDMes)} · <strong>IVA crédito:</strong> ${f(ctx.ivaCMes)}<br>
+        <strong>Saldo en cuentas:</strong> ${f(ctx.saldoTotal)}<br><br>
+        Probá con preguntas más específicas como: "¿Cuánto IVA debo?", "¿Cuál es mi margen?", "¿Cuándo vence el monotributo?", "¿Soy rentable?".
+      </div>
+      <div class="resp-disclaimer">Esta información es orientativa. Para decisiones importantes, consultá con un contador matriculado.</div>
+    `;
+  };
+
+  window.renderContador = function() {
+    const CATS = {
+      situacion:    'faq-situacion',
+      impuestos:    'faq-impuestos',
+      flujo:        'faq-flujo',
+      rentabilidad: 'faq-rentabilidad',
+      regimen:      'faq-regimen',
+      vencimientos: 'faq-vencimientos',
+      tramites:     'faq-tramites',
+    };
+    Object.entries(CATS).forEach(([cat, elId]) => {
+      const el = document.getElementById(elId); if (!el) return;
+      el.innerHTML = FAQS_CONTADOR[cat].map(faq =>
+        `<button class="contador-faq-btn" onclick="mostrarRespuesta('${faq.id}',this)">${faq.q}</button>`
+      ).join('');
+    });
+
+    // Alertas automáticas basadas en los datos
+    const ctx = getContextoFinanciero();
+    const alertas = [];
+    if (ctx.resMes < 0) alertas.push({ tipo:'danger', msg:`⚠️ Resultado negativo en ${getMonthLabel(ctx.mesActual)}: ${fmt(ctx.resMes)}. Revisá tu estructura de costos.` });
+    if (ctx.ivaDMes > ctx.ivaCMes) alertas.push({ tipo:'warn', msg:`🧾 IVA a pagar este mes: ${fmt(ctx.ivaDMes - ctx.ivaCMes)}. Recordá declarar antes del vencimiento.` });
+    if (ctx.saldoTotal > 0 && ctx.avgGas3 > 0 && ctx.saldoTotal / ctx.avgGas3 < 2) alertas.push({ tipo:'danger', msg:`💧 Tu runway es de ${(ctx.saldoTotal/ctx.avgGas3).toFixed(1)} meses. Menos de 2 meses de liquidez disponible.` });
+    if (parseFloat(ctx.margenMes) < 10 && ctx.ingMes > 0) alertas.push({ tipo:'warn', msg:`📉 Tu margen de ganancia es del ${ctx.margenMes}%. Por debajo del 10% es zona de riesgo.` });
+
+    const alertasEl = document.getElementById('contador-alertas');
+    if (alertasEl) {
+      alertasEl.innerHTML = alertas.map(a =>
+        `<div style="background:${a.tipo==='danger'?'var(--red-bg)':'rgba(193,122,74,.08)'};border-left:4px solid ${a.tipo==='danger'?'var(--red)':'var(--accent2)'};padding:12px 16px;border-radius:0 4px 4px 0;margin-bottom:8px;font-size:.82rem;color:var(--ink2);">${a.msg}</div>`
+      ).join('');
+    }
+  }
+
+  // ── BÚSQUEDA GLOBAL
   // ══════════════════════════════════════════════════
   window.runGlobalSearch = function(q) {
     q = q.trim();
@@ -1995,6 +2739,7 @@
     if(section==='cuentas')    renderCuentas();
     if(section==='iva')        { populateIVAMeses(); renderIVA(); }
     if(section==='reportes')   { populateAnioSelect('pl-anio'); populateAnioSelect('flujo-anio'); renderPL(); }
+    if(section==='contador')   renderContador();
   };
 
   // ── DARK / FOCO ──
