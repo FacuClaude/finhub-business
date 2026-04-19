@@ -47,7 +47,8 @@
     .shell { display:grid; grid-template-columns:224px 1fr; height:100vh; position:relative; z-index:1; max-width:100vw; overflow:hidden; }
 
     /* ── SIDEBAR ── */
-    .sidebar { background:#1e4d8c; border-right:none; padding:0; display:flex; flex-direction:column; height:100%; overflow-y:auto; overscroll-behavior:contain; transition:background .3s; }
+    .sidebar { background:#1e4d8c; border-right:none; padding:0; display:flex; flex-direction:column; height:100%; overflow-y:auto; overscroll-behavior:contain; transition:background .3s; scrollbar-width:none; }
+    .sidebar::-webkit-scrollbar { display:none; }
     body.dark .sidebar { background:#3a3a3a; border-right:1px solid #4a4a4a; }
     .wordmark { padding:20px 24px 16px; border-bottom:1px solid rgba(255,255,255,.12); }
     body.dark .wordmark { border-bottom-color:#4a4a4a; }
@@ -190,7 +191,10 @@
     .alert-items { font-size:.82rem; color:var(--ink2); line-height:1.8; }
 
     /* ── HAMBURGER ── */
-    .hamburger { display:none; position:fixed; top:16px; right:16px; z-index:9999; width:40px; height:40px; border-radius:6px; background:var(--accent); border:none; cursor:pointer; align-items:center; justify-content:center; box-shadow:0 2px 10px rgba(30,77,140,.3); }
+    .hamburger { display:none; position:fixed; top:12px; left:12px; z-index:9999; width:40px; height:40px; border-radius:8px; background:var(--accent); border:none; cursor:pointer; align-items:center; justify-content:center; box-shadow:0 2px 10px rgba(30,77,140,.3); }
+    .mobile-header { display:none; position:fixed; top:0; left:0; right:0; height:56px; background:var(--bg); border-bottom:1px solid var(--border); z-index:888; align-items:center; justify-content:center; padding:0 56px; }
+    .mobile-header-title { font-family:'Plus Jakarta Sans',sans-serif; font-size:.95rem; font-weight:600; color:var(--ink); }
+    @media(max-width:900px) { .mobile-header { display:flex; } }
     .mobile-overlay { display:none; position:fixed; inset:0; background:rgba(20,20,14,.4); z-index:8888; }
     .mobile-overlay.open { display:block; }
 
@@ -299,11 +303,130 @@
     .contacto-card:hover { box-shadow:0 4px 20px rgba(30,77,140,.1); }
 
     /* ── RESPONSIVE ── */
+    /* ══════════════════════════════════════
+       MOBILE — max 768px
+    ══════════════════════════════════════ */
     @media(max-width:900px){
-      .shell{grid-template-columns:1fr} .hamburger{display:flex!important}
-      .sidebar{position:fixed!important;left:-280px!important;top:0!important;bottom:0!important;width:280px!important;z-index:9999!important;transition:left .3s ease;}
-      .sidebar.mobile-open{left:0!important;box-shadow:8px 0 40px rgba(0,0,0,.2)!important}
-      main{padding:20px 16px;overflow-x:hidden} .cards-row{grid-template-columns:1fr;gap:12px} .cards-row-4{grid-template-columns:1fr 1fr} .charts-row{grid-template-columns:1fr} .page-title{font-size:1.6rem}
+
+      /* ── Shell y sidebar ── */
+      .shell { grid-template-columns:1fr; }
+      .hamburger { display:flex!important; }
+      .sidebar {
+        position:fixed!important; left:-290px!important; top:0!important;
+        bottom:0!important; width:280px!important; z-index:9999!important;
+        transition:left .3s ease; overflow-y:auto;
+      }
+      .sidebar.mobile-open { left:0!important; box-shadow:12px 0 48px rgba(0,0,0,.25)!important; }
+
+      /* ── Main ── */
+      main { padding:56px 16px 24px; overflow-x:hidden; overflow-y:auto; }
+      .page-title { font-size:1.5rem; }
+      .page-sub   { font-size:.72rem; margin-bottom:24px; }
+
+      /* ── Cards ── */
+      .cards-row   { grid-template-columns:1fr; gap:10px; margin-bottom:20px; }
+      .cards-row-4 { grid-template-columns:1fr 1fr; gap:10px; margin-bottom:20px; }
+      .card        { padding:18px 16px 14px; }
+      .card-value  { font-size:1.7rem; }
+
+      /* ── Charts ── */
+      .charts-row { grid-template-columns:1fr; gap:12px; margin-bottom:20px; }
+      .chart-wrap { height:160px; }
+
+      /* ── Period bar ── */
+      .period-bar { width:100%; overflow-x:auto; flex-wrap:nowrap; }
+      .period-btn { font-size:.62rem; padding:6px 10px; white-space:nowrap; }
+
+      /* ── TX list ── */
+      .tx-item { padding:11px 14px; flex-wrap:wrap; gap:8px; }
+      .tx-item-right { flex-direction:row; align-items:center; gap:10px; width:100%; justify-content:space-between; }
+      .tx-item-actions { display:flex; gap:6px; }
+      .tx-btn-action { font-size:.58rem; padding:4px 9px; }
+      .tx-month-header { padding:8px 14px; }
+
+      /* ── Section header ── */
+      .section-header { flex-direction:column; align-items:flex-start; gap:10px; }
+      .filter-row { flex-wrap:wrap; gap:5px; }
+      .filter-chip { font-size:.62rem; padding:5px 10px; }
+      .btn-primary, .btn-secondary, .btn-export { font-size:.65rem; padding:8px 14px; }
+
+      /* ── Modal ── */
+      .overlay { align-items:flex-end; }
+      .modal {
+        max-width:100%!important; width:100%!important; border-radius:12px 12px 0 0;
+        max-height:92vh; padding:22px 18px; animation:slideUpMobile .3s cubic-bezier(.16,1,.3,1) both;
+      }
+      @keyframes slideUpMobile { from{opacity:0;transform:translateY(40px)} to{opacity:1;transform:translateY(0)} }
+      .modal-title { font-size:1.1rem; margin-bottom:18px; }
+      .modal-actions { gap:8px; }
+
+      /* ── Dashboard banner movimientos ── */
+      #page-movimientos > div:nth-child(3) { grid-template-columns:1fr 1fr!important; gap:8px!important; }
+
+      /* ── Cuentas ── */
+      #cuentas-grid { grid-template-columns:1fr 1fr; gap:10px; }
+
+      /* ── Contactos grid ── */
+      #contactos-grid { grid-template-columns:1fr; }
+
+      /* ── Contador y Asesor Legal ── */
+      .ia-grid { grid-template-columns:1fr!important; }
+      .ia-grid > div:first-child { width:100%!important; }
+
+      /* ── Reportes ── */
+      #rep-pl > div:last-child { grid-template-columns:1fr!important; }
+      .chart-card { padding:16px; }
+      .pl-table { font-size:.72rem; }
+      .pl-table th, .pl-table td { padding:6px 8px; }
+
+      /* ── RRHH ── */
+      .emp-card { flex-direction:column; gap:10px; }
+      .emp-card > div:last-child { text-align:left!important; display:flex; align-items:center; gap:12px; }
+      #rrhh-liquidacion > div:first-child { flex-direction:column; }
+      #rrhh-liquidacion select,
+      #rrhh-liquidacion input[type=month] { width:100%!important; }
+      #rrhh-config > div { max-width:100%!important; }
+      #rrhh-config > div > div[style*="grid-template-columns:1fr 1fr"] { grid-template-columns:1fr!important; }
+      .recibo { padding:16px; font-size:11px; }
+      .recibo-empleado { grid-template-columns:1fr!important; }
+      .recibo-firma { grid-template-columns:1fr!important; gap:20px; }
+      .recibo-table th, .recibo-table td { padding:5px 8px; font-size:.75rem; }
+
+      /* ── IVA ── */
+      #page-iva > div:nth-child(4) { grid-template-columns:1fr!important; }
+
+      /* ── Búsqueda ── */
+      #busqueda-resultados > div[style*="grid-template-columns"] { display:block!important; }
+
+      /* ── Campos 2 col en modales → 1 col ── */
+      .modal div[style*="grid-template-columns:1fr 1fr"] { grid-template-columns:1fr!important; }
+      .modal div[style*="grid-template-columns: 1fr 1fr"] { grid-template-columns:1fr!important; }
+
+      /* ── Alert banner ── */
+      .alert-banner { padding:12px 14px; }
+
+      /* ── Tabs (period-btn usados como tabs) ── */
+      #page-reportes > div:first-child,
+      #page-rrhh > div:nth-child(3) {
+        width:100%; overflow-x:auto; flex-wrap:nowrap;
+      }
+
+      /* ── Busqueda sidebar ── */
+      #global-search { font-size:.78rem; }
+
+      /* ── Proyección flujo ── */
+      #flujo-proyeccion > div { grid-template-columns:1fr!important; }
+
+      /* ── P&L categorías ── */
+      #rep-pl > div:nth-child(5) { grid-template-columns:1fr!important; }
+    }
+
+    /* ── Extra pequeño (iPhone SE, etc.) ── */
+    @media(max-width:380px){
+      .cards-row-4 { grid-template-columns:1fr; }
+      #cuentas-grid { grid-template-columns:1fr; }
+      .period-btn { font-size:.58rem; padding:5px 8px; }
+      main { padding:52px 12px 20px; }
     }
   </style>
 </head>
@@ -637,7 +760,7 @@
       <div id="contador-alertas" style="margin-bottom:24px;"></div>
 
       <!-- Layout dos columnas -->
-      <div style="display:grid;grid-template-columns:1fr 1.6fr;gap:24px;align-items:start;">
+      <div class="ia-grid" style="display:grid;grid-template-columns:1fr 1.6fr;gap:24px;align-items:start;">
 
         <!-- Columna izquierda: categorías acordeón -->
         <div>
@@ -682,7 +805,7 @@
       <div class="page-title">Asesor Legal IA</div>
       <div class="page-sub">Orientación legal para tu PyME argentina — sin costo, basado en la ley vigente</div>
 
-      <div style="display:grid;grid-template-columns:1fr 1.6fr;gap:24px;align-items:start;">
+      <div class="ia-grid" style="display:grid;grid-template-columns:1fr 1.6fr;gap:24px;align-items:start;">
 
         <!-- Columna izquierda acordeón -->
         <div>
@@ -914,9 +1037,13 @@
       </div>
     </div>
 
+<!-- MOBILE HEADER -->
+<div class="mobile-header" id="mobile-header">
+  <div class="mobile-header-title" id="mobile-header-title">Dashboard</div>
+</div>
 <div class="mobile-overlay" id="mobile-overlay" onclick="closeMobileNav()"></div>
 <button class="hamburger" id="hamburger-btn" onclick="toggleMobileNav()">
-  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
 </button>
 
 <!-- MODAL: NUEVO MOVIMIENTO -->
@@ -3726,6 +3853,10 @@
     document.getElementById('page-'+section)?.classList.add('active');
     document.querySelectorAll('.nav-item').forEach(n=>{if(n.getAttribute('onclick')?.includes("'"+section+"'"))n.classList.add('active');});
     document.getElementById('main-content').scrollTop=0;
+    // Header mobile
+    const titleMap = {dashboard:'Dashboard',movimientos:'Movimientos',cuentas:'Cuentas',contactos:'Contactos',iva:'IVA',reportes:'Reportes',contador:'Contador IA',asesor:'Asesor Legal IA',rrhh:'RRHH',busqueda:'Búsqueda'};
+    const mTitle = document.getElementById('mobile-header-title');
+    if(mTitle) mTitle.textContent = titleMap[section]||section;
     // Limpiar búsqueda global al navegar
     const gsInput = document.getElementById('global-search');
     if(gsInput&&section!=='busqueda'){gsInput.value='';document.getElementById('global-search-clear').style.display='none';}
