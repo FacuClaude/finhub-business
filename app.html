@@ -497,7 +497,19 @@
         </span>
       </div>
       <div class="wordmark-badge">Business</div>
-      <div id="empresa-nombre" style="font-size:.65rem;color:rgba(255,255,255,.5);margin-top:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"></div>
+      <!-- Empresa switcher -->
+      <button id="empresa-switcher" onclick="toggleEmpresaMenu()" style="display:flex;align-items:center;justify-content:space-between;width:100%;margin-top:8px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:5px;padding:7px 10px;cursor:pointer;gap:6px;transition:background .15s;" onmouseover="this.style.background='rgba(255,255,255,.14)'" onmouseout="this.style.background='rgba(255,255,255,.08)'">
+        <span id="empresa-nombre" style="font-size:.72rem;color:rgba(255,255,255,.85);font-family:'DM Sans',sans-serif;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;text-align:left;">Mi empresa</span>
+        <svg id="empresa-arrow" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.5)" stroke-width="2.5" style="flex-shrink:0;transition:transform .2s;"><polyline points="6 9 12 15 18 9"/></svg>
+      </button>
+      <!-- Dropdown empresas -->
+      <div id="empresa-menu" style="display:none;background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.15);border-radius:5px;margin-top:4px;overflow:hidden;">
+        <div id="empresa-menu-lista"></div>
+        <button onclick="crearNuevaEmpresa()" style="display:flex;align-items:center;gap:8px;width:100%;padding:9px 12px;background:none;border:none;border-top:1px solid rgba(255,255,255,.1);cursor:pointer;font-family:'DM Sans',sans-serif;font-size:.72rem;color:rgba(255,255,255,.6);transition:color .15s;" onmouseover="this.style.color='white'" onmouseout="this.style.color='rgba(255,255,255,.6)'">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Nueva empresa
+        </button>
+      </div>
     </div>
 
     <!-- BÚSQUEDA GLOBAL -->
@@ -1621,12 +1633,14 @@
   function iniciarApp(user) {
     document.getElementById('user-email').textContent = user.email;
     verificarInvitacionesPendientes(user);
-    // Cargar nombre de empresa
+    // Cargar nombre de empresa en el switcher
     onValue(ref(db, `empresas/${empresaId}/info`), snap => {
       const info = snap.val() || {};
-      const nombreEl = document.getElementById('empresa-nombre');
-      if (nombreEl) nombreEl.textContent = info.nombre || 'Mi empresa';
+      const el = document.getElementById('empresa-nombre');
+      if (el) el.textContent = info.nombre || 'Mi empresa';
     }, { onlyOnce: true });
+    // Cargar todas las empresas del usuario para el switcher
+    cargarMisEmpresas();
     aplicarPermisos();
     loadTransactions();
     loadContactos();
@@ -4460,10 +4474,10 @@
     if (!nombre) { alert('Ingresá el nombre de la empresa.'); return; }
     await update(ref(db, `empresas/${empresaId}/info`), { nombre, cuit: cuit||null, updatedAt: Date.now() });
     closeModal('editar-empresa');
+    // Actualizar nombre en switcher y en módulo usuarios
+    const el = document.getElementById('empresa-nombre');
+    if (el) el.textContent = nombre;
     renderUsuarios();
-    // Actualizar nombre en sidebar
-    const nombreEl = document.getElementById('empresa-nombre');
-    if (nombreEl) nombreEl.textContent = nombre;
   };
 
   // Al iniciar sesión, verificar invitaciones pendientes por email
@@ -4488,6 +4502,139 @@
       if (encontro) await update(ref(db), batch);
     }, { onlyOnce: true });
   }
+
+  // ══════════════════════════════════════════════════
+  // MULTI-EMPRESA
+  // ══════════════════════════════════════════════════
+  let misEmpresas = {};   // { empresaId: rolObj }
+  let empresaMenuOpen = false;
+
+  // Cargar todas las empresas del usuario y renderizar el switcher
+  function cargarMisEmpresas() {
+    onValue(ref(db, `usuarios/${uid}/empresas`), snap => {
+      misEmpresas = snap.val() || {};
+      renderEmpresaMenu();
+    });
+  }
+
+  function renderEmpresaMenu() {
+    const lista = document.getElementById('empresa-menu-lista');
+    if (!lista) return;
+    const ids = Object.keys(misEmpresas);
+    if (ids.length <= 1) {
+      // Con una sola empresa ocultamos el arrow — no hay nada que switchar (todavía)
+      const arrow = document.getElementById('empresa-arrow');
+      if (arrow && ids.length === 1) arrow.style.opacity = '0.3';
+    }
+    // Cargar nombre de cada empresa y renderizar
+    lista.innerHTML = '';
+    ids.forEach(empId => {
+      onValue(ref(db, `empresas/${empId}/info`), snap => {
+        const info = snap.val() || {};
+        const btn = document.createElement('button');
+        btn.style.cssText = 'display:flex;align-items:center;justify-content:space-between;width:100%;padding:9px 12px;background:none;border:none;cursor:pointer;font-family:"DM Sans",sans-serif;font-size:.75rem;color:rgba(255,255,255,.8);transition:background .15s;text-align:left;gap:8px;';
+        btn.onmouseover = () => btn.style.background = 'rgba(255,255,255,.1)';
+        btn.onmouseout  = () => btn.style.background = 'none';
+        btn.innerHTML = `
+          <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;">${esc(info.nombre || empId)}</span>
+          ${empId === empresaId ? '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.7)" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>' : '<span style="width:12px;"></span>'}
+        `;
+        btn.onclick = () => {
+          if (empId !== empresaId) cambiarEmpresa(empId, misEmpresas[empId]);
+          cerrarEmpresaMenu();
+        };
+        // Insertar la empresa activa primero
+        if (empId === empresaId) lista.insertBefore(btn, lista.firstChild);
+        else lista.appendChild(btn);
+      }, { onlyOnce: true });
+    });
+  }
+
+  window.toggleEmpresaMenu = function() {
+    const menu  = document.getElementById('empresa-menu');
+    const arrow = document.getElementById('empresa-arrow');
+    if (!menu) return;
+    empresaMenuOpen = !empresaMenuOpen;
+    menu.style.display   = empresaMenuOpen ? 'block' : 'none';
+    if (arrow) arrow.style.transform = empresaMenuOpen ? 'rotate(180deg)' : '';
+    if (empresaMenuOpen) renderEmpresaMenu();
+  };
+
+  function cerrarEmpresaMenu() {
+    empresaMenuOpen = false;
+    const menu  = document.getElementById('empresa-menu');
+    const arrow = document.getElementById('empresa-arrow');
+    if (menu)  menu.style.display  = 'none';
+    if (arrow) arrow.style.transform = '';
+  }
+
+  // Cerrar el menu si se clickea fuera
+  document.addEventListener('click', e => {
+    if (empresaMenuOpen && !e.target.closest('#empresa-switcher') && !e.target.closest('#empresa-menu')) {
+      cerrarEmpresaMenu();
+    }
+  });
+
+  window.cambiarEmpresa = function(nuevoEmpresaId, nuevoRol) {
+    // Limpiar listeners actuales evitando memory leaks
+    // Firebase onValue retorna un unsubscribe — para esto usaríamos off()
+    // Como usamos onValue con la misma ref, simplemente reasignamos empresaId
+    // y recargamos todos los listeners
+    empresaId = nuevoEmpresaId;
+    miRol     = nuevoRol;
+
+    // Limpiar estado local
+    transactions = {}; contacts = {}; accounts = {}; empleados = {};
+
+    // Actualizar nombre en el switcher
+    onValue(ref(db, `empresas/${empresaId}/info`), snap => {
+      const info = snap.val() || {};
+      const el = document.getElementById('empresa-nombre');
+      if (el) el.textContent = info.nombre || 'Mi empresa';
+    }, { onlyOnce: true });
+
+    // Aplicar permisos del nuevo rol
+    aplicarPermisos();
+
+    // Recargar todos los datos
+    loadTransactions();
+    loadContactos();
+    loadCuentas();
+    loadEmpleados();
+
+    // Volver al dashboard
+    goTo('dashboard');
+
+    // Feedback visual breve
+    const el = document.getElementById('empresa-nombre');
+    if (el) {
+      el.style.color = 'rgba(255,255,255,1)';
+      setTimeout(() => { el.style.color = 'rgba(255,255,255,.85)'; }, 1000);
+    }
+  };
+
+  window.crearNuevaEmpresa = async function() {
+    cerrarEmpresaMenu();
+    const nombre = prompt('Nombre de la nueva empresa:');
+    if (!nombre || !nombre.trim()) return;
+
+    const nuevoEmpresaId = push(ref(db, 'empresas')).key;
+    const rolAdmin = { ...PERMISOS_DEFAULT.admin, tipoRol: 'admin', nombre: auth.currentUser?.email || '', email: auth.currentUser?.email || '' };
+
+    const batch = {};
+    batch[`empresas/${nuevoEmpresaId}/info`] = {
+      nombre: nombre.trim(),
+      createdAt: Date.now(),
+      ownerUid: uid
+    };
+    batch[`usuarios/${uid}/empresas/${nuevoEmpresaId}`] = rolAdmin;
+    batch[`usuariosDeEmpresa/${nuevoEmpresaId}/${uid}`] = rolAdmin;
+
+    await update(ref(db), batch);
+
+    // Cambiar a la nueva empresa automáticamente
+    cambiarEmpresa(nuevoEmpresaId, rolAdmin);
+  };
 
   // ── NAV ──
   const ADMIN_SECTIONS = ['contador','asesor','rrhh','usuarios'];
