@@ -314,6 +314,10 @@
         <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
         Contador IA
       </button>
+      <button class="nav-item" onclick="goTo('asesor')">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        Asesor Legal IA
+      </button>
     </nav>
     <div class="sidebar-footer">
       <div class="theme-toggle"><span class="theme-label">Privacidad</span><label class="switch"><input type="checkbox" id="foco-toggle" onchange="toggleFoco(this.checked)"><span class="slider"></span></label></div>
@@ -646,7 +650,67 @@
 
 
 
-<!-- MOBILE -->
+    <!-- ASESOR LEGAL IA -->
+    <div class="page" id="page-asesor">
+      <div class="page-title">Asesor Legal IA</div>
+      <div class="page-sub">Orientación legal para tu PyME argentina — sin costo, basado en la ley vigente</div>
+
+      <div style="display:grid;grid-template-columns:1fr 1.6fr;gap:24px;align-items:start;">
+
+        <!-- Columna izquierda -->
+        <div>
+          <div style="font-size:.62rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:12px;">Consultas frecuentes</div>
+
+          <div style="margin-bottom:8px;">
+            <div style="font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);padding:8px 0 6px;border-bottom:1px solid var(--border);margin-bottom:6px;">👷 Derecho laboral</div>
+            <div class="contador-faq-list" id="lfaq-laboral"></div>
+          </div>
+          <div style="margin-bottom:8px;">
+            <div style="font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);padding:8px 0 6px;border-bottom:1px solid var(--border);margin-bottom:6px;">📝 Contratos comerciales</div>
+            <div class="contador-faq-list" id="lfaq-contratos"></div>
+          </div>
+          <div style="margin-bottom:8px;">
+            <div style="font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);padding:8px 0 6px;border-bottom:1px solid var(--border);margin-bottom:6px;">🏢 Societario</div>
+            <div class="contador-faq-list" id="lfaq-societario"></div>
+          </div>
+          <div style="margin-bottom:8px;">
+            <div style="font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);padding:8px 0 6px;border-bottom:1px solid var(--border);margin-bottom:6px;">🧾 Impositivo-legal</div>
+            <div class="contador-faq-list" id="lfaq-impositivo"></div>
+          </div>
+          <div style="margin-bottom:8px;">
+            <div style="font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);padding:8px 0 6px;border-bottom:1px solid var(--border);margin-bottom:6px;">🔒 Protección de datos</div>
+            <div class="contador-faq-list" id="lfaq-datos"></div>
+          </div>
+          <div style="margin-bottom:8px;">
+            <div style="font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);padding:8px 0 6px;border-bottom:1px solid var(--border);margin-bottom:6px;">💡 Propiedad intelectual</div>
+            <div class="contador-faq-list" id="lfaq-pi"></div>
+          </div>
+          <div>
+            <div style="font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);padding:8px 0 6px;border-bottom:1px solid var(--border);margin-bottom:6px;">⚖️ Relación con clientes</div>
+            <div class="contador-faq-list" id="lfaq-clientes"></div>
+          </div>
+        </div>
+
+        <!-- Columna derecha -->
+        <div>
+          <div id="asesor-respuesta" style="background:var(--surface);border:1px solid var(--border);border-left:4px solid var(--accent);padding:24px;margin-bottom:20px;min-height:200px;">
+            <div style="font-size:.78rem;color:var(--muted);text-align:center;padding:40px 0;">
+              Seleccioná una consulta de la izquierda o escribí tu pregunta abajo.
+            </div>
+          </div>
+          <div style="background:var(--surface);border:1px solid var(--border);padding:20px;">
+            <div style="font-size:.65rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;">Consulta libre</div>
+            <textarea id="asesor-input" rows="3" placeholder="Ej: ¿Puedo despedir a un empleado en período de prueba? ¿Qué cláusulas debe tener un contrato de servicios?" style="resize:vertical;margin-bottom:10px;"></textarea>
+            <button class="btn-primary" style="width:100%;" onclick="responderAsesor()">Consultar →</button>
+            <div style="font-size:.68rem;color:var(--muted2);margin-top:10px;line-height:1.5;">
+              La información es orientativa y no reemplaza el asesoramiento de un abogado matriculado. Ante situaciones concretas, consultá siempre con un profesional.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
 <div class="mobile-overlay" id="mobile-overlay" onclick="closeMobileNav()"></div>
 <button class="hamburger" id="hamburger-btn" onclick="toggleMobileNav()">
   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
@@ -2524,6 +2588,221 @@
     }
   }
 
+  // ══════════════════════════════════════════════════
+  // ASESOR LEGAL IA
+  // ══════════════════════════════════════════════════
+  const FAQS_LEGAL = {
+    laboral: [
+      { q:"¿Qué es el período de prueba?",                    id:"l_prueba" },
+      { q:"¿Cómo registro a un empleado en AFIP?",            id:"l_registro" },
+      { q:"¿Cómo despido sin causa y cuánto pago?",           id:"l_despido_sc" },
+      { q:"¿Qué es el despido con causa?",                    id:"l_despido_cc" },
+      { q:"¿Qué incluye una liquidación final?",              id:"l_liquidacion" },
+      { q:"¿Qué es el preaviso y cuánto dura?",               id:"l_preaviso" },
+      { q:"¿Cuándo pago doble indemnización?",                id:"l_doble_ind" },
+      { q:"¿Qué son las cargas sociales?",                    id:"l_cargas" },
+      { q:"¿Qué pasa si un empleado me demanda?",             id:"l_demanda" },
+      { q:"¿Monotributista o empleado en dependencia?",       id:"l_mono_vs_dep" },
+      { q:"¿Qué es la ART y es obligatoria?",                 id:"l_art" },
+      { q:"¿Cómo funciona la licencia por maternidad?",       id:"l_maternidad" },
+      { q:"¿Cuántos días de vacaciones corresponden?",        id:"l_vacaciones" },
+      { q:"¿Qué es el SAC (aguinaldo)?",                      id:"l_sac" },
+    ],
+    contratos: [
+      { q:"¿Qué debe tener un contrato de servicios?",        id:"l_contrato_servicios" },
+      { q:"¿Contrato verbal o escrito?",                      id:"l_verbal_escrito" },
+      { q:"¿Cómo establezco una cláusula de confidencialidad?", id:"l_nda" },
+      { q:"¿Cómo me protejo ante incumplimiento?",            id:"l_incumplimiento" },
+      { q:"¿Cómo rescindo un contrato?",                      id:"l_rescision" },
+      { q:"¿Qué son las penalidades contractuales?",          id:"l_penalidades" },
+      { q:"¿Qué es una cesión de derechos?",                  id:"l_cesion" },
+      { q:"¿Contrato con proveedor del exterior?",            id:"l_contrato_intl" },
+    ],
+    societario: [
+      { q:"¿Diferencias entre SAS, SRL y SA?",               id:"l_tipos_sociedad" },
+      { q:"¿Cómo constituyo una SAS?",                        id:"l_constituir_sas" },
+      { q:"¿Cómo constituyo una SRL?",                        id:"l_constituir_srl" },
+      { q:"¿Qué es el capital social mínimo?",                id:"l_capital_social" },
+      { q:"¿Cómo agrego o retiro un socio?",                  id:"l_socios" },
+      { q:"¿Qué pasa si un socio quiere irse?",               id:"l_socio_sale" },
+      { q:"¿Cómo disuelvo una sociedad?",                     id:"l_disolucion" },
+      { q:"¿Qué es el directorio y cuándo es obligatorio?",   id:"l_directorio" },
+    ],
+    impositivo: [
+      { q:"¿Qué pasa si no emito factura?",                   id:"l_sin_factura" },
+      { q:"¿Cuáles son las sanciones de AFIP?",               id:"l_sanciones_afip" },
+      { q:"¿Qué es una clausura de local por AFIP?",          id:"l_clausura" },
+      { q:"¿Me pueden embargar por deuda impositiva?",        id:"l_embargo_impositivo" },
+      { q:"¿Qué es el régimen de retenciones?",               id:"l_retenciones" },
+      { q:"¿Cómo impugno una deuda de AFIP?",                 id:"l_impugnar_afip" },
+      { q:"¿Qué es la prescripción impositiva?",              id:"l_prescripcion" },
+    ],
+    datos: [
+      { q:"¿Qué es la Ley 25.326 de datos personales?",      id:"l_ley_datos" },
+      { q:"¿Necesito registrar mi base de clientes?",         id:"l_registro_bd" },
+      { q:"¿Qué es el consentimiento informado?",             id:"l_consentimiento" },
+      { q:"¿Cómo armo una política de privacidad?",           id:"l_politica_privacidad" },
+      { q:"¿Qué pasa si sufro un hackeo o filtración?",       id:"l_breach" },
+      { q:"¿Puedo usar datos de clientes para marketing?",    id:"l_marketing_datos" },
+    ],
+    pi: [
+      { q:"¿Cómo registro una marca en Argentina?",           id:"l_marca" },
+      { q:"¿Qué protege el derecho de autor?",                id:"l_derechos_autor" },
+      { q:"¿Cómo protejo el nombre de mi empresa?",           id:"l_nombre_empresa" },
+      { q:"¿Qué es una patente y cómo se obtiene?",           id:"l_patente" },
+      { q:"¿Alguien copió mi marca o logo — qué hago?",       id:"l_copia_marca" },
+      { q:"¿Cómo protejo el software que desarrollé?",        id:"l_software" },
+    ],
+    clientes: [
+      { q:"¿Qué hago si un cliente no me paga?",              id:"l_cobro_deuda" },
+      { q:"¿Cuándo puedo ir a juicio por cobro?",             id:"l_juicio_cobro" },
+      { q:"¿Qué es la mora del deudor?",                      id:"l_mora_deudor" },
+      { q:"¿Cómo documento una deuda de un cliente?",         id:"l_documentar_deuda" },
+      { q:"¿Qué son los intereses por mora?",                 id:"l_intereses_mora" },
+      { q:"¿Cómo hago una carta documento?",                  id:"l_carta_documento" },
+      { q:"¿Qué derechos tiene mi cliente como consumidor?",  id:"l_derechos_consumidor" },
+    ],
+  };
+
+  window.mostrarRespuestaLegal = function(id, btnEl) {
+    document.querySelectorAll(".contador-faq-btn").forEach(b => b.classList.remove("active"));
+    if (btnEl) btnEl.classList.add("active");
+    const input = document.getElementById("asesor-input");
+    if (input) input.value = "";
+    const resp = LEGAL_RESP[id];
+    if (!resp) return;
+    document.getElementById("asesor-respuesta").innerHTML =
+      "<div class=\"resp-title\">" + resp.title + "</div>" +
+      "<div class=\"resp-body\">" + resp.body + "</div>" +
+      "<div class=\"resp-disclaimer\">\u2696\ufe0f Esta informaci\u00f3n es de car\u00e1cter orientativo y no constituye asesoramiento legal. Las leyes y regulaciones pueden actualizarse. Para situaciones concretas, siempre consult\u00e1 con un abogado matriculado.</div>";
+    document.getElementById("main-content").scrollTop = 0;
+  };
+
+  window.responderAsesor = function() {
+    const q = (document.getElementById("asesor-input")?.value || "").trim().toLowerCase();
+    if (!q) return;
+    const kw = [
+      ["prueba","l_prueba"],["registro empleado","l_registro"],["alta empleado","l_registro"],
+      ["despido sin causa","l_despido_sc"],["indemnizacion","l_despido_sc"],
+      ["despido con causa","l_despido_cc"],["justa causa","l_despido_cc"],
+      ["liquidacion final","l_liquidacion"],["liquidacion","l_liquidacion"],
+      ["preaviso","l_preaviso"],["doble indemniz","l_doble_ind"],
+      ["cargas sociales","l_cargas"],["contribucion","l_cargas"],
+      ["demanda laboral","l_demanda"],["me demanda","l_demanda"],
+      ["fraude laboral","l_mono_vs_dep"],["en negro","l_mono_vs_dep"],["monotributista","l_mono_vs_dep"],
+      ["art ","l_art"],["aseguradora","l_art"],
+      ["maternidad","l_maternidad"],["embarazo","l_maternidad"],
+      ["vacaciones","l_vacaciones"],["sac","l_sac"],["aguinaldo","l_sac"],
+      ["contrato de servicio","l_contrato_servicios"],
+      ["verbal","l_verbal_escrito"],["escrito","l_verbal_escrito"],
+      ["confidencialidad","l_nda"],["nda","l_nda"],
+      ["incumplimiento","l_incumplimiento"],["rescind","l_rescision"],
+      ["penalidad","l_penalidades"],["cesion","l_cesion"],["ceder","l_cesion"],
+      ["exterior","l_contrato_intl"],["extranjero","l_contrato_intl"],
+      ["tipo sociedad","l_tipos_sociedad"],["sas srl","l_tipos_sociedad"],
+      ["constituir sas","l_constituir_sas"],["abrir sas","l_constituir_sas"],
+      ["constituir srl","l_constituir_srl"],["abrir srl","l_constituir_srl"],
+      ["capital social","l_capital_social"],["agregar socio","l_socios"],["nuevo socio","l_socios"],
+      ["socio","l_socio_sale"],["disolver","l_disolucion"],["cerrar empresa","l_disolucion"],
+      ["directorio","l_directorio"],["sin factura","l_sin_factura"],["no factur","l_sin_factura"],
+      ["sancion","l_sanciones_afip"],["multa afip","l_sanciones_afip"],
+      ["clausura","l_clausura"],["embargo","l_embargo_impositivo"],
+      ["retenciones","l_retenciones"],["impugnar","l_impugnar_afip"],["prescripcion","l_prescripcion"],
+      ["datos personales","l_ley_datos"],["25.326","l_ley_datos"],
+      ["base de datos","l_registro_bd"],["aaip","l_registro_bd"],
+      ["consentimiento","l_consentimiento"],["politica privacidad","l_politica_privacidad"],
+      ["hackeo","l_breach"],["filtracion","l_breach"],["brecha","l_breach"],
+      ["marketing","l_marketing_datos"],["email marketing","l_marketing_datos"],
+      ["marca","l_marca"],["inpi","l_marca"],
+      ["derecho de autor","l_derechos_autor"],["copyright","l_derechos_autor"],
+      ["nombre empresa","l_nombre_empresa"],["patente","l_patente"],
+      ["copian","l_copia_marca"],["copiaron","l_copia_marca"],
+      ["software","l_software"],["codigo fuente","l_software"],
+      ["no me paga","l_cobro_deuda"],["cobrar","l_cobro_deuda"],["no paga","l_cobro_deuda"],
+      ["juicio cobro","l_juicio_cobro"],["ejecutivo","l_juicio_cobro"],
+      ["mora","l_mora_deudor"],["documentar deuda","l_documentar_deuda"],["pagare","l_documentar_deuda"],
+      ["intereses","l_intereses_mora"],["carta documento","l_carta_documento"],["telegrama","l_carta_documento"],
+      ["consumidor","l_derechos_consumidor"],["garantia","l_derechos_consumidor"],
+    ];
+    let matchId = null;
+    for (const [k, id] of kw) { if (q.includes(k)) { matchId = id; break; } }
+    if (matchId) { mostrarRespuestaLegal(matchId, null); return; }
+    document.getElementById("asesor-respuesta").innerHTML =
+      "<div class=\"resp-title\">No encontr\u00e9 una respuesta espec\u00edfica</div>" +
+      "<div class=\"resp-body\">Prob\u00e1 con t\u00e9rminos m\u00e1s espec\u00edficos: <em>despido sin causa</em>, <em>registrar marca</em>, <em>contrato de servicios</em>, <em>datos personales</em>, <em>cliente no paga</em>...</div>" +
+      "<div class=\"resp-disclaimer\">\u2696\ufe0f Esta informaci\u00f3n es orientativa. Consult\u00e1 con un abogado matriculado.</div>";
+  };
+
+  window.renderAsesor = function() {
+    const CATS = { laboral:"lfaq-laboral", contratos:"lfaq-contratos", societario:"lfaq-societario", impositivo:"lfaq-impositivo", datos:"lfaq-datos", pi:"lfaq-pi", clientes:"lfaq-clientes" };
+    Object.entries(CATS).forEach(([cat, elId]) => {
+      const el = document.getElementById(elId); if (!el) return;
+      el.innerHTML = FAQS_LEGAL[cat].map(faq =>
+        `<button class="contador-faq-btn" onclick="mostrarRespuestaLegal('${faq.id}',this)">${faq.q}</button>`
+      ).join("");
+    });
+  };
+
+  const LEGAL_RESP = {
+    l_prueba:{title:"Per\u00edodo de prueba laboral",body:"El per\u00edodo de prueba es los primeros <strong>3 meses</strong> de la relaci\u00f3n laboral (LCT art. 92 bis). Durante este lapso:<br><br><ul><li>Cualquiera puede disolver el v\u00ednculo <strong>sin pagar indemnizaci\u00f3n</strong></li><li>El trabajador tiene todos los derechos laborales (obra social, ART, etc.)</li><li>Deb\u00e9s registrar al empleado desde el primer d\u00eda</li><li>Solo puede usarse <strong>una vez</strong> con la misma persona</li></ul>Si desp\u00e9dis durante el per\u00edodo de prueba, deb\u00e9s dar preaviso de 15 d\u00edas o pagar la indemnizaci\u00f3n sustitutiva.<br><br><div class=\"resp-alert\">\u26a0\ufe0f Registr\u00e1 al empleado desde el primer d\u00eda aunque est\u00e9 en prueba. No hacerlo es trabajo en negro.</div>"},
+    l_registro:{title:"C\u00f3mo registrar un empleado en AFIP",body:"El alta debe hacerse <strong>antes del primer d\u00eda de trabajo</strong>.<br><br><ol><li>Ingres\u00e1 a <strong>arca.gob.ar</strong> con clave fiscal nivel 3</li><li>Servicio \u201cMi Simplificaci\u00f3n II\u201d \u2192 Alta de empleado</li><li>Carg\u00e1: CUIL, fecha de ingreso, modalidad, categor\u00eda del convenio, remuneraci\u00f3n</li><li>Confirm\u00e1 el alta</li></ol><strong>Documentaci\u00f3n necesaria:</strong> DNI, CUIL, certificado m\u00e9dico preocupacional, ficha de ingreso firmada.<br><br><div class=\"resp-alert\">\ud83d\udea8 No registrar desde el primer d\u00eda es trabajo en negro. Genera multas severas y responsabilidad penal.</div>"},
+    l_despido_sc:{title:"Despido sin causa \u2014 indemnizaci\u00f3n",body:"<strong>Componentes de la indemnizaci\u00f3n:</strong><br><br><strong>1. Indemnizaci\u00f3n por antig\u00fcedad (art. 245 LCT):</strong> 1 sueldo bruto x a\u00f1o trabajado (o fracci\u00f3n mayor a 3 meses).<br><br><strong>2. Preaviso:</strong> hasta 5 a\u00f1os = 1 mes; m\u00e1s de 5 a\u00f1os = 2 meses.<br><br><strong>3. Integraci\u00f3n del mes de despido:</strong> d\u00edas restantes hasta fin de mes.<br><br><strong>4. SAC proporcional:</strong> aguinaldo del semestre en curso.<br><br><strong>5. Vacaciones proporcionales:</strong> d\u00edas no gozados del a\u00f1o.<br><br><div class=\"resp-alert\">\ud83d\udccb El m\u00f3dulo RRHH (pr\u00f3ximamente) calcular\u00e1 autom\u00e1ticamente el monto exacto para cada empleado.</div>"},
+    l_despido_cc:{title:"Despido con causa (justa causa)",body:"El despido con causa no genera obligaci\u00f3n de indemnizar si est\u00e1 bien documentado.<br><br><strong>Causales v\u00e1lidas (art. 242 LCT):</strong><ul><li>Injuria grave que haga imposible la continuaci\u00f3n del v\u00ednculo</li><li>Inasistencias reiteradas sin justificaci\u00f3n</li><li>Abandono de trabajo</li><li>Robo, hurto o da\u00f1os intencionales</li></ul><strong>Requisitos:</strong><ul><li>Causa contempor\u00e1nea al despido</li><li>Proporcional a la falta</li><li>Notificaci\u00f3n por escrito con causa precisa</li><li>Prueba documental</li></ul><div class=\"resp-alert\">\u26a0\ufe0f El despido con causa es muy litigioso. Consult\u00e1 con un abogado laboralista antes de ejecutarlo.</div>"},
+    l_liquidacion:{title:"\u00bfQu\u00e9 incluye una liquidaci\u00f3n final?",body:"<strong>Siempre incluye (cualquier motivo de egreso):</strong><ul><li>D\u00edas trabajados del mes de egreso no cobrados</li><li>SAC proporcional</li><li>Vacaciones proporcionales no gozadas</li></ul><strong>Solo en despido sin causa:</strong><ul><li>Indemnizaci\u00f3n por antig\u00fcedad</li><li>Preaviso o su sustitutivo</li><li>Integraci\u00f3n del mes de despido</li></ul><strong>En renuncia voluntaria:</strong> solo los conceptos b\u00e1sicos.<br><br><div class=\"resp-alert\">\ud83d\udccb El recibo de liquidaci\u00f3n final debe estar firmado por el empleado.</div>"},
+    l_preaviso:{title:"Preaviso \u2014 plazos y pago sustitutivo",body:"<strong>Plazos (art. 231 LCT):</strong><ul><li>Per\u00edodo de prueba: 15 d\u00edas</li><li>Hasta 5 a\u00f1os de antig\u00fcedad: 1 mes</li><li>M\u00e1s de 5 a\u00f1os: 2 meses</li></ul>Si no quer\u00e9s que trabaje el per\u00edodo, pag\u00e1 el pago sustitutivo (equivale al sueldo del per\u00edodo).<br><br><div class=\"resp-alert\">\ud83d\udccb Durante el preaviso el empleado tiene 2 horas diarias para buscar trabajo sin reducci\u00f3n de sueldo.</div>"},
+    l_doble_ind:{title:"\u00bfCu\u00e1ndo pago doble indemnizaci\u00f3n?",body:"<strong>Situaciones que generan doble indemnizaci\u00f3n:</strong><ul><li>Despido durante licencia por enfermedad</li><li>Despido por maternidad/embarazo</li><li>Despido por matrimonio</li><li>Decretos de emergencia del PE</li></ul><div class=\"resp-alert\">\u26a0\ufe0f El despido de un delegado gremial requiere autorizaci\u00f3n judicial previa. Sin ella, el despido es nulo.</div>"},
+    l_cargas:{title:"Cargas sociales \u2014 qu\u00e9 son y cu\u00e1nto son",body:"<strong>Aportes del trabajador</strong> (los reten\u00e9s del sueldo):<ul><li>Jubilaci\u00f3n (SIPA): 11%</li><li>Obra social: 3%</li><li>PAMI: 3%</li><li>Total: ~17%</li></ul><strong>Contribuciones del empleador</strong> (adem\u00e1s del sueldo):<ul><li>Jubilaci\u00f3n: 10.17% (PyME)</li><li>Obra social: 6%</li><li>PAMI: 1.5%</li><li>ART: ~2-5%</li><li>Total aproximado: ~22-28% adicional</li></ul><div class=\"resp-alert\">\ud83d\udccb Las PyMEs pueden tener reducciones en contribuciones patronales. Verific\u00e1 en ARCA el r\u00e9gimen aplicable.</div>"},
+    l_demanda:{title:"\u00bfQu\u00e9 pasa si un empleado me demanda?",body:"<strong>Etapas t\u00edpicas:</strong><ol><li>Conciliaci\u00f3n obligatoria (SECLO en CABA) \u2014 muchos casos se resuelven ac\u00e1</li><li>Juicio laboral: 2 a 5 a\u00f1os</li><li>Sentencia</li></ol><strong>C\u00f3mo protegerte:</strong><ul><li>Toda la documentaci\u00f3n en orden (contratos, recibos firmados)</li><li>Todo por escrito, nada verbal</li><li>Contratar abogado laboralista desde el inicio</li><li>No ignorar intimaciones telegr\u00e1ficas</li></ul><div class=\"resp-alert\">\u26a0\ufe0f Los intereses en juicios laborales en Argentina son muy altos. Siempre conviene intentar un acuerdo temprano.</div>"},
+    l_mono_vs_dep:{title:"Monotributista vs empleado en relaci\u00f3n de dependencia",body:"<strong>Es v\u00ednculo laboral (dependencia) cuando hay:</strong><ul><li>Horario fijo o controlado por vos</li><li>Exclusividad o casi exclusividad</li><li>Herramientas o equipos tuyos</li><li>\u00d3rdenes e instrucciones directas tuyas</li><li>Continuidad en el tiempo</li></ul><strong>Puede ser comercial (mono) cuando:</strong><ul><li>Tiene m\u00faltiples clientes</li><li>Organiza su propio trabajo y horario</li><li>Asume el riesgo de su actividad</li></ul><div class=\"resp-alert\">\u26a0\ufe0f La justicia laboral aplica el principio de primac\u00eda de la realidad: importa lo que ocurre en los hechos, no lo que dice el contrato.</div>"},
+    l_art:{title:"ART \u2014 Aseguradora de Riesgos del Trabajo",body:"La ART es <strong>obligatoria</strong> para todos los empleadores con personal en relaci\u00f3n de dependencia. Cubre accidentes laborales y enfermedades profesionales.<br><br><strong>Obligaciones:</strong><ul><li>Entregar el formulario de designaci\u00f3n de ART al empleado</li><li>Mantener condiciones seguras de trabajo</li><li>Denunciar accidentes dentro de las 24 hs</li></ul><div class=\"resp-alert\">\ud83d\udea8 Operar sin ART es infracci\u00f3n grave. Si un empleado sufre un accidente sin cobertura, sos responsable directo de todos los gastos e indemnizaciones.</div>"},
+    l_maternidad:{title:"Licencia por maternidad",body:"<strong>Duraci\u00f3n:</strong> 90 d\u00edas corridos. Puede tomarse 45 d\u00edas antes y 45 despu\u00e9s del parto.<br><br><strong>\u00bfQui\u00e9n paga?</strong> ANSES paga una asignaci\u00f3n equivalente al sueldo bruto durante la licencia.<br><br><strong>Protecci\u00f3n especial:</strong><ul><li>No pod\u00e9s despedir a una empleada embarazada ni hasta 7.5 meses despu\u00e9s del parto</li><li>Si la desp\u00e9dis en ese per\u00edodo, se presume discriminaci\u00f3n \u2192 doble indemnizaci\u00f3n</li></ul><div class=\"resp-alert\">\ud83d\udccb El padre tiene derecho a 15 d\u00edas de licencia por paternidad (Ley 27.716). Verific\u00e1 la normativa vigente.</div>"},
+    l_vacaciones:{title:"Vacaciones \u2014 d\u00edas que corresponden",body:"<strong>D\u00edas seg\u00fan antig\u00fcedad:</strong><ul><li>Hasta 5 a\u00f1os: <strong>14 d\u00edas corridos</strong></li><li>5 a 10 a\u00f1os: <strong>21 d\u00edas corridos</strong></li><li>10 a 20 a\u00f1os: <strong>28 d\u00edas corridos</strong></li><li>M\u00e1s de 20 a\u00f1os: <strong>35 d\u00edas corridos</strong></li></ul><strong>Pago:</strong> sueldo mensual / 25 = valor del d\u00eda. Se abona antes del inicio.<br><br><div class=\"resp-alert\">\ud83d\udccb No se pueden reemplazar vacaciones por dinero (salvo en la liquidaci\u00f3n final). Son un derecho irrenunciable.</div>"},
+    l_sac:{title:"SAC (Aguinaldo) \u2014 c\u00f3mo funciona",body:"El SAC equivale a <strong>medio sueldo</strong> y se paga dos veces al a\u00f1o.<br><br><strong>Fechas:</strong> hasta el 30 de junio (1\u00aa cuota) y hasta el 31 de diciembre (2\u00aa cuota).<br><br><strong>C\u00e1lculo:</strong> 50% del mayor sueldo mensual devengado en el semestre.<br><br><div class=\"resp-alert\">\ud83d\udccb El SAC es un derecho adquirido mes a mes. Si no lo pag\u00e1s en fecha, el empleado puede intimarte con intereses.</div>"},
+    l_contrato_servicios:{title:"\u00bfQu\u00e9 debe tener un contrato de servicios?",body:"<strong>Elementos esenciales:</strong><ul><li>Partes con datos completos (nombre, CUIT, domicilio)</li><li>Objeto: descripci\u00f3n precisa del servicio</li><li>Precio, moneda y forma de pago</li><li>Plazo y condiciones de renovaci\u00f3n</li><li>Entregables: qu\u00e9 se entrega, cu\u00e1ndo y en qu\u00e9 formato</li></ul><strong>Cl\u00e1usulas recomendadas:</strong><ul><li>Confidencialidad</li><li>Propiedad intelectual de los trabajos</li><li>Penalidades por incumplimiento</li><li>Rescisi\u00f3n anticipada</li><li>Jurisdicci\u00f3n</li></ul><div class=\"resp-alert\">\ud83d\udccb Firm\u00e1 en todas las hojas y guard\u00e1 una copia firmada por ambas partes.</div>"},
+    l_verbal_escrito:{title:"Contrato verbal vs escrito",body:"Los contratos verbales son <strong>legalmente v\u00e1lidos</strong> en Argentina para la mayor\u00eda de las transacciones. Pero siempre conviene el contrato escrito por:<br><ul><li>Prueba: ten\u00e9s evidencia de lo acordado</li><li>Claridad: evita malentendidos sobre precio y plazos</li><li>Ejecutabilidad: m\u00e1s f\u00e1cil reclamar judicialmente</li></ul><div class=\"resp-alert\">\ud83d\udccb Un email con confirmaci\u00f3n de ambas partes tiene valor probatorio. No necesit\u00e1s ir al escribano para contratos comerciales habituales.</div>"},
+    l_nda:{title:"Cl\u00e1usula de confidencialidad (NDA)",body:"<strong>Qu\u00e9 debe incluir:</strong><ul><li>Definici\u00f3n de informaci\u00f3n confidencial</li><li>Obligaciones del receptor (no divulgar, custodiarla)</li><li>Excepciones (informaci\u00f3n p\u00fablica, que ya conoc\u00eda)</li><li>Plazo (durante la relaci\u00f3n y 2-5 a\u00f1os despu\u00e9s)</li><li>Consecuencias del incumplimiento</li></ul><strong>Cu\u00e1ndo usarla:</strong> al contratar empleados con acceso a informaci\u00f3n cr\u00edtica, al negociar con socios o inversores, al tercerizar desarrollo.<br><br><div class=\"resp-alert\">\ud83d\udccb Los NDAs son exigibles en Argentina pero requieren que la informaci\u00f3n realmente sea confidencial.</div>"},
+    l_incumplimiento:{title:"C\u00f3mo protegerse ante incumplimiento contractual",body:"<strong>Paso 1 \u2014 Intimaci\u00f3n:</strong> Notific\u00e1 el incumplimiento por escrito, fijando un plazo para cumplir.<br><br><strong>Paso 2 \u2014 Rescisi\u00f3n:</strong> Si no cumple, pod\u00e9s rescindir y reclamar da\u00f1os.<br><br><strong>Paso 3 \u2014 Mediaci\u00f3n:</strong> En muchas provincias es obligatoria antes del juicio.<br><br><strong>Paso 4 \u2014 Acci\u00f3n judicial:</strong> por da\u00f1os y perjuicios.<br><br><div class=\"resp-alert\">\ud83d\udccb La mejor protecci\u00f3n es preventiva: contratos claros con cl\u00e1usulas penales, y cobr\u00e1 adelantos antes de prestar el servicio.</div>"},
+    l_rescision:{title:"C\u00f3mo rescindir un contrato",body:"<strong>Tipos:</strong><ul><li>De com\u00fan acuerdo: ambas partes firman un acuerdo de rescisi\u00f3n</li><li>Por incumplimiento: intim\u00e1 primero con carta documento</li><li>Unilateral (si el contrato lo permite): con preaviso y/o penalidad</li></ul><strong>Efectos:</strong><ul><li>Cese de obligaciones futuras</li><li>Pago de lo adeudado hasta la rescisi\u00f3n</li><li>Pago de la penalidad pactada</li></ul><div class=\"resp-alert\">\ud83d\udccb La rescisi\u00f3n unilateral sin causa puede generar obligaci\u00f3n de reparar da\u00f1os. Verific\u00e1 siempre las condiciones del contrato.</div>"},
+    l_penalidades:{title:"Cl\u00e1usulas penales en contratos",body:"Una cl\u00e1usula penal es un monto fijo pactado ante el incumplimiento. No necesit\u00e1s probar el da\u00f1o \u2014 solo el incumplimiento.<br><br><strong>Tipos comunes:</strong><ul><li>Demora: X% por d\u00eda de retraso</li><li>Incumplimiento total: monto fijo</li><li>Rescisi\u00f3n anticipada: penalidad por terminar antes</li></ul><div class=\"resp-alert\">\ud83d\udccb Evit\u00e1 cl\u00e1usulas penales excesivas \u2014 pueden ser reducidas judicialmente si son desproporcionadas.</div>"},
+    l_cesion:{title:"Cesi\u00f3n de derechos contractuales",body:"La cesi\u00f3n es la transferencia de los derechos de un contrato a un tercero.<br><br><strong>Requisitos:</strong><ul><li>El contrato no debe prohibirla expresamente</li><li>Notificaci\u00f3n al deudor cedido (fundamental)</li><li>Instrumento escrito de cesi\u00f3n</li></ul><div class=\"resp-alert\">\ud83d\udccb Antes de ceder, verific\u00e1 si el contrato tiene cl\u00e1usula de \u201cintuitu personae\u201d \u2014 en ese caso necesit\u00e1s el consentimiento del otro contratante.</div>"},
+    l_contrato_intl:{title:"Contratos con proveedores del exterior",body:"<strong>Puntos clave:</strong><ul><li>Ley aplicable: especific\u00e1 qu\u00e9 ley rige el contrato</li><li>Jurisdicci\u00f3n: ante qu\u00e9 tribunales se resuelven los conflictos</li><li>Moneda de pago y manejo de variaciones de tipo de cambio</li><li>Incoterms 2020 si hay bienes f\u00edsicos</li></ul><strong>Aspectos impositivos:</strong><ul><li>Los pagos al exterior pueden estar sujetos a retenciones en Argentina</li><li>Verificar convenios para evitar doble imposici\u00f3n</li></ul><div class=\"resp-alert\">\ud83d\udccb Para contratos internacionales de cierta relevancia, consult\u00e1 con un abogado con experiencia en comercio internacional.</div>"},
+    l_tipos_sociedad:{title:"SAS vs SRL vs SA \u2014 \u00bfcu\u00e1l elegir?",body:"<strong>SAS \u2014 Sociedad por Acciones Simplificada:</strong><ul><li>Se constituye en 24hs por internet</li><li>Capital m\u00ednimo: 2 SMVM</li><li>Ideal para startups y emprendimientos</li></ul><strong>SRL \u2014 Sociedad de Responsabilidad Limitada:</strong><ul><li>Cl\u00e1sica para PyMEs familiares</li><li>Entre 2 y 50 socios</li><li>Constituci\u00f3n m\u00e1s lenta (escribano + registro)</li></ul><strong>SA \u2014 Sociedad An\u00f3nima:</strong><ul><li>Para empresas m\u00e1s grandes o que buscan inversores</li><li>Requiere directorio y sindicatura</li><li>Constituci\u00f3n compleja y costosa</li></ul><div class=\"resp-alert\">\ud83d\udccb Para la mayor\u00eda de las PyMEs nuevas hoy conviene la SAS por su velocidad y simplicidad.</div>"},
+    l_constituir_sas:{title:"C\u00f3mo constituir una SAS",body:"<ol><li>Accedé al portal del Ministerio de Justicia o sistema de tu provincia</li><li>Complet\u00e1 el formulario online: nombre, objeto, capital, socios, administrador</li><li>Us\u00e1 el estatuto modelo o adapt\u00e1 uno propio</li><li>Firma digital de los socios</li><li>Pago de la tasa de inscripci\u00f3n</li><li>Inscripci\u00f3n en el Registro P\u00fablico: en CABA puede resolverse en 24-72hs h\u00e1biles</li></ol><div class=\"resp-alert\">\ud83d\udccb Despu\u00e9s de constituida, inscribila en AFIP (obtener CUIT de la sociedad) y habiit\u00e1la en el municipio si corresponde.</div>"},
+    l_constituir_srl:{title:"C\u00f3mo constituir una SRL",body:"<ol><li>Redacci\u00f3n del contrato social (instrumento privado con firmas certificadas o escritura p\u00fablica)</li><li>Publicaci\u00f3n en el Bolet\u00edn Oficial</li><li>Inscripci\u00f3n en el Registro P\u00fablico de Comercio de la provincia</li><li>Apertura de cuenta bancaria a nombre de la sociedad</li><li>Inscripci\u00f3n en AFIP (CUIT de la SRL)</li></ol><strong>Tiempo:</strong> 30 a 90 d\u00edas seg\u00fan la jurisdicci\u00f3n.<br><br><div class=\"resp-alert\">\ud83d\udccb A diferencia de la SAS, la SRL no tiene constituci\u00f3n online en la mayor\u00eda de las provincias. Necesit\u00e1s un escribano.</div>"},
+    l_capital_social:{title:"Capital social m\u00ednimo",body:"<strong>M\u00ednimos legales actuales:</strong><ul><li>SAS: 2 SMVM al momento de la constituci\u00f3n</li><li>SRL: no tiene m\u00ednimo legal fijo (recomendado acorde a la actividad)</li><li>SA: $100.000 (monto hist\u00f3ricamente bajo)</li></ul><div class=\"resp-alert\">\ud83d\udccb El capital social no es el dinero que us\u00e1s para operar. Se puede aumentar despu\u00e9s mediante asamblea de socios.</div>"},
+    l_socios:{title:"C\u00f3mo agregar o retirar un socio",body:"<strong>Para agregar un socio:</strong><ol><li>Aprobar el ingreso por la mayor\u00eda requerida</li><li>Definir la participaci\u00f3n y precio</li><li>Modificar el contrato social e inscribir el cambio en el Registro P\u00fablico</li></ol><strong>Para retirar un socio:</strong><ul><li>Venta voluntaria de sus cuotas/acciones (los otros socios tienen derecho de preferencia)</li><li>Exclusi\u00f3n forzosa (requiere proceso judicial)</li></ul><div class=\"resp-alert\">\u26a0\ufe0f Siempre document\u00e1 los acuerdos entre socios en un \u201cpacto de socios\u201d privado. Es lo que evita los conflictos m\u00e1s graves.</div>"},
+    l_socio_sale:{title:"\u00bfQu\u00e9 pasa si un socio quiere irse?",body:"<strong>En una SRL:</strong> el socio puede ceder sus cuotas, pero los otros socios tienen <strong>derecho de preferencia</strong>. La transferencia debe inscribirse en el Registro P\u00fablico.<br><br><strong>\u00bfY si no hay acuerdo sobre el precio?</strong><ul><li>Se recurre a tasaci\u00f3n pericial</li><li>En casos extremos, puede pedirse la disoluci\u00f3n judicial</li></ul><div class=\"resp-alert\">\u26a0\ufe0f Un pacto de socios bien redactado debe prever: precio de salida, c\u00f3mo se val\u00faa la empresa, qu\u00e9 pasa con la cartera de clientes.</div>"},
+    l_disolucion:{title:"C\u00f3mo disolver una sociedad",body:"<strong>Proceso de liquidaci\u00f3n:</strong><ol><li>Designaci\u00f3n de liquidador</li><li>Cobro de todos los cr\u00e9ditos pendientes</li><li>Pago de todas las deudas</li><li>Distribuci\u00f3n del remanente entre los socios</li><li>Inscripci\u00f3n de la extinci\u00f3n en el Registro P\u00fablico</li></ol><strong>Obligaciones impositivas al cierre:</strong> baja en AFIP, declaraciones juradas pendientes, baja de habilitaciones.<br><br><div class=\"resp-alert\">\ud83d\udccb El proceso completo puede tomar 6 meses a 2 a\u00f1os. No existe cerrar una sociedad sin pasar por este proceso formal.</div>"},
+    l_directorio:{title:"Directorio \u2014 cu\u00e1ndo es obligatorio",body:"<strong>\u00bfCu\u00e1ndo es obligatorio?</strong><ul><li>En todas las <strong>SA</strong> (siempre)</li><li>En SRL: no existe directorio \u2014 la administra el gerente</li><li>En SAS: no existe directorio \u2014 la administra el administrador</li></ul><strong>Responsabilidades de los directores:</strong><ul><li>Responden personalmente por da\u00f1os causados por culpa o dolo</li><li>Pueden ser removidos por asamblea de accionistas</li></ul><div class=\"resp-alert\">\ud83d\udccb Para una PyME t\u00edpica la SA con directorio es m\u00e1s compleja y costosa. Evalu\u00e1 si realmente la necesit\u00e1s.</div>"},
+    l_sin_factura:{title:"\u00bfQu\u00e9 pasa si no emito factura?",body:"<strong>Consecuencias:</strong><ul><li>Multa: desde $150.000 hasta $1.500.000 ARS</li><li>Clausura del local: 2 a 6 d\u00edas</li><li>Reincidencia: las sanciones se duplican</li><li>Ajuste impositivo con intereses y multas adicionales</li></ul><strong>C\u00f3mo lo detecta AFIP:</strong> controles en el punto de venta, cruce de informaci\u00f3n bancaria, denuncias, inconsistencias declaradas.<br><br><div class=\"resp-alert\">\ud83d\udea8 Emitir facturas siempre es la \u00fanica defensa. El costo del impuesto siempre es menor al costo de una clausura y multa.</div>"},
+    l_sanciones_afip:{title:"Sanciones de AFIP \u2014 cu\u00e1les existen",body:"<strong>Infracci\u00f3n formal (art. 38 y 39):</strong> no presentar DDJJ en t\u00e9rmino. Multa: desde $200 a $400.000 ARS.<br><br><strong>Omisi\u00f3n de impuesto (art. 45):</strong> Multa: 100% del impuesto omitido.<br><br><strong>Defraudaci\u00f3n fiscal (art. 46):</strong> Multa: 200% a 600% del tributo evadido.<br><br><strong>No emisi\u00f3n de facturas (art. 40):</strong> Clausura 2-6 d\u00edas + multa.<br><br><strong>Evasion penal (Ley 27.430):</strong> m\u00e1s de $1.500.000 evadido por a\u00f1o \u2192 delito penal, 2 a 9 a\u00f1os de prisi\u00f3n.<br><br><div class=\"resp-alert\">\ud83d\udccb Ante una inspecci\u00f3n, siempre asesor\u00e1te con un contador o abogado tributarista antes de firmar nada.</div>"},
+    l_clausura:{title:"Clausura de local por AFIP",body:"<strong>Causales (art. 40 Ley 11.683):</strong><ul><li>No entregar facturas o comprobantes equivalentes</li><li>No llevar registros de las operaciones</li><li>No conservar duplicados de comprobantes</li></ul><strong>Proceso:</strong><ol><li>Inspector labra un acta de infracci\u00f3n</li><li>Ten\u00e9s 5 d\u00edas h\u00e1biles para presentar descargo</li><li>Si no se acepta, se impone la clausura</li><li>Pod\u00e9s apelar ante el Tribunal Fiscal</li></ol><div class=\"resp-alert\">\u26a0\ufe0f Durante la clausura no pod\u00e9s operar, pero deb\u00e9s igualmente pagarles el salario a tus empleados.</div>"},
+    l_embargo_impositivo:{title:"\u00bfMe pueden embargar por deuda impositiva?",body:"S\u00ed. AFIP puede embargar cuentas bancarias, cr\u00e9ditos, bienes registrables e inhibir bienes.<br><br><strong>C\u00f3mo funciona:</strong><ol><li>AFIP determina la deuda e intima</li><li>Si no pag\u00e1s, inicia el juicio de ejecuci\u00f3n fiscal</li><li>El juez puede trabar embargo sobre cuentas y bienes</li></ol><strong>C\u00f3mo evitarlo:</strong> regularizar la deuda (pago, plan de pagos, moratoria) antes de que llegue a ejecuci\u00f3n.<br><br><div class=\"resp-alert\">\u26a0\ufe0f La ejecuci\u00f3n fiscal es r\u00e1pida. Los honorarios del agente fiscal se suman a la deuda. Actu\u00e1 antes de que llegue a esa instancia.</div>"},
+    l_retenciones:{title:"R\u00e9gimen de retenciones impositivas",body:"Las retenciones son un mecanismo de recaudaci\u00f3n anticipada: quien paga retiene parte del monto y lo deposita en AFIP.<br><br><strong>Cu\u00e1ndo te retienen a vos:</strong> cuando factur\u00e1s a grandes empresas, bancos, tarjetas de cr\u00e9dito o al Estado.<br><br><strong>Cu\u00e1ndo ten\u00e9s que retener vos:</strong> si AFIP te designa agente de retenci\u00f3n.<br><br><div class=\"resp-alert\">\ud83d\udccb Guard\u00e1 siempre el comprobante de retenci\u00f3n. Sin \u00e9l, no pod\u00e9s acreditar el pago y podr\u00edas pagar el impuesto dos veces.</div>"},
+    l_impugnar_afip:{title:"C\u00f3mo impugnar una deuda de AFIP",body:"<strong>V\u00edas disponibles:</strong><br><br><strong>1. Recurso de reconsideraci\u00f3n:</strong> ante la misma AFIP. Plazo: 15 d\u00edas h\u00e1biles desde la notificaci\u00f3n.<br><br><strong>2. Recurso de apelaci\u00f3n ante el Tribunal Fiscal de la Naci\u00f3n:</strong> la deuda queda suspendida mientras dura el proceso.<br><br><strong>3. Acci\u00f3n contencioso-administrativa:</strong> ante la C\u00e1mara Federal.<br><br><div class=\"resp-alert\">\u26a0\ufe0f Los plazos son perentorios. Si los perd\u00e9s, la deuda queda firme. Siempre con abogado tributarista.</div>"},
+    l_prescripcion:{title:"Prescripci\u00f3n impositiva",body:"<strong>Plazos generales:</strong><ul><li>5 a\u00f1os: contribuyentes inscriptos que presentaron DDJJ</li><li>10 a\u00f1os: contribuyentes no inscriptos o que no presentaron declaraciones</li></ul><strong>La interrumpen:</strong> reconocimiento de la deuda, inicio de acci\u00f3n judicial, intimaciones formales de AFIP.<br><br><div class=\"resp-alert\">\ud83d\udccb La prescripci\u00f3n no opera autom\u00e1ticamente \u2014 deb\u00e9s alegarla. Consult\u00e1 con un abogado tributarista.</div>"},
+    l_ley_datos:{title:"Ley 25.326 de Protecci\u00f3n de Datos Personales",body:"Regula el tratamiento de datos personales. La autoridad es la <strong>AAIP</strong>.<br><br><strong>Principios fundamentales:</strong><ul><li>Consentimiento del titular</li><li>Finalidad espec\u00edfica</li><li>Proporcionalidad (solo recolectar los datos necesarios)</li><li>Confidencialidad</li><li>Calidad (mantener datos actualizados)</li></ul><strong>Derechos de los titulares:</strong> acceso, rectificaci\u00f3n, cancelaci\u00f3n, oposici\u00f3n (ARCO).<br><br><div class=\"resp-alert\">\ud83d\udccb Argentina est\u00e1 en proceso de actualizar esta ley. Verific\u00e1 el estado en aaip.gob.ar</div>"},
+    l_registro_bd:{title:"\u00bfDebo registrar mi base de clientes en la AAIP?",body:"La obligaci\u00f3n de inscripci\u00f3n formal fue simplificada. <strong>Lo que s\u00ed deb\u00e9s hacer:</strong><ul><li>Tener una pol\u00edtica de privacidad clara</li><li>Obtener consentimiento para tratar datos personales</li><li>Implementar medidas de seguridad adecuadas</li><li>Responder solicitudes de ARCO en 30 d\u00edas</li></ul><div class=\"resp-alert\">\ud83d\udccb Verific\u00e1 en aaip.gob.ar los requisitos actuales ya que la normativa se actualiza frecuentemente.</div>"},
+    l_consentimiento:{title:"Consentimiento informado para datos personales",body:"Para ser v\u00e1lido, el consentimiento debe ser: <strong>libre, espec\u00edfico, informado y previo</strong>.<br><br><strong>C\u00f3mo obtenerlo:</strong><ul><li>Checkbox en formularios web (no pre-marcado)</li><li>Firma en documento f\u00edsico</li><li>Confirmaci\u00f3n por email</li></ul><strong>No necesit\u00e1s consentimiento cuando:</strong><ul><li>Datos en el marco de una relaci\u00f3n contractual</li><li>Datos p\u00fablicos y de libre acceso</li><li>Para cumplir una obligaci\u00f3n legal</li></ul><div class=\"resp-alert\">\ud83d\udccb Guard\u00e1 siempre evidencia del consentimiento. La carga de la prueba recae sobre vos.</div>"},
+    l_politica_privacidad:{title:"C\u00f3mo armar una pol\u00edtica de privacidad",body:"<strong>Debe incluir:</strong><ul><li>Qui\u00e9n trata los datos (nombre, CUIT, contacto)</li><li>Qu\u00e9 datos recolect\u00e1s</li><li>Para qu\u00e9 finalidades</li><li>Con qui\u00e9n compart\u00eds los datos</li><li>Por cu\u00e1nto tiempo los conserv\u00e1s</li><li>Derechos del usuario y c\u00f3mo ejercerlos</li><li>Pol\u00edtica de cookies</li></ul><strong>D\u00f3nde publicarla:</strong> pie de p\u00e1gina del sitio web, accesible siempre.<br><br><div class=\"resp-alert\">\ud83d\udccb Evit\u00e1 copiar y pegar pol\u00edticas de otros sitios. Hay plantillas gratuitas en aaip.gob.ar</div>"},
+    l_breach:{title:"\u00bfQu\u00e9 pasa si sufro un hackeo o filtraci\u00f3n de datos?",body:"<strong>\u00bfQu\u00e9 deb\u00e9s hacer?</strong><ol><li>Contener la brecha: aislar sistemas, cambiar credenciales</li><li>Evaluar el impacto: qu\u00e9 datos y cu\u00e1ntas personas</li><li>Notificar a la AAIP</li><li>Notificar a los afectados si el riesgo es alto</li><li>Documentar todo</li></ol><div class=\"resp-alert\">\u26a0\ufe0f Tener un plan de respuesta a incidentes antes de que ocurra es fundamental. Inclu\u00ed: contactos de emergencia y pasos a seguir.</div>"},
+    l_marketing_datos:{title:"\u00bfPuedo usar datos de clientes para marketing?",body:"S\u00ed, con condiciones:<br><br>Si el cliente te dio sus datos para comprar/contratar, pod\u00e9s enviarles comunicaciones sobre productos similares, si:<ul><li>Los informaste que usar\u00edas sus datos para eso</li><li>Les ofreciste darse de baja en cada comunicaci\u00f3n</li><li>Respet\u00e1s las solicitudes de baja inmediatamente</li></ul><strong>Siempre incluir en cada email:</strong> qui\u00e9n env\u00eda, link de unsubscribe, por qu\u00e9 recibe el email.<br><br><div class=\"resp-alert\">\ud83d\udccb Las plataformas de email marketing (Mailchimp, etc.) ya incluyen estas protecciones autom\u00e1ticamente.</div>"},
+    l_marca:{title:"C\u00f3mo registrar una marca en Argentina",body:"El registro se realiza ante el <strong>INPI</strong> y otorga uso exclusivo por 10 a\u00f1os renovables.<br><br><strong>Pasos:</strong><ol><li>Busc\u00e1 disponibilidad en inpi.gob.ar</li><li>Determin\u00e1 la/s clase/s de Niza (45 clases seg\u00fan producto/servicio)</li><li>Present\u00e1 la solicitud online con denominaci\u00f3n o imagen, clases y datos</li><li>Pago de la tasa (~$30.000-$80.000 ARS por clase)</li><li>Per\u00edodo de oposici\u00f3n: 30 d\u00edas</li><li>Concesi\u00f3n: proceso de 12-24 meses</li></ol><div class=\"resp-alert\">\ud83d\udccb Registr\u00e1 tu marca lo antes posible. Sin registro, cualquiera puede registrarla y pedirte que dejes de usarla.</div>"},
+    l_derechos_autor:{title:"\u00bfQu\u00e9 protege el derecho de autor?",body:"La Ley 11.723 protege: textos, m\u00fasica, obras audiovisuales, fotograf\u00edas, software, bases de datos originales, p\u00e1ginas web.<br><br><strong>\u00bfRequiere registro?</strong> No \u2014 surge autom\u00e1ticamente con la creaci\u00f3n. El registro en DNDA es voluntario pero \u00fatil como prueba.<br><br><strong>Duraci\u00f3n:</strong> vida del autor + 70 a\u00f1os.<br><br><div class=\"resp-alert\">\ud83d\udccb Si contr\u00e1s a alguien para crear contenido, acord\u00e1 contractualmente que los derechos se transfieren a tu empresa. Sin esa cl\u00e1usula, el autor conserva los derechos.</div>"},
+    l_nombre_empresa:{title:"C\u00f3mo proteger el nombre de tu empresa",body:"<strong>Tres capas de protecci\u00f3n:</strong><ul><li><strong>Registro societario:</strong> al inscribir la empresa, el nombre queda reservado en esa jurisdicci\u00f3n</li><li><strong>Registro de marca en INPI:</strong> protecci\u00f3n nacional para uso comercial</li><li><strong>Registro del dominio web en nic.ar</strong></li></ul><div class=\"resp-alert\">\ud83d\udccb La combinaci\u00f3n ideal: marca registrada en INPI + dominio en nic.ar + presencia establecida en redes sociales.</div>"},
+    l_patente:{title:"\u00bfQu\u00e9 es una patente y c\u00f3mo se obtiene?",body:"Una patente otorga el derecho exclusivo de explotar un invento por <strong>20 a\u00f1os</strong>.<br><br><strong>\u00bfQu\u00e9 se puede patentar?</strong> Inventos nuevos con aplicaci\u00f3n industrial, mejoras de inventos existentes, modelos de utilidad.<br><br><strong>\u00bfQu\u00e9 NO se puede patentar?</strong> Descubrimientos cient\u00edficos, obras art\u00edsticas, software como tal (se protege por derecho de autor).<br><br><div class=\"resp-alert\">\ud83d\udccb Para PyMEs de software, generalmente conviene proteger el c\u00f3digo por derechos de autor y mantener el know-how como secreto comercial.</div>"},
+    l_copia_marca:{title:"Alguien copi\u00f3 mi marca \u2014 qu\u00e9 hago",body:"<strong>Acciones disponibles:</strong><br><br><strong>1. Carta documento:</strong> notific\u00e1s al infractor para que cese el uso.<br><br><strong>2. Acci\u00f3n civil por infracci\u00f3n marcaria:</strong><ul><li>Cese del uso</li><li>Indemnizaci\u00f3n por da\u00f1os</li><li>Destrucci\u00f3n de productos con la marca falsa</li></ul><strong>3. Denuncia penal:</strong> la falsificaci\u00f3n de marcas es delito (Ley 22.362). Pena: 3 meses a 2 a\u00f1os + multa.<br><br><div class=\"resp-alert\">\u26a0\ufe0f Actu\u00e1 r\u00e1pido. El infractor puede intentar registrar tu marca antes que vos. Pod\u00e9s pedir medidas cautelares en INPI.</div>"},
+    l_software:{title:"C\u00f3mo proteger el software que desarrollaste",body:"El software est\u00e1 protegido por la <strong>Ley 11.723</strong> como obra literaria (protecci\u00f3n autom\u00e1tica).<br><br><strong>Para reforzar la protecci\u00f3n:</strong><ul><li>Registro en DNDA (da fecha cierta)</li><li>Secreto comercial: no publicar el c\u00f3digo, contratos de confidencialidad</li><li>Licencias de uso que controlan c\u00f3mo los usuarios pueden usar el software</li><li>Cl\u00e1usulas en contratos laborales que transfieren los derechos a la empresa</li></ul><div class=\"resp-alert\">\ud83d\udccb Si desarrollaste el software con freelancers, el derecho de autor lo tienen ellos salvo que el contrato transfiera esos derechos expl\u00edcitamente a tu empresa.</div>"},
+    l_cobro_deuda:{title:"\u00bfQu\u00e9 hago si un cliente no me paga?",body:"<strong>Paso 1 \u2014 Contacto amigable (d\u00eda 1-7):</strong> llamado o email recordando el vencimiento.<br><br><strong>Paso 2 \u2014 Intimaci\u00f3n formal (d\u00eda 7-15):</strong> email con acuse o carta documento.<br><br><strong>Paso 3 \u2014 Carta documento notarial (d\u00eda 15-30):</strong> intimaci\u00f3n formal con fecha cierta, interrumpe la prescripci\u00f3n.<br><br><strong>Paso 4 \u2014 Acciones judiciales:</strong><ul><li>Juicio ejecutivo (pagar\u00e9, cheque, factura de cr\u00e9dito aceptada)</li><li>Proceso monitorio (deudas documentadas)</li><li>Juicio ordinario (deudas sin documentaci\u00f3n ejecutable)</li></ul><div class=\"resp-alert\">\ud83d\udca1 Prevenci\u00f3n: cobr\u00e1 adelantos, us\u00e1 facturas de cr\u00e9dito MiPyME, pedid avales en montos importantes.</div>"},
+    l_juicio_cobro:{title:"\u00bfCu\u00e1ndo puedo ir a juicio por cobro?",body:"<strong>Seg\u00fan la documentaci\u00f3n:</strong><br><br><strong>Juicio ejecutivo (m\u00e1s r\u00e1pido):</strong> requiere t\u00edtulo ejecutivo: cheque, pagar\u00e9, factura de cr\u00e9dito MiPyME aceptada.<br><br><strong>Proceso monitorio:</strong> para deudas documentadas (contratos, facturas comunes).<br><br><strong>Juicio ordinario:</strong> cuando la deuda no est\u00e1 en un t\u00edtulo ejecutivo. M\u00e1s lento (1-3 a\u00f1os).<br><br><div class=\"resp-alert\">\ud83d\udccb Evalu\u00e1 la solvencia del deudor antes de ir a juicio. Ganar el juicio no garantiza cobrar.</div>"},
+    l_mora_deudor:{title:"\u00bfQu\u00e9 es la mora del deudor?",body:"La mora es el estado de incumplimiento que genera la obligaci\u00f3n de pagar intereses.<br><br><strong>Mora autom\u00e1tica:</strong> si el contrato tiene fecha de pago, la mora opera al d\u00eda siguiente del vencimiento.<br><br><strong>Mora por interpelaci\u00f3n:</strong> sin fecha determinada, deb\u00e9s intimar al deudor (carta documento).<br><br><strong>Efectos:</strong><ul><li>Obligaci\u00f3n de pagar intereses moratorios</li><li>Pod\u00e9s resolver el contrato por incumplimiento</li></ul><div class=\"resp-alert\">\ud83d\udccb Siempre inclu\u00ed en tus contratos y facturas la tasa de inter\u00e9s por mora.</div>"},
+    l_documentar_deuda:{title:"C\u00f3mo documentar una deuda de un cliente",body:"<strong>Documentos ejecutivos (los m\u00e1s fuertes):</strong><ul><li>Pagar\u00e9: el cliente firma al momento de la operaci\u00f3n</li><li>Cheque: si lo rechaza, ten\u00e9s t\u00edtulo ejecutivo</li><li>Factura de Cr\u00e9dito MiPyME aceptada</li></ul><strong>Documentos probatorios:</strong><ul><li>Contrato firmado con precio y fecha</li><li>Emails con confirmaci\u00f3n de la deuda</li><li>Facturas + remito firmado</li><li>WhatsApp (con capturas y backup)</li></ul><div class=\"resp-alert\">\ud83d\udccb El WhatsApp tiene valor probatorio en Argentina (varios fallos lo admiten). No borres la conversaci\u00f3n.</div>"},
+    l_intereses_mora:{title:"Intereses por mora",body:"<strong>\u00bfCu\u00e1nto son?</strong><ul><li>Tasa pactada en contrato: tiene prioridad</li><li>Sin tasa pactada: tasa activa del Banco Naci\u00f3n + plus fijado por los jueces (puede ser 100-200% anual en contextos inflacionarios)</li></ul><strong>Tipos:</strong><ul><li>Moratorios: por el retraso en s\u00ed</li><li>Punitorios: adicionales pactados contractualmente</li><li>Compensatorios: por el uso del capital</li></ul><div class=\"resp-alert\">\ud83d\udccb En contextos inflacionarios, acordar deudas en UVA o d\u00f3lares puede protegerte mejor que una tasa fija en pesos.</div>"},
+    l_carta_documento:{title:"C\u00f3mo hacer una carta documento",body:"La carta documento tiene fecha cierta y el receptor no puede alegar que no la recibi\u00f3.<br><br><strong>Pasos:</strong><ol><li>Redact\u00e1 el texto: qui\u00e9n env\u00eda, a qui\u00e9n, qu\u00e9 se reclama, plazo para responder</li><li>Present\u00e1te en cualquier sucursal del Correo Argentino con tu DNI</li><li>Pago: ~$2.000-$5.000 ARS</li><li>Te entregan comprobante de env\u00edo y copia sellada</li></ol><div class=\"resp-alert\">\ud83d\udccb Guard\u00e1 siempre el comprobante. Si el destinatario no la retira, al tercer aviso se da por notificado igualmente.</div>"},
+    l_derechos_consumidor:{title:"Derechos del consumidor que afectan tu negocio",body:"<strong>Ley 24.240 de Defensa del Consumidor:</strong><br><br><strong>1. Informaci\u00f3n:</strong> deb\u00e9s informar precio total, caracter\u00edsticas y condiciones antes de la compra.<br><br><strong>2. Garant\u00eda legal:</strong> productos nuevos 6 meses obligatoria; usados 3 meses m\u00ednimo.<br><br><strong>3. Arrepentimiento en ventas online:</strong> el consumidor puede cancelar dentro de los <strong>10 d\u00edas h\u00e1biles</strong> de recibida la compra. Deb\u00e9s devolver el dinero.<br><br><strong>4. Cl\u00e1usulas abusivas:</strong> son nulas de pleno derecho.<br><br><div class=\"resp-alert\">\u26a0\ufe0f Una denuncia en Defensa del Consumidor puede generar multas y da\u00f1o reputacional. La mejor defensa es cumplir tus obligaciones desde el inicio.</div>"},
+  };
+
+  
   // ── BÚSQUEDA GLOBAL
   // ══════════════════════════════════════════════════
   window.runGlobalSearch = function(q) {
@@ -2740,6 +3019,7 @@
     if(section==='iva')        { populateIVAMeses(); renderIVA(); }
     if(section==='reportes')   { populateAnioSelect('pl-anio'); populateAnioSelect('flujo-anio'); renderPL(); }
     if(section==='contador')   renderContador();
+    if(section==='asesor')     renderAsesor();
   };
 
   // ── DARK / FOCO ──
