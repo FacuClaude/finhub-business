@@ -1944,6 +1944,7 @@
       document.getElementById('inv-rol').value = 'contador';
       aplicarRolBase('contador');
     }
+    if(name==='empleado'){
       editingEmpId=null;
       document.getElementById('empleado-modal-title').textContent='Nuevo empleado';
       ['emp-nombre','emp-cuil','emp-dni','emp-cbu','emp-obra-social','emp-email','emp-telefono','emp-domicilio','emp-notas'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
