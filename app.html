@@ -563,6 +563,90 @@
       </div>
     </div>
 
+    <!-- VISTA RÁPIDA -->
+    <div class="page" id="page-vistarapida">
+      <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px;flex-wrap:wrap;gap:8px;">
+        <div class="page-title" style="margin-bottom:0;">Vista rápida</div>
+        <div id="vr-fecha" style="font-size:.78rem;color:var(--muted);"></div>
+      </div>
+      <div class="page-sub" style="margin-bottom:28px;">Panorama del día — todo lo que necesitás saber de un vistazo</div>
+
+      <!-- Fila 1: KPIs del mes -->
+      <div class="cards-row" style="margin-bottom:20px;">
+        <div class="card" style="border-top:2px solid var(--accent);cursor:pointer;" onclick="goTo('movimientos')">
+          <div class="card-label">Ingresos del mes</div>
+          <div class="card-value accent" id="vr-ingresos">$0</div>
+          <div class="card-sub" id="vr-ingresos-sub"></div>
+        </div>
+        <div class="card" style="border-top:2px solid var(--red);cursor:pointer;" onclick="goTo('movimientos')">
+          <div class="card-label">Gastos del mes</div>
+          <div class="card-value negative" id="vr-gastos">$0</div>
+          <div class="card-sub" id="vr-gastos-sub"></div>
+        </div>
+        <div class="card" style="cursor:pointer;" onclick="goTo('movimientos')">
+          <div class="card-label">Resultado neto</div>
+          <div class="card-value" id="vr-resultado">$0</div>
+          <div class="card-sub" id="vr-margen"></div>
+        </div>
+        <div class="card" style="border-top:2px solid var(--green);cursor:pointer;" onclick="goTo('cuentas')">
+          <div class="card-label">Saldo total cuentas</div>
+          <div class="card-value" style="color:var(--green);" id="vr-saldo">$0</div>
+          <div class="card-sub">ARS consolidado</div>
+        </div>
+      </div>
+
+      <!-- Fila 2: Alertas + Pendientes -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px;">
+
+        <!-- Alertas críticas -->
+        <div style="background:var(--surface);border:1px solid var(--border);padding:20px;">
+          <div style="font-size:.65rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:14px;">⚡ Alertas</div>
+          <div id="vr-alertas">
+            <div style="font-size:.8rem;color:var(--muted);padding:12px 0;">Sin alertas activas ✓</div>
+          </div>
+        </div>
+
+        <!-- Pendientes accionables -->
+        <div style="background:var(--surface);border:1px solid var(--border);padding:20px;">
+          <div style="font-size:.65rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:14px;">📋 Pendientes</div>
+          <div id="vr-pendientes">
+            <div style="font-size:.8rem;color:var(--muted);padding:12px 0;">Sin pendientes ✓</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Fila 3: OC activas + Stock crítico + Últimos movimientos -->
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;margin-bottom:20px;">
+
+        <!-- OC abiertas -->
+        <div style="background:var(--surface);border:1px solid var(--border);padding:18px;cursor:pointer;" onclick="goTo('oc')">
+          <div style="font-size:.65rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:12px;">🛒 OC abiertas</div>
+          <div id="vr-oc" style="font-size:.8rem;color:var(--muted);">—</div>
+        </div>
+
+        <!-- Stock crítico -->
+        <div style="background:var(--surface);border:1px solid var(--border);padding:18px;cursor:pointer;" onclick="goTo('inventario')">
+          <div style="font-size:.65rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:12px;">📦 Stock crítico</div>
+          <div id="vr-stock" style="font-size:.8rem;color:var(--muted);">—</div>
+        </div>
+
+        <!-- IVA del mes -->
+        <div style="background:var(--surface);border:1px solid var(--border);padding:18px;cursor:pointer;" onclick="goTo('iva')">
+          <div style="font-size:.65rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:12px;">🧾 IVA del mes</div>
+          <div id="vr-iva" style="font-size:.8rem;color:var(--muted);">—</div>
+        </div>
+      </div>
+
+      <!-- Últimos movimientos -->
+      <div style="background:var(--surface);border:1px solid var(--border);padding:20px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+          <div style="font-size:.65rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);">📊 Últimos movimientos</div>
+          <button onclick="goTo('movimientos')" style="font-size:.68rem;color:var(--accent);background:none;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;">Ver todos →</button>
+        </div>
+        <div id="vr-ultimos-movs"></div>
+      </div>
+    </div>
+
     <!-- BÚSQUEDA GLOBAL -->
     <div style="padding:12px 16px;border-bottom:1px solid rgba(255,255,255,.1);">
       <div style="position:relative;">
@@ -575,6 +659,10 @@
     </div>
     <nav>
       <div class="nav-section">Principal</div>
+      <button class="nav-item" onclick="goTo('vistarapida')">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        Vista rápida
+      </button>
       <button class="nav-item active" onclick="goTo('dashboard')">
         <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
         Dashboard
@@ -651,7 +739,110 @@
   </aside>
 
   <!-- ── MAIN ── -->
+  <!-- kippcode watermark -->
+  <div style="position:fixed;bottom:14px;right:18px;z-index:10;pointer-events:none;user-select:none;">
+    <div style="display:flex;align-items:center;gap:5px;opacity:.22;transition:opacity .3s;" onmouseenter="this.style.opacity='.45'" onmouseleave="this.style.opacity='.22'" style="pointer-events:auto;">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" style="flex-shrink:0;">
+        <rect x="2" y="2" width="20" height="20" rx="4" stroke="#888" stroke-width="1.5"/>
+        <circle cx="12" cy="12" r="2.5" fill="#e86c2a"/>
+      </svg>
+      <span style="font-family:'DM Sans',sans-serif;font-size:.65rem;font-weight:500;letter-spacing:.04em;color:var(--ink);white-space:nowrap;">kippcode</span>
+    </div>
+  </div>
   <main id="main-content" style="opacity:0;transition:opacity .3s">
+
+    <!-- VISTA RÁPIDA -->
+    <div class="page" id="page-vistarapida">
+      <div style="display:flex;align-items:baseline;gap:12px;margin-bottom:4px;">
+        <div class="page-title" style="margin-bottom:0;">Vista rápida</div>
+        <div id="vr-fecha" style="font-size:.8rem;color:var(--muted);"></div>
+      </div>
+      <div class="page-sub" style="margin-bottom:24px;">El pulso de tu empresa hoy</div>
+
+      <!-- Saludo contextual -->
+      <div id="vr-saludo" style="background:var(--accent);color:white;padding:18px 24px;border-radius:6px;margin-bottom:24px;display:flex;justify-content:space-between;align-items:center;">
+        <div>
+          <div id="vr-saludo-titulo" style="font-family:'Plus Jakarta Sans',sans-serif;font-size:1.15rem;font-weight:700;margin-bottom:2px;"></div>
+          <div id="vr-saludo-sub" style="font-size:.8rem;opacity:.85;"></div>
+        </div>
+        <div id="vr-saludo-icon" style="font-size:2.2rem;opacity:.8;"></div>
+      </div>
+
+      <!-- KPIs del día -->
+      <div class="cards-row" style="margin-bottom:24px;">
+        <div class="card" style="border-top:2px solid var(--accent);">
+          <div class="card-label">Saldo total en cuentas</div>
+          <div class="card-value accent" id="vr-saldo">$0</div>
+          <div class="card-sub" id="vr-saldo-sub"></div>
+        </div>
+        <div class="card" style="border-top:2px solid var(--green);">
+          <div class="card-label">Ingresos este mes</div>
+          <div class="card-value positive" id="vr-ingresos">$0</div>
+        </div>
+        <div class="card" style="border-top:2px solid var(--red);">
+          <div class="card-label">Gastos este mes</div>
+          <div class="card-value negative" id="vr-gastos">$0</div>
+        </div>
+        <div class="card" id="vr-resultado-card" style="border-top:2px solid var(--green);">
+          <div class="card-label">Resultado del mes</div>
+          <div class="card-value" id="vr-resultado">$0</div>
+          <div class="card-sub" id="vr-margen"></div>
+        </div>
+      </div>
+
+      <!-- Alertas críticas -->
+      <div id="vr-alertas" style="margin-bottom:24px;"></div>
+
+      <!-- Grid de paneles -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:24px;">
+
+        <!-- Panel: Últimos movimientos -->
+        <div style="background:var(--surface);border:1px solid var(--border);padding:20px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+            <div style="font-size:.7rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);">Últimos movimientos</div>
+            <button onclick="goTo('movimientos')" style="font-size:.65rem;color:var(--accent);background:none;border:none;cursor:pointer;padding:0;">Ver todos →</button>
+          </div>
+          <div id="vr-movimientos"></div>
+        </div>
+
+        <!-- Panel: Inventario crítico -->
+        <div style="background:var(--surface);border:1px solid var(--border);padding:20px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+            <div style="font-size:.7rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);">Stock crítico</div>
+            <button onclick="goTo('inventario')" style="font-size:.65rem;color:var(--accent);background:none;border:none;cursor:pointer;padding:0;">Ver inventario →</button>
+          </div>
+          <div id="vr-stock"></div>
+        </div>
+
+        <!-- Panel: OC pendientes -->
+        <div style="background:var(--surface);border:1px solid var(--border);padding:20px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+            <div style="font-size:.7rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);">OC pendientes</div>
+            <button onclick="goTo('oc')" style="font-size:.65rem;color:var(--accent);background:none;border:none;cursor:pointer;padding:0;">Ver todas →</button>
+          </div>
+          <div id="vr-oc"></div>
+        </div>
+
+        <!-- Panel: Empleados (alertas) -->
+        <div style="background:var(--surface);border:1px solid var(--border);padding:20px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+            <div style="font-size:.7rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);">Personal</div>
+            <button onclick="goTo('rrhh')" style="font-size:.65rem;color:var(--accent);background:none;border:none;cursor:pointer;padding:0;">Ver RRHH →</button>
+          </div>
+          <div id="vr-personal"></div>
+        </div>
+      </div>
+
+      <!-- Accesos rápidos -->
+      <div style="font-size:.65rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:12px;">Acciones frecuentes</div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        <button onclick="openModal('tx')" class="btn-primary" style="font-size:.72rem;">+ Movimiento</button>
+        <button onclick="goTo('movimientos')" class="btn-export" style="font-size:.72rem;">Ver movimientos</button>
+        <button onclick="openModal('oc-nueva')" class="btn-export" style="font-size:.72rem;">+ Orden de compra</button>
+        <button onclick="goTo('iva')" class="btn-export" style="font-size:.72rem;">Ver IVA</button>
+        <button onclick="goTo('reportes')" class="btn-export" style="font-size:.72rem;">Ver reportes</button>
+      </div>
+    </div>
 
     <!-- BÚSQUEDA GLOBAL -->
     <div class="page" id="page-busqueda">
@@ -1339,7 +1530,12 @@
             <option value="pagada">Pagada</option>
           </select>
         </div>
-        <button class="btn-primary" onclick="openModal('oc-nueva')">+ Nueva OC</button>
+        <div style="display:flex;gap:8px;">
+          <button class="btn-export" onclick="descargarTemplateOC()">↓ Template</button>
+          <button class="btn-export" onclick="document.getElementById('import-oc-file').click()">↑ Importar</button>
+          <input type="file" id="import-oc-file" accept=".xlsx,.xls" style="display:none" onchange="importarOCExcel(this)"/>
+          <button class="btn-primary" onclick="openModal('oc-nueva')">+ Nueva OC</button>
+        </div>
       </div>
 
       <div id="oc-lista"></div>
@@ -6225,6 +6421,325 @@
   };
 
 
+
+  // ══════════════════════════════════════════════════
+  // VISTA RÁPIDA
+  // ══════════════════════════════════════════════════
+
+  // ── EXCEL ÓRDENES DE COMPRA ──
+  window.descargarTemplateOC = function() {
+    _cargarXLSX(() => {
+      const wb = XLSX.utils.book_new();
+      const data = [
+        ['numero','proveedor_nombre','fecha_emision','fecha_entrega','estado','notas','items_descripcion','items_cantidad','items_precio_unitario'],
+        ['OC-2026-001','Importadora Palanquillas SA','2026-01-10','2026-01-20','enviada','Entrega en planta','Chapa galvanizada 2mm 1x2m|Tubo estructural 50x50x2mm','50|200','45000|8500'],
+        ['OC-2026-002','Gases Industriales del Sur','2026-01-15','2026-01-22','recibida','Urgente','Oxígeno industrial 50L|Argón 99,9% 50L','5|3','18000|22000'],
+        ['OC-2026-003','Herramientas Industriales SA','2026-02-01','2026-02-10','borrador','','Disco de corte 230mm|Electrodo rutílico 3,25mm 5kg','100|20','1200|3500'],
+      ];
+      const ws = XLSX.utils.aoa_to_sheet(data);
+      ws['!cols'] = [{wch:16},{wch:30},{wch:14},{wch:14},{wch:12},{wch:24},{wch:50},{wch:20},{wch:22}];
+      const instr = [
+        ['INSTRUCCIONES — Importar órdenes de compra · finHub Business'],[''],
+        ['numero','Número de OC (ej: OC-2026-001). Opcional.'],
+        ['proveedor_nombre','Nombre exacto del proveedor tal como está en Contactos. OBLIGATORIO.'],
+        ['fecha_emision','YYYY-MM-DD. Opcional (usa la fecha de hoy si se omite).'],
+        ['fecha_entrega','YYYY-MM-DD. Opcional.'],
+        ['estado','borrador / enviada (por defecto: borrador)'],
+        ['notas','Texto libre. Opcional.'],
+        ['items_descripcion','Descripciones separadas por | (pipe). Ej: Producto A|Producto B'],
+        ['items_cantidad','Cantidades separadas por | en el mismo orden. Ej: 10|5'],
+        ['items_precio_unitario','Precios unitarios separados por | en el mismo orden. Ej: 1000|2000'],
+      ];
+      const wsI = XLSX.utils.aoa_to_sheet(instr);
+      wsI['!cols'] = [{wch:22},{wch:65}];
+      XLSX.utils.book_append_sheet(wb, ws, 'OrdeneCompra');
+      XLSX.utils.book_append_sheet(wb, wsI, 'Instrucciones');
+      XLSX.writeFile(wb, 'finhub_template_ordenes_compra.xlsx');
+    });
+  };
+
+  window.importarOCExcel = function(input) {
+    const file = input.files[0]; if (!file) return; input.value = '';
+    _cargarXLSX(() => {
+      const reader = new FileReader();
+      reader.onload = async e => {
+        try {
+          const wb = XLSX.read(e.target.result, {type:'binary'});
+          if (!wb.SheetNames.includes('OrdeneCompra')) {
+            alert('Este archivo no tiene la hoja "OrdeneCompra".\nUsá el botón "\u2193 Template" para descargar el formato correcto.'); return;
+          }
+          const rows = XLSX.utils.sheet_to_json(wb.Sheets['OrdeneCompra'], {defval:''});
+          const batch = {}; let ok = 0, err = 0;
+          const estadosValidos = ['borrador','enviada','recibida','parcial','facturada','pagada'];
+          rows.forEach((row, i) => {
+            const provNombre = String(row.proveedor_nombre||'').trim();
+            if (!provNombre) { err++; return; }
+            // Buscar proveedor por nombre en contactos
+            const provEntry = Object.entries(contacts).find(([,c]) => c.nombre?.toLowerCase() === provNombre.toLowerCase() && c.tipo === 'proveedor');
+            const provId = provEntry ? provEntry[0] : null;
+            // Parsear items (separados por |)
+            const descs  = String(row.items_descripcion||'').split('|').map(s=>s.trim()).filter(Boolean);
+            const cants  = String(row.items_cantidad||'').split('|').map(s=>parseFloat(s)||1);
+            const precios= String(row.items_precio_unitario||'').split('|').map(s=>parseFloat(s)||0);
+            const items  = descs.map((desc,j) => ({
+              prodId: null, descripcion: desc,
+              cantidad: cants[j]||1, precioUnitario: precios[j]||0, cantidadRecibida: 0
+            }));
+            if (!items.length) { err++; return; }
+            const totalOC = items.reduce((s,it)=>s+(it.cantidad*it.precioUnitario),0);
+            const estado  = estadosValidos.includes(String(row.estado||'').trim()) ? String(row.estado).trim() : 'borrador';
+            const id = push(ref(db, `empresas/${empresaId}/ordenesCompra`)).key;
+            batch[`empresas/${empresaId}/ordenesCompra/${id}`] = {
+              numero:       String(row.numero||'').trim()||null,
+              proveedorId:  provId,
+              fechaEmision: String(row.fecha_emision||'').slice(0,10)||new Date().toISOString().slice(0,10),
+              fechaEntrega: String(row.fecha_entrega||'').slice(0,10)||null,
+              estado, items, totalOC,
+              notas: String(row.notas||'').trim()||null,
+              createdAt: Date.now(), updatedAt: Date.now(),
+            };
+            ok++;
+          });
+          if (!ok) { alert('No se encontraron órdenes válidas. Verificá el archivo.'); return; }
+          await update(ref(db), batch);
+          alert(`✓ ${ok} orden${ok!==1?'es':''} de compra importada${ok!==1?'s':''}${err?`
+⚠️ ${err} filas ignoradas.`:''}`);
+        } catch(ex) { alert('Error al procesar el archivo.\n'+ex.message); }
+      };
+      reader.readAsBinaryString(file);
+    });
+  };
+
+
+
+  // ══════════════════════════════════════════════════
+  // VISTA RÁPIDA
+  // ══════════════════════════════════════════════════
+  window.renderVistaRapida = function() {
+    // Fecha del día
+    const hoy = new Date();
+    const fechaEl = document.getElementById('vr-fecha');
+    if (fechaEl) fechaEl.textContent = hoy.toLocaleDateString('es-AR', { weekday:'long', day:'numeric', month:'long', year:'numeric' });
+
+    const txArr = Object.entries(transactions).map(([id,t]) => ({id,...t})).filter(t => t.type !== 'transferencia');
+    const mesActual = hoy.toISOString().slice(0,7);
+    const txMes = txArr.filter(t => t.date?.startsWith(mesActual));
+
+    const ing  = txMes.filter(t=>t.type==='income').reduce((s,t)=>s+t.amount,0);
+    const gast = txMes.filter(t=>t.type==='expense').reduce((s,t)=>s+t.amount,0);
+    const res  = ing - gast;
+    const marg = ing > 0 ? ((res/ing)*100).toFixed(1) : null;
+
+    // KPIs
+    const e = id => document.getElementById(id);
+    if (e('vr-ingresos'))    { e('vr-ingresos').textContent = fmt(ing); e('vr-ingresos').className = 'card-value accent'; }
+    if (e('vr-gastos'))      { e('vr-gastos').textContent   = fmt(gast); }
+    if (e('vr-resultado'))   { e('vr-resultado').textContent = fmt(res); e('vr-resultado').className = 'card-value ' + (res>=0?'positive':'negative'); }
+    if (e('vr-margen'))      { e('vr-margen').textContent = marg !== null ? `Margen: ${marg}%` : ''; }
+    if (e('vr-ingresos-sub')){ e('vr-ingresos-sub').textContent = `${txMes.filter(t=>t.type==='income').length} operaciones`; }
+    if (e('vr-gastos-sub'))  { e('vr-gastos-sub').textContent = `${txMes.filter(t=>t.type==='expense').length} operaciones`; }
+
+    // Saldo total cuentas
+    const saldoTotal = Object.keys(accounts).reduce((s,id) => s + calcSaldoCuenta(id), 0);
+    if (e('vr-saldo')) e('vr-saldo').textContent = fmt(saldoTotal);
+
+    // ── Alertas ──
+    const alertas = [];
+    if (res < 0) alertas.push({ tipo:'danger', msg:`Resultado negativo este mes: <strong>${fmt(res)}</strong>` });
+    const ivaDeb = txMes.filter(t=>t.type==='income'&&t.ivaAlicuota).reduce((s,t)=>s+t.amount*t.ivaAlicuota/100,0);
+    const ivaCre = txMes.filter(t=>t.type==='expense'&&t.ivaAlicuota).reduce((s,t)=>s+t.amount*t.ivaAlicuota/100,0);
+    const saldoIva = ivaDeb - ivaCre;
+    if (saldoIva > 0) alertas.push({ tipo:'warn', msg:`IVA a pagar: <strong>${fmt(saldoIva)}</strong>` });
+    // Stock crítico
+    const prodCriticos = Object.entries(productos).filter(([id,p]) => {
+      if (p.estado !== 'activo') return false;
+      const s = calcularStock(id);
+      return s <= (p.stockMinimo||0);
+    });
+    if (prodCriticos.length > 0) alertas.push({ tipo:'danger', msg:`<strong>${prodCriticos.length} producto${prodCriticos.length!==1?'s':''}</strong> con stock crítico o sin stock` });
+    // RRHH — períodos de prueba vencidos
+    const empPrueba = Object.values(empleados).filter(e2 => {
+      if (e2.estado !== 'activo' || e2.contrato !== 'prueba' || !e2.ingreso) return false;
+      const fin = new Date(e2.ingreso + 'T12:00:00');
+      fin.setMonth(fin.getMonth() + 3);
+      return fin <= hoy;
+    });
+    if (empPrueba.length > 0) alertas.push({ tipo:'danger', msg:`${empPrueba.length} empleado${empPrueba.length!==1?'s':''} con período de prueba vencido` });
+    // OC sin recibir hace más de 7 días
+    const ocVencidas = Object.values(ordenesCompra).filter(oc =>
+      oc.estado === 'enviada' && oc.fechaEntrega && oc.fechaEntrega < hoy.toISOString().slice(0,10)
+    );
+    if (ocVencidas.length > 0) alertas.push({ tipo:'warn', msg:`<strong>${ocVencidas.length} OC</strong> con fecha de entrega vencida sin recibir` });
+
+    const alertasEl = e('vr-alertas');
+    if (alertasEl) alertasEl.innerHTML = alertas.length
+      ? alertas.map(a => `<div style="display:flex;align-items:flex-start;gap:8px;padding:8px 0;border-bottom:1px solid var(--border);font-size:.8rem;color:var(--ink2);">
+          <span style="color:${a.tipo==='danger'?'var(--red)':'var(--accent2)'};flex-shrink:0;">${a.tipo==='danger'?'🔴':'🟡'}</span>
+          <span>${a.msg}</span>
+        </div>`).join('')
+      : '<div style="font-size:.8rem;color:var(--green);padding:8px 0;">✅ Sin alertas activas</div>';
+
+    // ── Pendientes ──
+    const pendientes = [];
+    const ocFacturar = Object.values(ordenesCompra).filter(oc => ['recibida','parcial'].includes(oc.estado));
+    if (ocFacturar.length) pendientes.push({ icon:'🧾', txt:`${ocFacturar.length} OC recibida${ocFacturar.length!==1?'s':''} esperando factura`, section:'oc' });
+    const ocPagar = Object.values(ordenesCompra).filter(oc => oc.estado === 'facturada');
+    if (ocPagar.length) pendientes.push({ icon:'💳', txt:`${ocPagar.length} OC facturada${ocPagar.length!==1?'s':''} sin pagar`, section:'oc' });
+    const stockBajo = Object.entries(productos).filter(([id,p]) => {
+      if (p.estado !== 'activo') return false;
+      const s = calcularStock(id); const m = p.stockMinimo || 0;
+      return s > m && s <= m * 1.5;
+    });
+    if (stockBajo.length) pendientes.push({ icon:'📦', txt:`${stockBajo.length} producto${stockBajo.length!==1?'s':''} con stock bajo`, section:'inventario' });
+
+    const pendEl = e('vr-pendientes');
+    if (pendEl) pendEl.innerHTML = pendientes.length
+      ? pendientes.map(p => `<div onclick="goTo('${p.section}')" style="display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--border);font-size:.8rem;color:var(--ink2);cursor:pointer;" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--ink2)'">
+          <span>${p.icon}</span><span>${p.txt}</span><span style="margin-left:auto;color:var(--muted);">→</span>
+        </div>`).join('')
+      : '<div style="font-size:.8rem;color:var(--green);padding:8px 0;">✅ Sin pendientes</div>';
+
+    // ── OC abiertas ──
+    const ocAbiertas = Object.values(ordenesCompra).filter(oc => ['borrador','enviada'].includes(oc.estado));
+    const ocEl = e('vr-oc');
+    if (ocEl) {
+      if (!ocAbiertas.length) { ocEl.innerHTML = '<span style="color:var(--green);">Sin OC abiertas ✓</span>'; }
+      else ocEl.innerHTML = ocAbiertas.slice(0,4).map(oc => {
+        const prov = contacts[oc.proveedorId];
+        return `<div style="padding:4px 0;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;">
+          <span style="font-size:.75rem;color:var(--ink2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;">${esc(oc.numero||'s/n')} · ${prov?esc(prov.nombre):'—'}</span>
+          <span style="font-size:.68rem;color:var(--muted);margin-left:8px;flex-shrink:0;">${fmt(oc.totalOC||0)}</span>
+        </div>`;
+      }).join('') + (ocAbiertas.length>4?`<div style="font-size:.7rem;color:var(--muted);margin-top:6px;">+${ocAbiertas.length-4} más</div>`:'');
+    }
+
+    // ── Stock crítico ──
+    const stockEl = e('vr-stock');
+    if (stockEl) {
+      if (!prodCriticos.length) { stockEl.innerHTML = '<span style="color:var(--green);">Todo en orden ✓</span>'; }
+      else stockEl.innerHTML = prodCriticos.slice(0,4).map(([id,p]) => {
+        const s = calcularStock(id);
+        return `<div style="padding:4px 0;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;">
+          <span style="font-size:.75rem;color:var(--ink2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;">${esc(p.nombre)}</span>
+          <span style="font-size:.7rem;color:var(--red);margin-left:8px;flex-shrink:0;">${s} ${p.unidad||'u.'}</span>
+        </div>`;
+      }).join('') + (prodCriticos.length>4?`<div style="font-size:.7rem;color:var(--muted);margin-top:6px;">+${prodCriticos.length-4} más</div>`:'');
+    }
+
+    // ── IVA del mes ──
+    const ivaEl = e('vr-iva');
+    if (ivaEl) ivaEl.innerHTML = `
+      <div style="margin-bottom:6px;"><span style="color:var(--muted);font-size:.72rem;">Débito: </span><strong style="color:var(--ink);">${fmt(ivaDeb)}</strong></div>
+      <div style="margin-bottom:6px;"><span style="color:var(--muted);font-size:.72rem;">Crédito: </span><strong style="color:var(--ink);">${fmt(ivaCre)}</strong></div>
+      <div style="padding-top:6px;border-top:1px solid var(--border);">
+        <span style="color:var(--muted);font-size:.72rem;">Saldo: </span>
+        <strong style="color:${saldoIva>=0?'var(--red)':'var(--green)'};">${saldoIva>=0?'A pagar':'A favor'} ${fmt(Math.abs(saldoIva))}</strong>
+      </div>`;
+
+    // ── Últimos movimientos ──
+    const ultimosEl = e('vr-ultimos-movs');
+    if (ultimosEl) {
+      const ultimos = [...txArr].sort((a,b) => (b.date||'') > (a.date||'') ? 1:-1).slice(0,6);
+      if (!ultimos.length) { ultimosEl.innerHTML = '<div style="font-size:.8rem;color:var(--muted);padding:12px 0;">Sin movimientos registrados.</div>'; }
+      else ultimosEl.innerHTML = ultimos.map(t => {
+        const isInc = t.type==='income';
+        return `<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border);">
+          <div style="flex:1;min-width:0;">
+            <div style="font-size:.82rem;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${esc(t.description||'Sin descripción')}</div>
+            <div style="font-size:.68rem;color:var(--muted);">${t.category||''} · ${t.date||''}</div>
+          </div>
+          <div style="font-size:.88rem;font-weight:600;color:${isInc?'var(--green)':'var(--red)'};margin-left:12px;flex-shrink:0;">${isInc?'+':'−'}${fmt(t.amount)}</div>
+        </div>`;
+      }).join('');
+    }
+  };
+
+  // ── EXCEL ÓRDENES DE COMPRA ──
+  window.descargarTemplateOC = function() {
+    _cargarXLSX(() => {
+      const wb = XLSX.utils.book_new();
+      const data = [
+        ['proveedor_nombre','numero','fecha_emision','fecha_entrega','estado','notas',
+         'item1_descripcion','item1_cantidad','item1_precio_unitario',
+         'item2_descripcion','item2_cantidad','item2_precio_unitario',
+         'item3_descripcion','item3_cantidad','item3_precio_unitario'],
+        ['Proveedor XYZ SA','OC-2026-001','2026-01-15','2026-01-25','borrador','Entrega en planta',
+         'Materia prima A','50','15000','Materia prima B','30','22000','','',''],
+        ['Distribuidora ABC','OC-2026-002','2026-01-20','2026-01-28','enviada','',
+         'Producto X','100','8500','','','','','',''],
+      ];
+      const ws = XLSX.utils.aoa_to_sheet(data);
+      ws['!cols']=[{wch:28},{wch:14},{wch:14},{wch:14},{wch:12},{wch:24},
+                   {wch:26},{wch:10},{wch:14},{wch:26},{wch:10},{wch:14},{wch:26},{wch:10},{wch:14}];
+      const instr=[
+        ['INSTRUCCIONES — Importar OC · finHub Business'],[''],
+        ['proveedor_nombre','Nombre del proveedor (debe existir en Contactos). OBLIGATORIO.'],
+        ['fecha_emision','Fecha YYYY-MM-DD. OBLIGATORIO.'],
+        ['estado','borrador / enviada / recibida / parcial / facturada / pagada'],
+        ['item1_descripcion','Descripción del primer ítem.'],
+        ['item1_cantidad','Cantidad numérica.'],
+        ['item1_precio_unitario','Precio unitario en ARS.'],
+        ['','Repetir para item2 e item3 si corresponde.'],
+      ];
+      const wsI=XLSX.utils.aoa_to_sheet(instr);
+      wsI['!cols']=[{wch:22},{wch:58}];
+      XLSX.utils.book_append_sheet(wb,ws,'OrdenesCopra');
+      XLSX.utils.book_append_sheet(wb,wsI,'Instrucciones');
+      XLSX.writeFile(wb,'finhub_template_oc.xlsx');
+    });
+  };
+
+  window.importarOCExcel = function(input) {
+    const file=input.files[0]; if(!file) return; input.value='';
+    _cargarXLSX(() => {
+      const reader=new FileReader();
+      reader.onload=async e=>{
+        try {
+          const wb=XLSX.read(e.target.result,{type:'binary'});
+          if(!wb.SheetNames.includes('OrdenesCopra')){
+            alert('Este archivo no tiene la hoja "OrdenesCopra".\nUsá el botón "↓ Template" para descargar el formato correcto.'); return;
+          }
+          const rows=XLSX.utils.sheet_to_json(wb.Sheets['OrdenesCopra'],{defval:''});
+          const estadosValidos=['borrador','enviada','recibida','parcial','facturada','pagada'];
+          const batch={}; let ok=0,err=0;
+          rows.forEach((row,i)=>{
+            const provNombre=String(row.proveedor_nombre||'').trim();
+            const fechaEm=String(row.fecha_emision||'').trim();
+            if(!fechaEm){err++;return;}
+            // Buscar proveedor por nombre
+            const provEntry=Object.entries(contacts).find(([,c])=>c.nombre===provNombre);
+            const provId=provEntry?provEntry[0]:null;
+            // Armar ítems
+            const items=[];
+            for(let n=1;n<=3;n++){
+              const desc=String(row[`item${n}_descripcion`]||'').trim();
+              const cant=parseFloat(row[`item${n}_cantidad`])||0;
+              const precio=parseFloat(row[`item${n}_precio_unitario`])||0;
+              if(desc&&cant>0) items.push({prodId:null,descripcion:desc,cantidad:cant,precioUnitario:precio,cantidadRecibida:0});
+            }
+            const totalOC=items.reduce((s,it)=>s+it.cantidad*it.precioUnitario,0);
+            const estado=String(row.estado||'borrador').trim().toLowerCase();
+            const id=push(ref(db,`empresas/${empresaId}/ordenesCompra`)).key;
+            batch[`empresas/${empresaId}/ordenesCompra/${id}`]={
+              proveedorId:provId,
+              numero:String(row.numero||'').trim()||null,
+              fechaEmision:fechaEm,
+              fechaEntrega:String(row.fecha_entrega||'').trim()||null,
+              estado:estadosValidos.includes(estado)?estado:'borrador',
+              notas:String(row.notas||'').trim()||null,
+              items,totalOC,createdAt:Date.now()
+            }; ok++;
+          });
+          if(!ok){alert('No se encontraron OC válidas. Verificá el archivo.');return;}
+          await update(ref(db),batch);
+          alert(`✓ ${ok} orden${ok!==1?'es':''} de compra importada${ok!==1?'s':''}${err?`\n⚠️ ${err} filas ignoradas.`:''}`);
+        } catch(e){alert('Error al procesar el archivo.\n'+e.message);}
+      };
+      reader.readAsBinaryString(file);
+    });
+  };
+
+
   // ── NAV ──
   const ADMIN_SECTIONS = ['contador','asesor','rrhh','usuarios'];
 
@@ -6259,7 +6774,7 @@
     }
 
     // Header mobile
-    const titleMap={dashboard:'Dashboard',movimientos:'Movimientos',cuentas:'Cuentas',contactos:'Contactos',iva:'IVA',reportes:'Reportes',inventario:'Inventario',oc:'Órdenes de compra',contador:'Contador IA',asesor:'Asesor Legal IA',rrhh:'RRHH',usuarios:'Usuarios',busqueda:'Búsqueda'};
+    const titleMap={vistarapida:'Vista rápida',dashboard:'Dashboard',movimientos:'Movimientos',cuentas:'Cuentas',contactos:'Contactos',iva:'IVA',reportes:'Reportes',inventario:'Inventario',oc:'Órdenes de compra',contador:'Contador IA',asesor:'Asesor Legal IA',rrhh:'RRHH',usuarios:'Usuarios',busqueda:'Búsqueda'};
     const mTitle=document.getElementById('mobile-header-title');
     if(mTitle) mTitle.textContent=titleMap[section]||section;
 
@@ -6276,6 +6791,7 @@
     if(section==='contador')   renderContador();
     if(section==='asesor')     renderAsesor();
     if(section==='rrhh')       renderRRHH();
+    if(section==='vistarapida') renderVistaRapida();
     if(section==='inventario')  { renderInventario(); populateProveedorSelectInv(); }
     if(section==='oc')          { renderOCPage(); }
     if(section==='usuarios')   renderUsuarios();
