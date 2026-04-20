@@ -44,7 +44,9 @@
     body::before { content:''; position:fixed; inset:0; background-image:radial-gradient(circle,#ccc9c3 1px,transparent 1px); background-size:28px 28px; opacity:.3; pointer-events:none; z-index:0; }
     body.dark::before { opacity:.06; }
 
-    .shell { display:grid; grid-template-columns:224px 1fr; height:100vh; position:relative; z-index:1; max-width:100vw; overflow:hidden; }
+    .shell { display:grid; grid-template-columns:224px 1fr; grid-template-areas:"sidebar main"; height:100vh; position:relative; z-index:1; max-width:100vw; overflow:hidden; }
+    aside.sidebar { grid-area:sidebar; }
+    main { grid-area:main; }
 
     /* ── SIDEBAR ── */
     .sidebar { background:#1e4d8c; border-right:none; padding:0; display:flex; flex-direction:column; height:100%; overflow-y:auto; overscroll-behavior:contain; transition:background .3s; scrollbar-width:none; }
@@ -85,7 +87,7 @@
     body.dark .btn-logout:hover { color:var(--red); border-color:var(--red); }
 
     /* ── MAIN ── */
-    main { padding:48px 52px; animation:fadeIn .4s ease both; height:100%; overflow-y:auto; overscroll-behavior:contain; scrollbar-width:none; }
+    main { grid-area:main; padding:48px 52px; animation:fadeIn .4s ease both; height:100%; overflow-y:auto; overscroll-behavior:contain; scrollbar-width:none; }
     main::-webkit-scrollbar { display:none; }
     @keyframes fadeIn { from{opacity:0} to{opacity:1} }
     .page { display:none; }
@@ -406,20 +408,43 @@
     ══════════════════════════════════════ */
     @media(max-width:900px){
 
-      /* ── Shell y sidebar ── */
-      .shell { grid-template-columns:1fr; }
-      .hamburger { display:flex!important; }
-      .sidebar {
-        position:fixed!important; left:-290px!important; top:0!important;
-        bottom:0!important; width:280px!important; z-index:9999!important;
-        transition:left .3s ease; overflow-y:auto;
+      /* ── Shell: single column, sidebar fuera del flujo ── */
+      .shell {
+        grid-template-columns: 1fr !important;
+        grid-template-areas: "main" !important;
       }
-      .sidebar.mobile-open { left:0!important; box-shadow:12px 0 48px rgba(0,0,0,.25)!important; }
+      .hamburger { display:flex!important; }
 
-      /* ── Main ── */
-      main { padding:56px 16px 24px; overflow-x:hidden; overflow-y:auto; }
-      .page-title { font-size:1.5rem; }
-      .page-sub   { font-size:.72rem; margin-bottom:24px; }
+      /* Sidebar: fixed drawer, completamente fuera del flujo del grid */
+      .sidebar {
+        position: fixed !important;
+        left: -290px !important;
+        top: 0 !important;
+        bottom: 0 !important;
+        width: 280px !important;
+        z-index: 9999 !important;
+        transition: left .28s ease;
+        overflow-y: auto;
+        grid-area: unset !important;
+      }
+      .sidebar.mobile-open {
+        left: 0 !important;
+        box-shadow: 12px 0 48px rgba(0,0,0,.3) !important;
+      }
+
+      /* Main: ocupa el ancho completo, respeta el header fijo */
+      main {
+        grid-area: main !important;
+        width: 100% !important;
+        min-width: 0 !important;
+        padding: 68px 14px 32px 14px !important;
+        overflow-x: hidden !important;
+        overflow-y: auto !important;
+        box-sizing: border-box !important;
+      }
+
+      .page-title { font-size:1.3rem !important; }
+      .page-sub   { font-size:.72rem; margin-bottom:18px; }
 
       /* ── Cards ── */
       .cards-row   { grid-template-columns:1fr; gap:10px; margin-bottom:20px; }
@@ -466,6 +491,12 @@
 
       /* ── Contactos grid ── */
       #contactos-grid { grid-template-columns:1fr; }
+
+      /* ── Vista rápida ── */
+      #page-vistarapida > div[style*="grid-template-columns:1fr 1fr"],
+      #page-vistarapida > div[style*="grid-template-columns:1fr 1fr 1fr"] {
+        grid-template-columns:1fr!important;
+      }
 
       /* ── Contador y Asesor Legal ── */
       .ia-grid { grid-template-columns:1fr!important; }
@@ -524,7 +555,7 @@
       .cards-row-4 { grid-template-columns:1fr; }
       #cuentas-grid { grid-template-columns:1fr; }
       .period-btn { font-size:.58rem; padding:5px 8px; }
-      main { padding:52px 12px 20px; }
+      main { padding:64px 10px 20px 10px!important; }
     }
   </style>
 </head>
