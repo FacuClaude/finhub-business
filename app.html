@@ -690,8 +690,11 @@
       <!-- Acciones -->
       <div class="section-header" style="margin-bottom:20px;">
         <div class="section-title">Gestión de cuentas</div>
-        <div style="display:flex;gap:8px;">
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
           <button class="btn-export" onclick="openModal('transferencia')">⇄ Transferencia</button>
+          <button class="btn-export" onclick="descargarTemplateCuentas()">↓ Template</button>
+          <button class="btn-export" onclick="document.getElementById('import-cuentas-file').click()">↑ Importar</button>
+          <input type="file" id="import-cuentas-file" accept=".xlsx,.xls" style="display:none" onchange="importarCuentasExcel(this)"/>
           <button class="btn-primary" onclick="openModal('cuenta')">+ Nueva cuenta</button>
         </div>
       </div>
@@ -712,7 +715,12 @@
           <svg style="position:absolute;left:12px;top:50%;transform:translateY(-50%);opacity:.4;" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
           <input type="text" id="contacto-search" placeholder="Buscar por nombre o CUIT…" oninput="renderContactos()" style="padding-left:36px;width:100%;">
         </div>
-        <button class="btn-primary" onclick="openModal('contacto')">+ Contacto</button>
+        <div style="display:flex;gap:8px;">
+          <button class="btn-export" onclick="descargarTemplateContactos()">↓ Template</button>
+          <button class="btn-export" onclick="document.getElementById('import-contactos-file').click()">↑ Importar</button>
+          <input type="file" id="import-contactos-file" accept=".xlsx,.xls" style="display:none" onchange="importarContactosExcel(this)"/>
+          <button class="btn-primary" onclick="openModal('contacto')">+ Contacto</button>
+        </div>
       </div>
       <div id="contactos-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;"></div>
     </div>
@@ -960,7 +968,12 @@
         <!-- Listado empleados -->
         <div class="section-header">
           <div class="section-title">Legajo de empleados</div>
-          <button class="btn-primary" onclick="openModal('empleado')">+ Nuevo empleado</button>
+          <div style="display:flex;gap:8px;">
+            <button class="btn-export" onclick="descargarTemplateEmpleados()">↓ Template</button>
+            <button class="btn-export" onclick="document.getElementById('import-empleados-file').click()">↑ Importar</button>
+            <input type="file" id="import-empleados-file" accept=".xlsx,.xls" style="display:none" onchange="importarEmpleadosExcel(this)"/>
+            <button class="btn-primary" onclick="openModal('empleado')">+ Nuevo empleado</button>
+          </div>
         </div>
         <div id="rrhh-empleados-lista"></div>
       </div>
@@ -2129,9 +2142,38 @@
 
   // ── IMPORTAR EXCEL ──
   window.downloadTemplate=function(){
-    alert('El template se descargó junto con la app.\nBuscá el archivo "finhub-business-template.xlsx" en tu carpeta de descargas.');
+    // Template de movimientos — descarga Excel completo con IVA
+    if (!window.XLSX) {
+      const s=document.createElement('script');
+      s.src='https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
+      s.onload=_dlTemplateMovimientos; document.head.appendChild(s);
+    } else { _dlTemplateMovimientos(); }
   };
+
+  function _cargarXLSX(cb) {
+    if (window.XLSX) { cb(); return; }
+    const s=document.createElement('script');
+    s.src='https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
+    s.onload=cb; document.head.appendChild(s);
+  }
+
+  function _dlTemplateMovimientos() {
+    const wb=XLSX.utils.book_new();
+    const data=[
+      ['fecha','tipo','descripcion','monto','categoria','comprobante','notas','iva_alicuota'],
+      ['2026-01-15','ingreso','Venta productos cliente ABC','350000','Ventas','FC-0001','','21'],
+      ['2026-01-18','gasto','Alquiler local enero','120000','Alquiler','RC-0045','',''],
+      ['2026-01-20','gasto','Proveedor materiales','85000','Proveedores','FC-B-0012','','10.5'],
+      ['2026-01-22','ingreso','Servicio de consultoría','200000','Servicios prestados','FC-0002','','21'],
+    ];
+    const ws=XLSX.utils.aoa_to_sheet(data);
+    ws['!cols']=[{wch:14},{wch:10},{wch:38},{wch:13},{wch:30},{wch:14},{wch:22},{wch:13}];
+    XLSX.utils.book_append_sheet(wb, ws, 'Movimientos');
+    XLSX.writeFile(wb,'finhub_template_movimientos.xlsx');
+  }
+
   window.resetImport=function(){document.getElementById('import-step1').style.display='block';document.getElementById('import-step2').style.display='none';document.getElementById('import-file').value='';};
+
   window.handleImport=async function(input){
     const file=input.files[0]; if(!file) return;
     if(!window.XLSX){alert('Librería no cargada, intentá de nuevo.');return;}
@@ -2139,7 +2181,11 @@
     reader.onload=async(e)=>{
       try{
         const wb=XLSX.read(e.target.result,{type:'array',cellDates:true});
-        const ws=wb.Sheets[wb.SheetNames[0]];
+        // Validar que sea el template de movimientos
+        if(!wb.SheetNames.includes('Movimientos')){
+          alert('Este archivo no corresponde al template de Movimientos.\nUsá el botón "↓ Template" para descargar el formato correcto.'); return;
+        }
+        const ws=wb.Sheets['Movimientos'];
         const rows=XLSX.utils.sheet_to_json(ws,{defval:''});
         let ok=0,errors=0;
         const batch={};
@@ -2151,28 +2197,232 @@
           if(!fecha||!tipo||!monto||!desc){errors++;continue;}
           if(!['ingreso','gasto'].includes(tipo)){errors++;continue;}
           const fechaStr=typeof fecha==='object'?fecha.toISOString().slice(0,10):fecha.toString().trim();
-          const ivaRaw=(row['tiene_iva']||'').toString().toUpperCase().trim();
-          const ivaAl=ivaRaw==='SI'?parseFloat(row['iva_alicuota']||21):null;
+          const ivaRaw=row['iva_alicuota'];
+          const ivaAl=(ivaRaw!==''&&ivaRaw!=null)?parseFloat(ivaRaw):null;
           const newId=push(ref(db,`empresas/${empresaId}/movimientos`)).key;
           batch[`empresas/${empresaId}/movimientos/${newId}`]={
             type:tipo==='ingreso'?'income':'expense', description:desc, amount:Math.abs(monto),
-            category:(row['categoria']||row['Categoria']||row['categoría']||'Otros gastos').toString().trim(),
+            category:(row['categoria']||row['Categoria']||'Otros gastos').toString().trim(),
             date:fechaStr, comprobante:(row['comprobante']||'').toString().trim()||null,
             notas:(row['notas']||'').toString().trim()||null, ivaAlicuota:ivaAl, createdAt:Date.now()
           };
           ok++;
         }
-        if(ok>0){
-          await update(ref(db),batch);
-          // onValue en movimientos dispara renderAll automáticamente
-        }
+        if(ok>0) await update(ref(db),batch);
         document.getElementById('import-step1').style.display='none';
         document.getElementById('import-step2').style.display='block';
         document.getElementById('import-result').textContent=`${ok} movimiento${ok!==1?'s':''} importado${ok!==1?'s':''}`;
         document.getElementById('import-result-sub').textContent=errors>0?`${errors} fila${errors!==1?'s':''} omitida${errors!==1?'s':''} (datos incompletos)`:'Todo importado correctamente';
-      }catch(err){alert('Error al leer el archivo. Verificá que sea el template correcto.');console.error(err);}
+      }catch(err){alert('Error al leer el archivo. Verificá que sea el template correcto.\n'+err.message);console.error(err);}
     };
     reader.readAsArrayBuffer(file);
+  };
+
+  // ── CUENTAS: import/export ──
+  window.descargarTemplateCuentas = function() {
+    _cargarXLSX(() => {
+      const wb=XLSX.utils.book_new();
+      const data=[
+        ['nombre','tipo','saldo_inicial','moneda','notas'],
+        ['Caja chica','caja','50000','ARS','Efectivo en oficina'],
+        ['Banco Nación CC','banco','250000','ARS','CBU 011-456789'],
+        ['Mercado Pago','digital','35000','ARS','Alias: miempresa.mp'],
+        ['Dólares billete','caja','1500','USD','Bóveda física'],
+        ['Plazo fijo','inversion','500000','ARS','Vence 90 días'],
+      ];
+      const ws=XLSX.utils.aoa_to_sheet(data);
+      ws['!cols']=[{wch:24},{wch:14},{wch:14},{wch:10},{wch:30}];
+      // Instrucciones
+      const instr=[
+        ['INSTRUCCIONES — Importar cuentas · finHub Business'],[''],
+        ['nombre','Nombre descriptivo. OBLIGATORIO.'],
+        ['tipo','caja / banco / corriente / digital / inversion'],
+        ['saldo_inicial','Número (ej: 50000). Saldo al comenzar a usar la app.'],
+        ['moneda','ARS ó USD'],
+        ['notas','CBU, alias, datos adicionales. Opcional.'],
+      ];
+      const wsI=XLSX.utils.aoa_to_sheet(instr);
+      wsI['!cols']=[{wch:18},{wch:55}];
+      XLSX.utils.book_append_sheet(wb, ws, 'Cuentas');
+      XLSX.utils.book_append_sheet(wb, wsI, 'Instrucciones');
+      XLSX.writeFile(wb,'finhub_template_cuentas.xlsx');
+    });
+  };
+
+  window.importarCuentasExcel = function(input) {
+    const file=input.files[0]; if(!file) return; input.value='';
+    _cargarXLSX(() => {
+      const reader=new FileReader();
+      reader.onload=async e => {
+        try {
+          const wb=XLSX.read(e.target.result,{type:'binary'});
+          if(!wb.SheetNames.includes('Cuentas')) {
+            alert('Este archivo no tiene la hoja "Cuentas".\nUsá el botón "↓ Template" para descargar el formato correcto.'); return;
+          }
+          const rows=XLSX.utils.sheet_to_json(wb.Sheets['Cuentas'],{defval:''});
+          const batch={}; let ok=0, err=0;
+          rows.forEach((row,i)=>{
+            const nombre=String(row.nombre||'').trim();
+            if(!nombre){err++;return;}
+            const id=push(ref(db,`empresas/${empresaId}/cuentas`)).key;
+            batch[`empresas/${empresaId}/cuentas/${id}`]={
+              nombre, tipo:String(row.tipo||'banco').trim(),
+              saldoInicial:parseFloat(row.saldo_inicial)||0,
+              moneda:String(row.moneda||'ARS').trim().toUpperCase(),
+              notas:String(row.notas||'').trim()||null, createdAt:Date.now()
+            }; ok++;
+          });
+          if(!ok){alert('No se encontraron cuentas válidas. Verificá el archivo.');return;}
+          await update(ref(db),batch);
+          alert(`✓ ${ok} cuenta${ok!==1?'s':''} importada${ok!==1?'s':''}${err?`\n⚠️ ${err} filas ignoradas.`:''}`);
+        } catch(e){alert('Error al procesar el archivo.\n'+e.message);}
+      };
+      reader.readAsBinaryString(file);
+    });
+  };
+
+  // ── CONTACTOS: import/export ──
+  window.descargarTemplateContactos = function() {
+    _cargarXLSX(() => {
+      const wb=XLSX.utils.book_new();
+      const data=[
+        ['tipo','nombre','cuit','condicion_iva','email','telefono','notas'],
+        ['cliente','Distribuidora Pérez S.A.','30-71234567-8','responsable_inscripto','compras@perez.com.ar','011-4567-8901','30 días de pago'],
+        ['cliente','Juan Rodríguez','20-35678901-2','monotributista','juan@gmail.com','351-456-7890',''],
+        ['proveedor','Papelería Martínez','27-28901234-5','responsable_inscripto','ventas@papeleria.com','011-4789-0123','Crédito 30 días'],
+        ['proveedor','Servicios IT SRL','30-56789012-3','responsable_inscripto','admin@servit.com','011-5678-9012','Soporte mensual'],
+      ];
+      const ws=XLSX.utils.aoa_to_sheet(data);
+      ws['!cols']=[{wch:12},{wch:30},{wch:18},{wch:24},{wch:28},{wch:16},{wch:24}];
+      const instr=[
+        ['INSTRUCCIONES — Importar contactos · finHub Business'],[''],
+        ['tipo','cliente ó proveedor. OBLIGATORIO.'],
+        ['nombre','Razón social o nombre completo. OBLIGATORIO.'],
+        ['cuit','Con guiones (ej: 30-71234567-8). Opcional.'],
+        ['condicion_iva','responsable_inscripto / monotributista / exento / consumidor_final'],
+        ['email','Opcional.'],['telefono','Opcional.'],['notas','Opcional.'],
+      ];
+      const wsI=XLSX.utils.aoa_to_sheet(instr);
+      wsI['!cols']=[{wch:18},{wch:55}];
+      XLSX.utils.book_append_sheet(wb, ws, 'Contactos');
+      XLSX.utils.book_append_sheet(wb, wsI, 'Instrucciones');
+      XLSX.writeFile(wb,'finhub_template_contactos.xlsx');
+    });
+  };
+
+  window.importarContactosExcel = function(input) {
+    const file=input.files[0]; if(!file) return; input.value='';
+    _cargarXLSX(() => {
+      const reader=new FileReader();
+      reader.onload=async e => {
+        try {
+          const wb=XLSX.read(e.target.result,{type:'binary'});
+          if(!wb.SheetNames.includes('Contactos')) {
+            alert('Este archivo no tiene la hoja "Contactos".\nUsá el botón "↓ Template" para descargar el formato correcto.'); return;
+          }
+          const rows=XLSX.utils.sheet_to_json(wb.Sheets['Contactos'],{defval:''});
+          const batch={}; let ok=0, err=0;
+          rows.forEach((row,i)=>{
+            const nombre=String(row.nombre||'').trim();
+            const tipo=String(row.tipo||'cliente').trim().toLowerCase();
+            if(!nombre){err++;return;}
+            const id=push(ref(db,`empresas/${empresaId}/contactos`)).key;
+            batch[`empresas/${empresaId}/contactos/${id}`]={
+              tipo:['cliente','proveedor'].includes(tipo)?tipo:'cliente', nombre,
+              cuit:String(row.cuit||'').trim()||null,
+              condicionIva:String(row.condicion_iva||'responsable_inscripto').trim(),
+              email:String(row.email||'').trim()||null,
+              telefono:String(row.telefono||'').trim()||null,
+              notas:String(row.notas||'').trim()||null, createdAt:Date.now()
+            }; ok++;
+          });
+          if(!ok){alert('No se encontraron contactos válidos. Verificá el archivo.');return;}
+          await update(ref(db),batch);
+          alert(`✓ ${ok} contacto${ok!==1?'s':''} importado${ok!==1?'s':''}${err?`\n⚠️ ${err} filas ignoradas.`:''}`);
+        } catch(e){alert('Error al procesar el archivo.\n'+e.message);}
+      };
+      reader.readAsBinaryString(file);
+    });
+  };
+
+  // ── RRHH/EMPLEADOS: import/export ──
+  window.descargarTemplateEmpleados = function() {
+    _cargarXLSX(() => {
+      const wb=XLSX.utils.book_new();
+      const data=[
+        ['nombre','cuil','dni','ingreso','estado','categoria','convenio','contrato','sueldo','obra_social','email','telefono','notas'],
+        ['García Juan Carlos','20-35678901-2','35678901','2022-03-01','activo','Operario categoría B','comercio','indefinido','850000','OSECAC','juan.garcia@empresa.com','11-1234-5678',''],
+        ['López María Fernanda','27-28901234-5','28901234','2023-06-15','activo','Administrativa','comercio','indefinido','980000','OSDE','mlopez@empresa.com','11-2345-6789',''],
+        ['Rodríguez Pedro','20-45678901-3','45678901','2024-01-10','prueba','Técnico junior','general','prueba','720000','Swiss Medical','prodriguez@empresa.com','11-3456-7890','Período de prueba'],
+      ];
+      const ws=XLSX.utils.aoa_to_sheet(data);
+      ws['!cols']=[{wch:24},{wch:16},{wch:12},{wch:13},{wch:12},{wch:22},{wch:14},{wch:14},{wch:12},{wch:16},{wch:26},{wch:16},{wch:22}];
+      const instr=[
+        ['INSTRUCCIONES — Importar empleados · finHub Business'],[''],
+        ['nombre','Apellido y nombre. OBLIGATORIO.'],
+        ['cuil','Con guiones (ej: 20-35678901-2). Opcional.'],
+        ['ingreso','Fecha de ingreso YYYY-MM-DD. Opcional.'],
+        ['estado','activo / prueba / suspendido / egresado'],
+        ['categoria','Cargo o categoría del convenio. Opcional.'],
+        ['convenio','general / comercio / construccion / gastronomico / metalurgico / textil / transporte'],
+        ['contrato','indefinido / plazo_fijo / prueba / eventual'],
+        ['sueldo','Sueldo bruto mensual en ARS (número sin puntos).'],
+        ['obra_social','Nombre de la obra social. Opcional.'],
+      ];
+      const wsI=XLSX.utils.aoa_to_sheet(instr);
+      wsI['!cols']=[{wch:18},{wch:58}];
+      XLSX.utils.book_append_sheet(wb, ws, 'Empleados');
+      XLSX.utils.book_append_sheet(wb, wsI, 'Instrucciones');
+      XLSX.writeFile(wb,'finhub_template_empleados.xlsx');
+    });
+  };
+
+  window.importarEmpleadosExcel = function(input) {
+    const file=input.files[0]; if(!file) return; input.value='';
+    _cargarXLSX(() => {
+      const reader=new FileReader();
+      reader.onload=async e => {
+        try {
+          const wb=XLSX.read(e.target.result,{type:'binary'});
+          if(!wb.SheetNames.includes('Empleados')) {
+            alert('Este archivo no tiene la hoja "Empleados".\nUsá el botón "↓ Template" para descargar el formato correcto.'); return;
+          }
+          const rows=XLSX.utils.sheet_to_json(wb.Sheets['Empleados'],{defval:''});
+          const batch={}; let ok=0, err=0;
+          const estadosValidos=['activo','prueba','suspendido','egresado'];
+          const contratosValidos=['indefinido','plazo_fijo','prueba','eventual'];
+          const conveniosValidos=['general','comercio','construccion','gastronomico','metalurgico','textil','transporte'];
+          rows.forEach((row,i)=>{
+            const nombre=String(row.nombre||'').trim();
+            if(!nombre){err++;return;}
+            const estado=String(row.estado||'activo').trim().toLowerCase();
+            const contrato=String(row.contrato||'indefinido').trim().toLowerCase();
+            const convenio=String(row.convenio||'general').trim().toLowerCase();
+            const id=push(ref(db,`empresas/${empresaId}/empleados`)).key;
+            batch[`empresas/${empresaId}/empleados/${id}`]={
+              nombre,
+              cuil:String(row.cuil||'').trim()||null,
+              dni:String(row.dni||'').trim()||null,
+              ingreso:String(row.ingreso||'').trim()||null,
+              estado:estadosValidos.includes(estado)?estado:'activo',
+              categoria:String(row.categoria||'').trim()||null,
+              convenio:conveniosValidos.includes(convenio)?convenio:'general',
+              contrato:contratosValidos.includes(contrato)?contrato:'indefinido',
+              sueldo:parseFloat(row.sueldo)||0,
+              obraSocial:String(row.obra_social||'').trim()||null,
+              email:String(row.email||'').trim()||null,
+              telefono:String(row.telefono||'').trim()||null,
+              notas:String(row.notas||'').trim()||null,
+              createdAt:Date.now()
+            }; ok++;
+          });
+          if(!ok){alert('No se encontraron empleados válidos. Verificá el archivo.');return;}
+          await update(ref(db),batch);
+          alert(`✓ ${ok} empleado${ok!==1?'s':''} importado${ok!==1?'s':''}${err?`\n⚠️ ${err} filas ignoradas.`:''}`);
+        } catch(e){alert('Error al procesar el archivo.\n'+e.message);}
+      };
+      reader.readAsBinaryString(file);
+    });
   };
 
   // ── IVA ──
