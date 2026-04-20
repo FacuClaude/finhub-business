@@ -1368,6 +1368,7 @@
         <div id="prod-detalle-content"></div>
         <div class="modal-actions">
           <button class="btn-secondary" onclick="closeModal('producto-detalle')" style="flex:1">Cerrar</button>
+          <button onclick="deleteProducto()" style="flex:1;background:var(--red-bg);color:var(--red);border:1px solid var(--red);font-family:'DM Sans',sans-serif;font-size:.72rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;padding:10px;cursor:pointer;border-radius:4px;">🗑 Eliminar</button>
           <button class="btn-export" onclick="editProdFromDetalle()" style="flex:1">Editar</button>
           <button class="btn-primary" onclick="openMovimientoStock()" style="flex:1">+ Movimiento</button>
         </div>
@@ -5370,6 +5371,20 @@
     document.getElementById('modal-producto-detalle').classList.add('open');
   };
 
+  window.deleteProducto = async function() {
+    const p = productos[detalleProdId]; if (!p) return;
+    if (!confirm(`¿Eliminar "${p.nombre}"?\n\nSe eliminarán también todos los movimientos de stock de este producto. Esta acción no se puede deshacer.`)) return;
+    closeModal('producto-detalle');
+    // Eliminar producto y todos sus movimientos de stock
+    const batch = {};
+    batch[`empresas/${empresaId}/productos/${detalleProdId}`] = null;
+    // Eliminar movimientos de stock asociados
+    Object.entries(movStock).forEach(([id, m]) => {
+      if (m.prodId === detalleProdId) batch[`empresas/${empresaId}/movStock/${id}`] = null;
+    });
+    await update(ref(db), batch);
+  };
+
   window.editProdFromDetalle = function() {
     closeModal('producto-detalle');
     openEditProducto(detalleProdId);
@@ -5515,8 +5530,7 @@
         try {
           const wb=XLSX.read(e.target.result,{type:'binary'});
           if(!wb.SheetNames.includes('Inventario')){
-            alert('Este archivo no tiene la hoja "Inventario".
-Usá el botón "↓ Template" para descargar el formato correcto.'); return;
+            alert('Este archivo no tiene la hoja "Inventario".\nUsá el botón "↓ Template" para descargar el formato correcto.'); return;
           }
           const rows=XLSX.utils.sheet_to_json(wb.Sheets['Inventario'],{defval:''});
           const batch={}; let ok=0,err=0;
@@ -5547,8 +5561,7 @@ Usá el botón "↓ Template" para descargar el formato correcto.'); return;
           await update(ref(db),batch);
           alert(`✓ ${ok} producto${ok!==1?'s':''} importado${ok!==1?'s':''}${err?`
 ⚠️ ${err} filas ignoradas.`:''}`);
-        } catch(e){alert('Error al procesar el archivo.
-'+e.message);}
+        } catch(e){alert('Error al procesar el archivo.\n'+e.message);}
       };
       reader.readAsBinaryString(file);
     });
