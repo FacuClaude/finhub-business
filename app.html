@@ -83,7 +83,10 @@
       scrollbar-width:none;
       box-sizing:border-box;
       animation:fadeIn .4s ease both;
+      scroll-snap-type:y proximity;
     }
+    #page-bienvenida { scroll-snap-align:start; }
+    #page-dashboard  { scroll-snap-align:start; padding-top:32px; }
 
     /* ── SIDEBAR ESTILOS DECORATIVOS ── */
     .sidebar::-webkit-scrollbar { display:none; }
@@ -405,15 +408,19 @@
     /* ── BIENVENIDA ── */
     #page-bienvenida {
       background: linear-gradient(145deg, #1a3a6b 0%, #1e4d8c 45%, #2a5fa0 100%) !important;
+      height:calc(100dvh - 26px);
       min-height:calc(100dvh - 26px);
       display:flex; flex-direction:column;
       padding:0 !important;
+      overflow:hidden;
     }
     .wc-wrap {
       flex:1; display:flex; flex-direction:column;
+      justify-content:space-between;
       padding:52px 64px 40px;
       max-width:900px; width:100%;
       margin:0 auto;
+      overflow:hidden;
     }
     .wc-greeting {
       font-family:'Plus Jakarta Sans',sans-serif;
@@ -423,11 +430,11 @@
     }
     .wc-date {
       font-size:.85rem; color:rgba(255,255,255,.5);
-      margin-bottom:52px; font-weight:400;
+      margin-bottom:0; font-weight:400;
     }
     .wc-numbers {
       display:grid; grid-template-columns:1fr 1fr 1fr;
-      gap:3px; margin-bottom:40px;
+      gap:3px; margin-bottom:0;
     }
     .wc-num-card {
       background:rgba(255,255,255,.07);
@@ -451,7 +458,7 @@
     .wc-num-sub { font-size:.72rem; color:rgba(255,255,255,.4); }
 
     /* Alertas */
-    .wc-alerts { display:flex; flex-direction:column; gap:8px; margin-bottom:40px; }
+    .wc-alerts { display:flex; flex-direction:column; gap:8px; margin-bottom:0; }
     .wc-alert-item {
       display:flex; align-items:center; gap:12px;
       background:rgba(255,255,255,.06);
@@ -494,13 +501,13 @@
     }
 
     @media(max-width:900px){
-      #page-bienvenida { min-height:100dvh !important; }
-      .wc-wrap { padding:40px 22px 28px; }
-      .wc-greeting { font-size:2rem; margin-bottom:4px; }
-      .wc-date { margin-bottom:36px; }
+      #page-bienvenida { height:100dvh !important; min-height:100dvh !important; }
+      .wc-wrap { padding:36px 20px 20px; }
+      .wc-greeting { font-size:1.9rem; }
       .wc-numbers { grid-template-columns:1fr 1fr; gap:3px; }
-      .wc-num-val { font-size:1.5rem; }
-      .wc-footer { padding:16px 22px 24px; }
+      .wc-num-card { padding:18px 16px; }
+      .wc-num-val { font-size:1.4rem; }
+      .wc-footer { padding:14px 20px 20px; }
     }
     @media(max-width:380px){
       .wc-numbers { grid-template-columns:1fr; }
@@ -1136,14 +1143,14 @@
 <div class="page" id="page-bienvenida">
   <div class="wc-wrap">
 
-    <!-- Empresa activa (solo visible con 2+ empresas) -->
-    <div id="wc-empresa-selector" style="display:none;"></div>
+    <!-- Parte superior: saludo + empresa -->
+    <div>
+      <div id="wc-empresa-selector" style="display:none;margin-bottom:20px;"></div>
+      <div class="wc-greeting" id="wc-greeting">Buen día.</div>
+      <div class="wc-date" id="wc-date"></div>
+    </div>
 
-    <!-- Saludo -->
-    <div class="wc-greeting" id="wc-greeting">Buen día.</div>
-    <div class="wc-date" id="wc-date"></div>
-
-    <!-- 3 números grandes -->
+    <!-- Centro: 3 números grandes -->
     <div class="wc-numbers">
       <div class="wc-num-card" onclick="goTo('movimientos')">
         <div class="wc-num-label">Resultado del mes</div>
@@ -1162,12 +1169,12 @@
       </div>
     </div>
 
-    <!-- Alertas accionables -->
+    <!-- Parte inferior: alertas -->
     <div class="wc-alerts" id="wc-alerts"></div>
 
   </div>
 
-  <!-- Footer -->
+  <!-- Footer pegado abajo -->
   <div class="wc-footer">
     <div class="wc-footer-cta" id="wc-footer-text">Seleccioná una sección para empezar</div>
     <div class="wc-footer-brand">
