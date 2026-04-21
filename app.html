@@ -290,6 +290,30 @@
     .mov-salida  { color:var(--red); font-weight:600; }
     .mov-ajuste  { color:var(--accent2); font-weight:600; }
 
+
+    /* ── CRM ── */
+    .crm-pipeline { display:grid; gap:14px; grid-template-columns:repeat(5,1fr); }
+    .crm-col { background:var(--surface); border:1px solid var(--border); border-radius:4px; min-height:200px; display:flex; flex-direction:column; }
+    .crm-col-header { padding:12px 14px 10px; border-bottom:1px solid var(--border); }
+    .crm-col-title { font-size:.65rem; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:var(--muted); }
+    .crm-col-total { font-size:.72rem; color:var(--ink2); margin-top:2px; }
+    .crm-col-body { padding:10px; flex:1; display:flex; flex-direction:column; gap:8px; }
+    .crm-card { background:var(--bg); border:1px solid var(--border); border-radius:4px; padding:10px 12px; cursor:pointer; transition:box-shadow .15s; border-left:3px solid var(--border); }
+    .crm-card:hover { box-shadow:0 3px 12px rgba(0,0,0,.1); }
+    .crm-card.etapa-prospecto   { border-left-color:#8b9aba; }
+    .crm-card.etapa-contactado  { border-left-color:var(--accent); }
+    .crm-card.etapa-propuesta   { border-left-color:var(--accent2); }
+    .crm-card.etapa-negociacion { border-left-color:#e8b84b; }
+    .crm-card.etapa-ganado      { border-left-color:var(--green); }
+    .crm-card.etapa-perdido     { border-left-color:var(--red); opacity:.65; }
+    .crm-card-nombre   { font-size:.82rem; font-weight:600; color:var(--ink); margin-bottom:3px; line-height:1.3; }
+    .crm-card-cliente  { font-size:.7rem; color:var(--muted); margin-bottom:6px; }
+    .crm-card-monto    { font-size:.85rem; font-weight:700; color:var(--accent); font-family:'Plus Jakarta Sans',sans-serif; }
+    .crm-prob-bar  { height:3px; background:var(--border); border-radius:2px; margin-top:7px; }
+    .crm-prob-fill { height:100%; border-radius:2px; background:var(--green); transition:width .3s; }
+    @media(max-width:900px){ .crm-pipeline { grid-template-columns:1fr 1fr; } }
+    @media(max-width:480px){ .crm-pipeline { grid-template-columns:1fr; } }
+
     /* ── INSTRUCTIVO ── */
     .inst-overlay { display:none; position:fixed; inset:0; background:rgba(26,26,20,.5); backdrop-filter:blur(6px); z-index:500; }
     .inst-overlay.open { display:flex; align-items:center; justify-content:center; padding:20px; }
@@ -667,6 +691,10 @@
 <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.5" viewbox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" x2="8" y1="13" y2="13"></line><line x1="16" x2="8" y1="17" y2="17"></line><line x1="10" x2="8" y1="9" y2="9"></line></svg>
         Órdenes de compra
       </button>
+      <button class="nav-item" onclick="goTo('crm')">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        CRM
+      </button>
 <!-- ── ADMIN (submenú colapsable) ── -->
 <div class="nav-section" style="margin-top:4px;">Admin</div>
 <button class="nav-item nav-group-toggle" id="admin-toggle" onclick="toggleAdminMenu()" style="justify-content:space-between;">
@@ -769,6 +797,116 @@
 <div id="busqueda-resultados"></div>
 </div>
 <!-- DASHBOARD -->
+<!-- CRM -->
+<div class="page" id="page-crm">
+  <div class="page-title">CRM</div>
+  <div class="page-sub">Pipeline de oportunidades comerciales</div>
+
+  <!-- KPIs -->
+  <div class="cards-row" style="margin-bottom:24px;">
+    <div class="card" style="border-top:2px solid var(--accent);">
+      <div class="card-label">Pipeline total</div>
+      <div class="card-value accent" id="crm-kpi-pipeline">$0</div>
+      <div class="card-sub">Oportunidades activas</div>
+    </div>
+    <div class="card" style="border-top:2px solid var(--green);">
+      <div class="card-label">Ganadas este mes</div>
+      <div class="card-value positive" id="crm-kpi-ganadas">$0</div>
+      <div class="card-sub" id="crm-kpi-ganadas-n"></div>
+    </div>
+    <div class="card" style="border-top:2px solid var(--red);">
+      <div class="card-label">Perdidas este mes</div>
+      <div class="card-value negative" id="crm-kpi-perdidas">$0</div>
+      <div class="card-sub" id="crm-kpi-perdidas-n"></div>
+    </div>
+    <div class="card">
+      <div class="card-label">Tasa de conversión</div>
+      <div class="card-value" id="crm-kpi-tasa">0%</div>
+      <div class="card-sub">Ganadas / (Ganadas + Perdidas)</div>
+    </div>
+  </div>
+
+  <!-- Acciones -->
+  <div class="section-header" style="margin-bottom:20px;">
+    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+      <input type="text" id="crm-search" placeholder="Buscar oportunidad o cliente..." style="width:240px;" oninput="renderCRM()"/>
+      <select id="crm-filtro-etapa" style="width:auto;padding:8px 12px;font-size:.78rem;" onchange="renderCRM()">
+        <option value="">Todas las etapas</option>
+        <option value="prospecto">Prospecto</option>
+        <option value="contactado">Contactado</option>
+        <option value="propuesta">Propuesta enviada</option>
+        <option value="negociacion">Negociación</option>
+        <option value="ganado">Ganado</option>
+        <option value="perdido">Perdido</option>
+      </select>
+    </div>
+    <button class="btn-primary" onclick="openModal('oportunidad')">+ Oportunidad</button>
+  </div>
+
+  <!-- Pipeline Kanban -->
+  <div class="crm-pipeline" id="crm-pipeline"></div>
+</div>
+
+<!-- MODAL: OPORTUNIDAD -->
+<div class="overlay" id="modal-oportunidad" onclick="closeModal('oportunidad')">
+  <div class="modal" onclick="event.stopPropagation()" style="max-width:520px;">
+    <div class="modal-title" id="oportunidad-modal-title">Nueva oportunidad</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+      <div class="field" style="grid-column:1/-1;">
+        <label>Nombre de la oportunidad</label>
+        <input type="text" id="op-nombre" placeholder="Ej: Instalación sanitaria Torre Libertador"/>
+      </div>
+      <div class="field">
+        <label>Cliente</label>
+        <select id="op-cliente"></select>
+      </div>
+      <div class="field">
+        <label>Etapa</label>
+        <select id="op-etapa">
+          <option value="prospecto">Prospecto</option>
+          <option value="contactado">Contactado</option>
+          <option value="propuesta">Propuesta enviada</option>
+          <option value="negociacion">Negociación</option>
+          <option value="ganado">Ganado</option>
+          <option value="perdido">Perdido</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Monto estimado ($)</label>
+        <input type="number" id="op-monto" placeholder="0" min="0"/>
+      </div>
+      <div class="field">
+        <label>Probabilidad de cierre (%)</label>
+        <input type="number" id="op-probabilidad" placeholder="50" min="0" max="100"/>
+      </div>
+      <div class="field">
+        <label>Fecha estimada de cierre</label>
+        <input type="date" id="op-fecha-cierre"/>
+      </div>
+      <div class="field">
+        <label>Responsable (opcional)</label>
+        <input type="text" id="op-responsable" placeholder="Nombre del responsable"/>
+      </div>
+      <div class="field" style="grid-column:1/-1;">
+        <label>Notas (opcional)</label>
+        <textarea id="op-notas" rows="2" style="resize:vertical;" placeholder="Descripción, contexto, próximos pasos..."></textarea>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-secondary" onclick="closeModal('oportunidad')" style="flex:1">Cancelar</button>
+      <button class="btn-primary" onclick="saveOportunidad()" style="flex:2">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: DETALLE OPORTUNIDAD -->
+<div class="overlay" id="modal-oportunidad-detalle" onclick="closeModal('oportunidad-detalle')">
+  <div class="modal" onclick="event.stopPropagation()" style="max-width:480px;">
+    <div id="op-detalle-content"></div>
+    <div id="op-detalle-actions" class="modal-actions"></div>
+  </div>
+</div>
+
 <div class="page active" id="page-dashboard">
 <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px;margin-bottom:4px;">
 <div class="page-title">Dashboard</div>
@@ -2072,6 +2210,7 @@
     loadEmpleados();
     loadInventario();
     loadOC();
+    loadCRM();
   }
 
   function mostrarSelectorEmpresa(misEmpresas, user) {
@@ -2416,6 +2555,15 @@
       ocItemsEditor = [];
       renderOCItemsEditor();
       populateProveedorSelectOC();
+    }
+    if(name==='oportunidad'){
+      editingOpId=null;
+      document.getElementById('oportunidad-modal-title').textContent='Nueva oportunidad';
+      ['op-nombre','op-responsable','op-notas'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+      ['op-monto','op-probabilidad'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+      const fe=document.getElementById('op-fecha-cierre');if(fe)fe.value='';
+      const et=document.getElementById('op-etapa');if(et)et.value='prospecto';
+      populateClienteSelectCRM();
     }
     if(name==='producto'){
       editingProdId=null;
@@ -5266,7 +5414,7 @@
     if (uid) localStorage.setItem(`finhub-last-empresa-${uid}`, empresaId);
 
     // Limpiar estado local
-    transactions = {}; contacts = {}; accounts = {}; empleados = {}; productos = {}; movStock = {}; ordenesCompra = {};
+    transactions = {}; contacts = {}; accounts = {}; empleados = {}; productos = {}; movStock = {}; ordenesCompra = {}; oportunidades = {};
 
     // Actualizar nombre en el switcher
     onValue(ref(db, `empresas/${empresaId}/info`), snap => {
@@ -6645,6 +6793,233 @@
         </div>`).join('');
   };
 
+
+  // ══════════════════════════════════════════════════
+  // CRM
+  // ══════════════════════════════════════════════════
+  let oportunidades = {};
+  let editingOpId   = null;
+  let detalleOpId   = null;
+
+  const CRM_ETAPAS = [
+    { id:'prospecto',    label:'Prospecto',         color:'#8b9aba' },
+    { id:'contactado',   label:'Contactado',         color:'var(--accent)' },
+    { id:'propuesta',    label:'Propuesta enviada',  color:'var(--accent2)' },
+    { id:'negociacion',  label:'Negociación',        color:'#e8b84b' },
+    { id:'ganado',       label:'Ganado',             color:'var(--green)' },
+    { id:'perdido',      label:'Perdido',            color:'var(--red)' },
+  ];
+
+  function loadCRM() {
+    onValue(ref(db, `empresas/${empresaId}/oportunidades`), snap => {
+      oportunidades = snap.val() || {};
+      renderCRM();
+    });
+  }
+
+  window.renderCRM = function() {
+    const pipeline = document.getElementById('crm-pipeline');
+    if (!pipeline) return;
+
+    const search   = (document.getElementById('crm-search')?.value || '').toLowerCase();
+    const filtEtapa = document.getElementById('crm-filtro-etapa')?.value || '';
+    const mesActual = new Date().toISOString().slice(0,7);
+
+    const arr = Object.entries(oportunidades).map(([id,o]) => ({id,...o}));
+
+    // KPIs
+    const activas  = arr.filter(o => !['ganado','perdido'].includes(o.etapa));
+    const ganadas  = arr.filter(o => o.etapa==='ganado'  && (o.fechaCierre||'').startsWith(mesActual));
+    const perdidas = arr.filter(o => o.etapa==='perdido' && (o.fechaCierre||'').startsWith(mesActual));
+    const totalPipeline = activas.reduce((s,o) => s+(o.monto||0), 0);
+    const totalGanadas  = ganadas.reduce((s,o) => s+(o.monto||0), 0);
+    const totalPerdidas = perdidas.reduce((s,o) => s+(o.monto||0), 0);
+    const gTotal = arr.filter(o=>o.etapa==='ganado').length;
+    const pTotal = arr.filter(o=>o.etapa==='perdido').length;
+    const tasa   = (gTotal+pTotal)>0 ? Math.round(gTotal/(gTotal+pTotal)*100) : 0;
+
+    const E = id => document.getElementById(id);
+    if(E('crm-kpi-pipeline'))  E('crm-kpi-pipeline').textContent  = fmt(totalPipeline);
+    if(E('crm-kpi-ganadas'))   E('crm-kpi-ganadas').textContent   = fmt(totalGanadas);
+    if(E('crm-kpi-perdidas'))  E('crm-kpi-perdidas').textContent  = fmt(totalPerdidas);
+    if(E('crm-kpi-tasa'))      E('crm-kpi-tasa').textContent      = tasa+'%';
+    if(E('crm-kpi-ganadas-n')) E('crm-kpi-ganadas-n').textContent = ganadas.length+' oportunidad'+(ganadas.length!==1?'es':'');
+    if(E('crm-kpi-perdidas-n'))E('crm-kpi-perdidas-n').textContent= perdidas.length+' oportunidad'+(perdidas.length!==1?'es':'');
+
+    // Filtrar
+    const filtered = arr.filter(o => {
+      if (filtEtapa && o.etapa !== filtEtapa) return false;
+      if (search) {
+        const cli = contacts[o.clienteId]?.nombre || '';
+        return (o.nombre||'').toLowerCase().includes(search) || cli.toLowerCase().includes(search);
+      }
+      return true;
+    });
+
+    // Renderizar columnas kanban
+    pipeline.innerHTML = CRM_ETAPAS.map(etapa => {
+      const tarjetas = filtered.filter(o => o.etapa === etapa.id)
+        .sort((a,b) => (b.monto||0)-(a.monto||0));
+      const totalEtapa = tarjetas.reduce((s,o)=>s+(o.monto||0),0);
+
+      const cards = tarjetas.map(o => {
+        const cliente = contacts[o.clienteId];
+        const prob = o.probabilidad || 0;
+        const diasCierre = o.fechaCierre ? Math.ceil((new Date(o.fechaCierre)-new Date())/(1000*60*60*24)) : null;
+        const vencida = diasCierre !== null && diasCierre < 0 && !['ganado','perdido'].includes(o.etapa);
+        return `<div class="crm-card etapa-${etapa.id}" onclick="openOpDetalle('${o.id}')">
+          <div class="crm-card-nombre">${esc(o.nombre||'Sin nombre')}</div>
+          ${cliente ? `<div class="crm-card-cliente">👤 ${esc(cliente.nombre)}</div>` : ''}
+          <div style="display:flex;justify-content:space-between;align-items:baseline;">
+            <div class="crm-card-monto">${fmt(o.monto||0)}</div>
+            <div style="font-size:.65rem;color:${vencida?'var(--red)':'var(--muted)'};">
+              ${diasCierre!==null ? (vencida?'⚠️ Vencida':'📅 '+diasCierre+'d') : ''}
+            </div>
+          </div>
+          ${prob>0 ? `<div class="crm-prob-bar"><div class="crm-prob-fill" style="width:${prob}%;background:${prob>=70?'var(--green)':prob>=40?'#e8b84b':'var(--red)'}"></div></div><div style="font-size:.62rem;color:var(--muted);margin-top:3px;">${prob}% prob.</div>` : ''}
+        </div>`;
+      }).join('');
+
+      const isEmpty = !tarjetas.length;
+      return `<div class="crm-col">
+        <div class="crm-col-header" style="border-top:3px solid ${etapa.color};">
+          <div class="crm-col-title">${etapa.label}</div>
+          <div class="crm-col-total">${tarjetas.length} · ${fmt(totalEtapa)}</div>
+        </div>
+        <div class="crm-col-body">
+          ${isEmpty ? `<div style="text-align:center;padding:24px 0;color:var(--muted);font-size:.75rem;">Sin oportunidades</div>` : cards}
+          <button onclick="openNuevaOpEtapa('${etapa.id}')" style="margin-top:auto;width:100%;padding:7px;background:none;border:1px dashed var(--border);border-radius:4px;color:var(--muted);font-size:.72rem;cursor:pointer;font-family:'DM Sans',sans-serif;" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--muted)'">+ Agregar</button>
+        </div>
+      </div>`;
+    }).join('');
+  };
+
+  window.openNuevaOpEtapa = function(etapa) {
+    openModal('oportunidad');
+    setTimeout(() => {
+      const sel = document.getElementById('op-etapa');
+      if (sel) sel.value = etapa;
+    }, 50);
+  };
+
+  window.openOpDetalle = function(id) {
+    const o = oportunidades[id]; if (!o) return;
+    detalleOpId = id;
+    const cliente = contacts[o.clienteId];
+    const etapa = CRM_ETAPAS.find(e=>e.id===o.etapa);
+    const prob = o.probabilidad || 0;
+    const valorEsperado = Math.round((o.monto||0) * prob / 100);
+
+    document.getElementById('op-detalle-content').innerHTML = `
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px;gap:12px;">
+        <div style="flex:1;">
+          <div style="font-size:1.05rem;font-weight:700;color:var(--ink);margin-bottom:4px;">${esc(o.nombre||'Sin nombre')}</div>
+          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+            <span style="font-size:.65rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:3px 9px;border-radius:3px;background:var(--surface2);color:var(--muted);">${etapa?.label||o.etapa}</span>
+            ${cliente?`<span style="font-size:.72rem;color:var(--muted);">👤 ${esc(cliente.nombre)}</span>`:''}
+          </div>
+        </div>
+        <div style="text-align:right;">
+          <div style="font-family:'Plus Jakarta Sans',sans-serif;font-size:1.4rem;font-weight:700;color:var(--accent);">${fmt(o.monto||0)}</div>
+          <div style="font-size:.7rem;color:var(--muted);">Valor esperado: ${fmt(valorEsperado)}</div>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;">
+        <div style="background:var(--surface2);padding:10px 14px;border-radius:4px;">
+          <div style="font-size:.6rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:4px;">Probabilidad</div>
+          <div style="font-size:1.1rem;font-weight:700;color:var(--ink);">${prob}%</div>
+          <div class="crm-prob-bar" style="margin-top:6px;"><div class="crm-prob-fill" style="width:${prob}%;background:${prob>=70?'var(--green)':prob>=40?'#e8b84b':'var(--red)'}"></div></div>
+        </div>
+        <div style="background:var(--surface2);padding:10px 14px;border-radius:4px;">
+          <div style="font-size:.6rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:4px;">Cierre estimado</div>
+          <div style="font-size:.95rem;font-weight:600;color:var(--ink);">${o.fechaCierre||'—'}</div>
+          ${o.responsable?`<div style="font-size:.7rem;color:var(--muted);margin-top:4px;">👤 ${esc(o.responsable)}</div>`:''}
+        </div>
+      </div>
+      ${o.notas?`<div style="background:var(--surface2);padding:10px 14px;border-radius:4px;font-size:.8rem;color:var(--ink2);line-height:1.6;margin-bottom:12px;">${esc(o.notas)}</div>`:''}
+      <div style="font-size:.65rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;">Mover a etapa</div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;">
+        ${CRM_ETAPAS.filter(e=>e.id!==o.etapa).map(e=>`
+          <button onclick="moverOportunidad('${id}','${e.id}')" style="font-size:.68rem;padding:5px 10px;background:var(--surface2);border:1px solid var(--border);border-radius:3px;cursor:pointer;color:var(--ink2);font-family:'DM Sans',sans-serif;" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">${e.label}</button>
+        `).join('')}
+      </div>`;
+
+    const actions = document.getElementById('op-detalle-actions');
+    actions.innerHTML = `
+      <button class="btn-secondary" onclick="closeModal('oportunidad-detalle')" style="flex:1">Cerrar</button>
+      <button onclick="deleteOportunidad('${id}')" style="flex:1;background:var(--red-bg);color:var(--red);border:1px solid var(--red);font-family:'DM Sans',sans-serif;font-size:.72rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;padding:10px;cursor:pointer;border-radius:4px;">🗑 Eliminar</button>
+      <button class="btn-primary" onclick="editOpFromDetalle()" style="flex:1">Editar</button>`;
+
+    document.getElementById('modal-oportunidad-detalle').classList.add('open');
+  };
+
+  window.moverOportunidad = async function(id, nuevaEtapa) {
+    closeModal('oportunidad-detalle');
+    const updates = { etapa: nuevaEtapa, updatedAt: Date.now() };
+    if (['ganado','perdido'].includes(nuevaEtapa)) {
+      updates.fechaCierre = new Date().toISOString().slice(0,10);
+    }
+    await update(ref(db, `empresas/${empresaId}/oportunidades/${id}`), updates);
+  };
+
+  window.deleteOportunidad = async function(id) {
+    if (!confirm('¿Eliminar esta oportunidad?')) return;
+    closeModal('oportunidad-detalle');
+    await remove(ref(db, `empresas/${empresaId}/oportunidades/${id}`));
+  };
+
+  window.editOpFromDetalle = function() {
+    const o = oportunidades[detalleOpId]; if (!o) return;
+    closeModal('oportunidad-detalle');
+    editingOpId = detalleOpId;
+    document.getElementById('oportunidad-modal-title').textContent = 'Editar oportunidad';
+    document.getElementById('op-nombre').value       = o.nombre||'';
+    document.getElementById('op-etapa').value        = o.etapa||'prospecto';
+    document.getElementById('op-monto').value        = o.monto||'';
+    document.getElementById('op-probabilidad').value = o.probabilidad||'';
+    document.getElementById('op-fecha-cierre').value = o.fechaCierre||'';
+    document.getElementById('op-responsable').value  = o.responsable||'';
+    document.getElementById('op-notas').value        = o.notas||'';
+    document.getElementById('op-cliente').value      = o.clienteId||'';
+    document.getElementById('modal-oportunidad').classList.add('open');
+  };
+
+  window.saveOportunidad = async function() {
+    const nombre = document.getElementById('op-nombre').value.trim();
+    if (!nombre) { alert('Ingresá el nombre de la oportunidad.'); return; }
+    const data = {
+      nombre,
+      clienteId:    document.getElementById('op-cliente').value || null,
+      etapa:        document.getElementById('op-etapa').value,
+      monto:        parseFloat(document.getElementById('op-monto').value)||0,
+      probabilidad: parseFloat(document.getElementById('op-probabilidad').value)||0,
+      fechaCierre:  document.getElementById('op-fecha-cierre').value || null,
+      responsable:  document.getElementById('op-responsable').value.trim() || null,
+      notas:        document.getElementById('op-notas').value.trim() || null,
+      updatedAt:    Date.now(),
+    };
+    closeModal('oportunidad');
+    if (editingOpId) {
+      await update(ref(db, `empresas/${empresaId}/oportunidades/${editingOpId}`), data);
+      editingOpId = null;
+    } else {
+      data.createdAt = Date.now();
+      await push(ref(db, `empresas/${empresaId}/oportunidades`), data);
+    }
+  };
+
+  function populateClienteSelectCRM() {
+    const sel = document.getElementById('op-cliente'); if (!sel) return;
+    sel.innerHTML = '<option value="">— Sin asignar —</option>' +
+      Object.entries(contacts).map(([id,c]) => `<option value="${id}">${esc(c.nombre||'')}</option>`).join('');
+  }
+
+  window.renderCRMPage = function() {
+    populateClienteSelectCRM();
+    renderCRM();
+  };
+
+
   // ── NAV ──
   const ADMIN_SECTIONS = ['contador','asesor','rrhh','usuarios'];
 
@@ -6679,7 +7054,7 @@
     }
 
     // Header mobile
-    const titleMap={vistarapida:'Vista rápida',dashboard:'Dashboard',movimientos:'Movimientos',cuentas:'Cuentas',contactos:'Contactos',iva:'IVA',reportes:'Reportes',inventario:'Inventario',oc:'Órdenes de compra',contador:'Contador IA',asesor:'Asesor Legal IA',rrhh:'RRHH',usuarios:'Usuarios',busqueda:'Búsqueda'};
+    const titleMap={vistarapida:'Vista rápida',dashboard:'Dashboard',movimientos:'Movimientos',cuentas:'Cuentas',contactos:'Contactos',iva:'IVA',reportes:'Reportes',inventario:'Inventario',oc:'Órdenes de compra',crm:'CRM',contador:'Contador IA',asesor:'Asesor Legal IA',rrhh:'RRHH',usuarios:'Usuarios',busqueda:'Búsqueda'};
     const mTitle=document.getElementById('mobile-header-title');
     if(mTitle) mTitle.textContent=titleMap[section]||section;
 
@@ -6699,6 +7074,7 @@
     if(section==='inventario')  { renderInventario(); populateProveedorSelectInv(); }
     if(section==='vistarapida') renderVistaRapida();
     if(section==='oc')          { renderOCPage(); }
+    if(section==='crm')         { renderCRMPage(); }
     if(section==='usuarios')   renderUsuarios();
   };
 
