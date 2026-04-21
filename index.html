@@ -4,46 +4,34 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="color-scheme" content="light" />
-  <title>finHub Business · Acceder</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <title>finHub. · Acceder</title>
+  <link rel="manifest" href="manifest.json" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     html { color-scheme: light only; }
 
     :root {
-      /* ── Neutros (idénticos a finHub home) ── */
-      --bg:      #f5f3f0;
+      --bg:      #f5f0e8;
       --surface: #fdfaf4;
       --border:  #e0d8cc;
       --ink:     #1a1a14;
       --ink2:    #3a3830;
       --muted:   #8a8070;
-
-      /* ── Accent azul corporativo (reemplaza el verde) ── */
-      --accent:     #1e4d8c;
-      --accent-mid: #2460a7;
-      --accent-dim: rgba(30,77,140,0.10);
-
-      /* ── Acento secundario: azul-pizarra para highlights ── */
-      --accent2:    #3b7dd8;
-
+      --accent:  #3d6b52;
       --error:   #b85050;
-      --font-ui: 'DM Sans', ui-sans-serif, -apple-system, BlinkMacSystemFont, sans-serif;
-      --font-hd: 'Plus Jakarta Sans', ui-sans-serif, sans-serif;
+      --font:    ui-sans-serif, -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
     }
 
     html, body { height: 100%; }
 
     body {
-      background: var(--bg) !important;
-      color: var(--ink) !important;
-      font-family: var(--font-ui);
+      background: #f5f0e8 !important;
+      color: #1a1a14 !important;
+      font-family: var(--font);
       font-weight: 300;
     }
 
-    /* Textura de puntos, igual que finHub home */
     body::before {
       content: '';
       position: fixed; inset: 0;
@@ -53,7 +41,6 @@
       pointer-events: none;
     }
 
-    /* ── LAYOUT ── */
     .layout {
       min-height: 100vh;
       display: grid;
@@ -67,74 +54,34 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      gap: 32px;
+      gap: 28px;
       position: relative;
       overflow: hidden;
       padding: 60px 40px;
     }
 
-    /* Círculos decorativos (igual estructura que home, color azul) */
     .panel-left::before {
       content: '';
       position: absolute;
-      width: 500px; height: 500px;
+      width: 480px; height: 480px;
       border-radius: 50%;
-      border: 1px solid rgba(255,255,255,0.06);
-      bottom: -220px; right: -160px;
+      border: 1px solid rgba(255,255,255,0.07);
+      bottom: -200px; right: -140px;
     }
     .panel-left::after {
       content: '';
       position: absolute;
-      width: 280px; height: 280px;
-      border-radius: 50%;
-      border: 1px solid rgba(255,255,255,0.04);
-      top: 50px; left: 30px;
-    }
-
-    /* Círculo adicional para profundidad */
-    .panel-left-circle3 {
-      position: absolute;
-      width: 180px; height: 180px;
+      width: 260px; height: 260px;
       border-radius: 50%;
       border: 1px solid rgba(255,255,255,0.05);
-      bottom: 80px; left: -60px;
-      pointer-events: none;
+      top: 60px; left: 40px;
     }
 
-    .panel-logo-area {
-      position: relative;
-      z-index: 1;
-      text-align: center;
-    }
-
-    /* Badge "Business" sobre el logo */
-    .business-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      background: rgba(255,255,255,0.12);
-      border: 1px solid rgba(255,255,255,0.18);
-      border-radius: 20px;
-      padding: 5px 14px;
-      font-family: var(--font-ui);
-      font-size: 0.65rem;
-      font-weight: 600;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-      color: rgba(255,255,255,0.85);
-      margin-bottom: 24px;
-    }
-    .business-badge::before {
-      content: '';
-      display: inline-block;
-      width: 6px; height: 6px;
-      border-radius: 50%;
-      background: var(--accent2);
-    }
+    .panel-logo-area { position: relative; z-index: 1; text-align: center; }
 
     .panel-wordmark {
-      font-family: var(--font-hd);
-      font-size: 3.2rem;
+      font-family: var(--font);
+      font-size: 3rem;
       font-weight: 700;
       letter-spacing: -0.03em;
       line-height: 1;
@@ -142,53 +89,10 @@
     }
 
     .panel-tagline {
-      font-size: 0.88rem;
-      color: rgba(255,255,255,0.5);
-      margin-top: 12px;
+      font-size: 0.9rem;
+      color: rgba(255,255,255,0.55);
+      margin-top: 10px;
       letter-spacing: 0.01em;
-      font-family: var(--font-ui);
-    }
-
-    /* Separador decorativo */
-    .panel-divider {
-      position: relative;
-      z-index: 1;
-      width: 40px;
-      height: 1px;
-      background: rgba(255,255,255,0.2);
-    }
-
-    /* Features list en el panel izquierdo */
-    .panel-features {
-      position: relative;
-      z-index: 1;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      width: 100%;
-      max-width: 260px;
-    }
-
-    .panel-feature {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      font-family: var(--font-ui);
-      font-size: 0.8rem;
-      color: rgba(255,255,255,0.65);
-    }
-
-    .panel-feature-icon {
-      width: 28px; height: 28px;
-      border-radius: 6px;
-      background: rgba(255,255,255,0.10);
-      display: flex; align-items: center; justify-content: center;
-      flex-shrink: 0;
-    }
-
-    .panel-feature-icon svg {
-      width: 14px; height: 14px;
-      stroke: rgba(255,255,255,0.8);
     }
 
     /* ── PANEL DERECHO ── */
@@ -210,7 +114,7 @@
       to   { opacity: 1; transform: translateY(0); }
     }
 
-    /* Logo pequeño en mobile */
+    /* Logo chico en el form (mobile) */
     .form-logo {
       display: none;
       align-items: center;
@@ -219,7 +123,7 @@
     }
 
     .form-title {
-      font-family: var(--font-hd);
+      font-family: var(--font);
       font-size: 1.75rem;
       font-weight: 600;
       letter-spacing: -0.02em;
@@ -237,13 +141,12 @@
 
     label {
       display: block;
-      font-size: 0.68rem;
+      font-size: 0.7rem;
       font-weight: 500;
       letter-spacing: 0.1em;
       text-transform: uppercase;
       color: var(--ink2);
       margin-bottom: 8px;
-      font-family: var(--font-ui);
     }
 
     input {
@@ -251,7 +154,7 @@
       background: var(--surface);
       border: 1px solid var(--border);
       color: var(--ink);
-      font-family: var(--font-ui);
+      font-family: var(--font);
       font-size: 0.95rem;
       font-weight: 300;
       padding: 13px 16px;
@@ -262,7 +165,7 @@
 
     input:focus {
       border-color: var(--accent);
-      box-shadow: 0 0 0 3px var(--accent-dim);
+      box-shadow: 0 0 0 3px rgba(61,107,82,0.1);
     }
 
     input::placeholder { color: var(--muted); }
@@ -272,9 +175,9 @@
       margin-top: 24px;
       padding: 14px;
       background: var(--accent);
-      color: #fff;
+      color: #fdfaf4;
       border: none;
-      font-family: var(--font-ui);
+      font-family: var(--font);
       font-size: 0.8rem;
       font-weight: 600;
       letter-spacing: 0.12em;
@@ -284,7 +187,7 @@
       transition: background 0.2s, transform 0.15s;
     }
 
-    .btn:hover  { background: var(--accent-mid); }
+    .btn:hover { background: #2d5240; }
     .btn:active { transform: scale(0.99); }
     .btn:disabled { opacity: 0.4; cursor: not-allowed; }
 
@@ -299,30 +202,11 @@
 
     .toggle { text-align: center; font-size: 0.82rem; color: var(--muted); }
     .toggle a { color: var(--accent); cursor: pointer; font-weight: 500; }
-    .toggle a:hover { text-decoration: underline; }
 
     .msg { min-height: 18px; font-size: 0.78rem; text-align: center; margin-top: 10px; }
     .msg.error { color: var(--error); }
     .msg.ok    { color: var(--accent); }
 
-    /* Link a finHub personal (footer del form) */
-    .switch-product {
-      margin-top: 36px;
-      padding-top: 20px;
-      border-top: 1px solid var(--border);
-      text-align: center;
-      font-size: 0.78rem;
-      color: var(--muted);
-    }
-    .switch-product a {
-      color: var(--accent);
-      cursor: pointer;
-      font-weight: 500;
-      text-decoration: none;
-    }
-    .switch-product a:hover { text-decoration: underline; }
-
-    /* ── RESPONSIVE ── */
     @media (max-width: 700px) {
       .layout { grid-template-columns: 1fr; }
       .panel-left { display: none; }
@@ -332,89 +216,63 @@
   </style>
 </head>
 <body>
-
 <div class="layout" id="layout" style="opacity:0;transition:opacity 0.3s">
 
-  <!-- ── PANEL IZQUIERDO ── -->
-  <div class="panel-left">
-    <div class="panel-left-circle3"></div>
-
+  <!-- Panel izquierdo: logo grande -->
+  <div class="panel-left" style="position:relative;">
     <div class="panel-logo-area">
-      <div class="business-badge">Business</div>
-
-      <!-- Ícono: igual que finHub home pero en azul -->
+      <!-- Ícono barras + flecha -->
       <svg width="96" height="80" viewBox="0 0 96 80" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <rect x="0"  y="52" width="20" height="28" rx="3" fill="rgba(255,255,255,0.35)"/>
-        <rect x="25" y="34" width="20" height="46" rx="3" fill="rgba(255,255,255,0.55)"/>
-        <rect x="50" y="8"  width="20" height="72" rx="3" fill="white"/>
-        <circle cx="60" cy="24" r="12" fill="rgba(30,77,140,0.55)" stroke="white" stroke-width="1.5"/>
+        <rect x="0" y="52" width="20" height="28" rx="3" fill="rgba(255,255,255,0.4)"/>
+        <rect x="25" y="34" width="20" height="46" rx="3" fill="rgba(255,255,255,0.6)"/>
+        <rect x="50" y="8" width="20" height="72" rx="3" fill="white"/>
+        <circle cx="60" cy="24" r="12" fill="rgba(61,107,82,0.6)" stroke="white" stroke-width="1.5"/>
         <path d="M55 29 L60 19 L65 29" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
         <line x1="60" y1="19" x2="60" y2="29" stroke="white" stroke-width="2" stroke-linecap="round"/>
       </svg>
-
+      <!-- Wordmark panel -->
       <div class="panel-wordmark">
-        <span style="color:rgba(255,255,255,0.55)">fin</span><span style="color:white">Hub.</span>
+        <span style="color:rgba(255,255,255,0.65)">fin</span><span style="color:white">Hub.</span>
       </div>
-      <div class="panel-tagline">Gestión financiera para PyMEs argentinas</div>
+      <div class="panel-tagline">Finanzas simples, mente tranquila</div>
     </div>
-
-    <div class="panel-divider"></div>
-
-    <!-- Features -->
-    <div class="panel-features">
-      <div class="panel-feature">
-        <div class="panel-feature-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
-        </div>
-        Multi-cuenta · Caja, banco, CC
-      </div>
-      <div class="panel-feature">
-        <div class="panel-feature-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>
-        </div>
-        IVA débito y crédito automático
-      </div>
-      <div class="panel-feature">
-        <div class="panel-feature-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-        </div>
-        Clientes, proveedores y CUIT
-      </div>
-      <div class="panel-feature">
-        <div class="panel-feature-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-        </div>
-        P&amp;L mensual y flujo de caja
-      </div>
+    <!-- Badge kippcode -->
+    <div style="position:absolute;bottom:24px;left:0;right:0;display:flex;justify-content:center;align-items:center;gap:7px;opacity:.35;pointer-events:none;user-select:none;">
+      <svg width="14" height="14" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="6" y="6" width="36" height="36" rx="7" stroke="white" stroke-width="9" fill="none"/>
+        <rect x="58" y="6" width="36" height="36" rx="7" stroke="white" stroke-width="9" fill="none"/>
+        <rect x="6" y="58" width="36" height="36" rx="7" stroke="white" stroke-width="9" fill="none"/>
+        <circle cx="76" cy="76" r="15" fill="#e86c2a"/>
+      </svg>
+      <span style="font-family:sans-serif;font-size:11px;font-weight:600;letter-spacing:.06em;color:white;">kippcode</span>
     </div>
   </div>
 
-  <!-- ── PANEL DERECHO: FORM ── -->
+  <!-- Panel derecho: form -->
   <div class="panel-right">
     <div class="form-wrap">
 
       <!-- Logo pequeño (solo mobile) -->
       <div class="form-logo">
-        <svg width="28" height="24" viewBox="0 0 96 80" fill="none">
-          <rect x="0"  y="52" width="20" height="28" rx="3" fill="#1e4d8c" opacity="0.4"/>
-          <rect x="25" y="34" width="20" height="46" rx="3" fill="#1e4d8c" opacity="0.65"/>
-          <rect x="50" y="8"  width="20" height="72" rx="3" fill="#1e4d8c"/>
-          <circle cx="60" cy="24" r="12" fill="white" stroke="#1e4d8c" stroke-width="2"/>
-          <path d="M55 29 L60 19 L65 29" stroke="#1e4d8c" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-          <line x1="60" y1="19" x2="60" y2="29" stroke="#1e4d8c" stroke-width="2.5" stroke-linecap="round"/>
+        <svg width="28" height="24" viewBox="0 0 96 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="0" y="52" width="20" height="28" rx="3" fill="#3d6b52" opacity="0.4"/>
+          <rect x="25" y="34" width="20" height="46" rx="3" fill="#3d6b52" opacity="0.65"/>
+          <rect x="50" y="8" width="20" height="72" rx="3" fill="#3d6b52"/>
+          <circle cx="60" cy="24" r="12" fill="white" stroke="#3d6b52" stroke-width="2"/>
+          <path d="M55 29 L60 19 L65 29" stroke="#3d6b52" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+          <line x1="60" y1="19" x2="60" y2="29" stroke="#3d6b52" stroke-width="2.5" stroke-linecap="round"/>
         </svg>
-        <span style="font-family:'Plus Jakarta Sans',sans-serif;font-size:1.3rem;font-weight:700;letter-spacing:-0.02em;">
-          <span style="color:#8a8070">fin</span><span style="color:#1e4d8c">Hub.</span>
+        <span style="font-size:1.3rem;font-weight:700;letter-spacing:-0.02em">
+          <span style="color:#8a8070">fin</span><span style="color:#3d6b52">Hub.</span>
         </span>
-        <span style="font-size:0.6rem;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:#1e4d8c;background:rgba(30,77,140,0.08);border:1px solid rgba(30,77,140,0.18);border-radius:10px;padding:2px 8px;">BIZ</span>
       </div>
 
       <div class="form-title" id="form-title">Bienvenido</div>
-      <div class="form-sub"   id="form-sub">Ingresá con tu cuenta empresarial</div>
+      <div class="form-sub" id="form-sub">Ingresá con tu cuenta para continuar</div>
 
       <div class="field">
         <label>Correo electrónico</label>
-        <input type="email" id="email" placeholder="empresa@mail.com" autocomplete="email" />
+        <input type="email" id="email" placeholder="tu@email.com" autocomplete="email" />
       </div>
       <div class="field">
         <label>Contraseña</label>
@@ -428,40 +286,31 @@
       <div class="toggle" id="toggle-text">
         ¿No tenés cuenta? <a onclick="toggleMode()">Registrate gratis</a>
       </div>
-
-      <!-- Link a finHub personal -->
-      <div class="switch-product">
-        ¿Buscás finanzas personales?
-        <a href="https://finhub-app-fb853.web.app" target="_blank">Ir a finHub Home →</a>
-      </div>
-
     </div>
   </div>
 
 </div>
 
 <script type="module">
-  import { initializeApp }
-    from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
   import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged }
     from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
-  // ─── CONFIG FIREBASE — proyecto exclusivo finHub Business ───
+  // ─── REEMPLAZÁ CON TU CONFIG ───
   const firebaseConfig = {
-    apiKey:            "AIzaSyDEdKUEJighBOwemKjh0fMxr-TGN2U9Ulo",
-    authDomain:        "finhub-business.firebaseapp.com",
-    databaseURL:       "https://finhub-business-default-rtdb.firebaseio.com",
-    projectId:         "finhub-business",
-    storageBucket:     "finhub-business.firebasestorage.app",
-    messagingSenderId: "946602595680",
-    appId:             "1:946602595680:web:0ebeacaa6c499b21f0fa05"
+    apiKey:            "AIzaSyDKzetZ189S7Q4DIu4jN3cS7RcWPmF2q-A",
+    authDomain:        "finhub-app-fb853.firebaseapp.com",
+    databaseURL:       "https://finhub-app-fb853-default-rtdb.firebaseio.com",
+    projectId:         "finhub-app-fb853",
+    storageBucket:     "finhub-app-fb853.firebasestorage.app",
+    messagingSenderId: "906737525390",
+    appId:             "1:906737525390:web:3ae1bf5effca01c5f31fdf"
   };
-  // ─────────────────────────────────────────────────────────────
+  // ──────────────────────────────
 
   const app  = initializeApp(firebaseConfig);
   const auth = getAuth(app);
 
-  // Si ya está logueado, ir directo al dashboard
   onAuthStateChanged(auth, user => {
     if (user) {
       window.location.href = 'app.html';
@@ -476,9 +325,7 @@
     isRegister = !isRegister;
     document.getElementById('btn-login').textContent  = isRegister ? 'Crear cuenta' : 'Ingresar';
     document.getElementById('form-title').textContent = isRegister ? 'Crear cuenta' : 'Bienvenido';
-    document.getElementById('form-sub').textContent   = isRegister
-      ? 'Registrá tu empresa para comenzar'
-      : 'Ingresá con tu cuenta empresarial';
+    document.getElementById('form-sub').textContent   = isRegister ? 'Completá tus datos para registrarte' : 'Ingresá con tu cuenta para continuar';
     document.getElementById('toggle-text').innerHTML  = isRegister
       ? '¿Ya tenés cuenta? <a onclick="toggleMode()">Ingresá</a>'
       : '¿No tenés cuenta? <a onclick="toggleMode()">Registrate gratis</a>';
@@ -495,16 +342,15 @@
       isRegister
         ? await createUserWithEmailAndPassword(auth, email, password)
         : await signInWithEmailAndPassword(auth, email, password);
-      // onAuthStateChanged redirige automáticamente
     } catch (e) {
       btn.disabled = false;
       const msgs = {
-        'auth/user-not-found':       'No encontramos esa cuenta.',
-        'auth/wrong-password':       'Contraseña incorrecta.',
-        'auth/email-already-in-use': 'Ese email ya está registrado.',
-        'auth/weak-password':        'Mínimo 6 caracteres.',
-        'auth/invalid-email':        'Email inválido.',
-        'auth/invalid-credential':   'Credenciales inválidas.',
+        'auth/user-not-found':      'No encontramos esa cuenta.',
+        'auth/wrong-password':      'Contraseña incorrecta.',
+        'auth/email-already-in-use':'Ese email ya está registrado.',
+        'auth/weak-password':       'Mínimo 6 caracteres.',
+        'auth/invalid-email':       'Email inválido.',
+        'auth/invalid-credential':  'Credenciales inválidas.',
       };
       setMsg(msgs[e.code] || e.message, true);
     }
@@ -516,7 +362,6 @@
     el.className = 'msg ' + (err ? 'error' : 'ok');
   };
 
-  // Enter en contraseña dispara el login
   document.getElementById('password').addEventListener('keydown', e => {
     if (e.key === 'Enter') window.handleLogin();
   });
