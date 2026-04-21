@@ -402,7 +402,7 @@
     .onboarding-actions { display:flex; gap:10px; }
 
     /* ── INSTRUCTIVO ── */
-    .inst-overlay { display:none; position:fixed; inset:0; background:rgba(26,26,20,.5); backdrop-filter:blur(6px); z-index:500; }
+    .inst-overlay { display:none; position:fixed; inset:0; background:rgba(26,26,20,.5); backdrop-filter:blur(6px); z-index:10000; }
     .inst-overlay.open { display:flex; align-items:center; justify-content:center; padding:20px; }
     .inst-modal { background:var(--bg); border:1px solid var(--border); border-radius:8px; width:100%; max-width:900px; height:88vh; display:grid; grid-template-columns:220px 1fr; grid-template-rows:1fr; overflow:hidden; box-shadow:0 32px 80px rgba(0,0,0,.2); animation:slideUp .3s cubic-bezier(.16,1,.3,1); position:relative; }
     .inst-nav { background:var(--surface); border-right:1px solid var(--border); padding:0; display:flex; flex-direction:column; overflow-y:auto; overflow-x:hidden; min-height:0; scrollbar-width:thin; scrollbar-color:var(--border) transparent; }
@@ -571,6 +571,14 @@
       /* Ticker: oculto */
       .biz-ticker { display:none !important; }
 
+      /* Prevenir scroll horizontal global */
+      .page { overflow-x:hidden !important; max-width:100% !important; }
+      .page > * { max-width:100% !important; box-sizing:border-box !important; }
+      /* Grids inline que pueden romper el layout */
+      div[style*="grid-template-columns:1fr 1fr 1fr"] { grid-template-columns:1fr 1fr !important; }
+      /* Inputs y selects no más anchos que la pantalla */
+      input, select, textarea { max-width:100% !important; box-sizing:border-box !important; }
+
       /* Main */
       main {
         margin-left:0 !important; margin-top:0 !important;
@@ -599,6 +607,15 @@
 
       /* Botones */
       .btn-primary, .btn-secondary, .btn-export { font-size:.65rem; padding:8px 12px; }
+      /* Fila de botones de acción — wrap para no salirse del ancho */
+      .section-header { flex-wrap:wrap; }
+      .section-header > div { flex-wrap:wrap; max-width:100%; }
+      .section-header > div > * { flex-shrink:0; }
+      /* TX botones — no exceder ancho */
+      .tx-item-right { flex-wrap:wrap; }
+      .tx-btn-action { font-size:.56rem; padding:4px 7px; }
+      /* Botones de exportar en fila — forzar wrap */
+      div[style*="display:flex"][style*="gap"] { flex-wrap:wrap; max-width:100%; }
 
       /* Section header */
       .section-header { flex-direction:column; align-items:flex-start; gap:10px; }
