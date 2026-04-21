@@ -65,7 +65,7 @@
       background:#1e4d8c;
       display:flex;
       flex-direction:column;
-      height:100vh;
+      height:calc(100vh - 26px);
       overflow-y:auto;
       overscroll-behavior:contain;
       transition:background .3s;
@@ -102,7 +102,7 @@
     .nav-item.active { color:white; border-left-color:white; background:rgba(255,255,255,.18); font-weight:500; }
     body.dark .nav-item.active { color:white; border-left-color:#6aaee8; background:rgba(106,174,232,.18); }
     .nav-icon { width:14px; height:14px; flex-shrink:0; }
-    .sidebar-footer { padding:14px 24px 20px; border-top:1px solid rgba(255,255,255,.12); }
+    .sidebar-footer { padding:14px 24px 32px; border-top:1px solid rgba(255,255,255,.12); }
     body.dark .sidebar-footer { border-top-color:#4a4a4a; }
     .user-email { font-size:.7rem; color:rgba(255,255,255,.55); margin-bottom:12px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
     body.dark .user-email { color:#aaa; }
