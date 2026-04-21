@@ -582,10 +582,13 @@
       /* Main */
       main {
         margin-left:0 !important; margin-top:0 !important;
-        width:100% !important; padding:68px 14px 40px !important;
+        width:100% !important; padding:68px 14px 100px !important;
         height:100vh !important; overflow-y:auto !important;
         box-sizing:border-box !important;
       }
+
+      /* Badge kippcode: ocultar en mobile para no tapar contenido */
+      #kippcode-badge { display:none !important; }
 
       /* Tipografía */
       .page-title { font-size:1.3rem !important; }
@@ -623,10 +626,12 @@
       .filter-chip { font-size:.62rem; padding:5px 10px; }
 
       /* TX */
-      .tx-item { padding:10px 12px; flex-wrap:wrap; gap:6px; }
-      .tx-item-right { flex-direction:row; align-items:center; gap:8px; width:100%; justify-content:space-between; }
-      .tx-item-actions { display:flex; gap:6px; }
-      .tx-btn-action { font-size:.58rem; padding:4px 8px; }
+      /* TX — layout consistente en mobile */
+      .tx-item { padding:12px 14px; flex-wrap:nowrap; gap:10px; align-items:flex-start; }
+      .tx-item-left { flex:1; min-width:0; margin-bottom:0; }
+      .tx-item-right { flex-direction:row !important; align-items:center !important; gap:8px; flex-shrink:0; flex-wrap:nowrap; width:auto !important; justify-content:flex-end; }
+      .tx-item-actions { display:flex; gap:5px; flex-shrink:0; }
+      .tx-btn-action { font-size:.56rem !important; padding:5px 9px !important; }
       .tx-month-header { padding:8px 12px; }
 
       /* Modal */
@@ -942,8 +947,8 @@
 </aside>
 <!-- ── MAIN ── -->
 <!-- kippcode watermark -->
-<div style="position:fixed;bottom:14px;right:18px;z-index:10;pointer-events:none;user-select:none;">
-<div onmouseenter="this.style.opacity='.45'" onmouseleave="this.style.opacity='.22'" style="pointer-events:auto;">
+<div id="kippcode-badge" style="position:fixed;bottom:14px;right:18px;z-index:10;pointer-events:none;user-select:none;">
+<div onmouseenter="this.style.opacity='.45'" onmouseleave="this.style.opacity='.22'" style="pointer-events:auto;display:flex;align-items:center;gap:4px;opacity:.22;">
 <svg fill="none" height="14" style="flex-shrink:0;" viewbox="0 0 24 24" width="14">
 <rect height="20" rx="4" stroke="#888" stroke-width="1.5" width="20" x="2" y="2"></rect>
 <circle cx="12" cy="12" fill="#e86c2a" r="2.5"></circle>
@@ -2874,11 +2879,13 @@
       <div class="tx-item-left">
         <div class="tx-desc">${esc(t.description||'Sin descripción')}</div>
         <div class="tx-cat">${esc(t.category||'')}${t.comprobante?' · '+esc(t.comprobante):''}</div>
-        <div style="display:flex;gap:6px;margin-top:4px;flex-wrap:wrap;">${ivaBadge}${cuentaBadge}${contactoBadge}</div>
+        ${(ivaBadge||cuentaBadge||contactoBadge)?`<div style="display:flex;gap:6px;margin-top:4px;flex-wrap:wrap;">${ivaBadge}${cuentaBadge}${contactoBadge}</div>`:''}
       </div>
       <div class="tx-item-right">
-        <div class="tx-amount ${isInc?'income':'expense'}">${isInc?'+':'−'}${fmt(t.amount)}</div>
-        <div class="tx-date">${fmtDate(t.date)}</div>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:2px;">
+          <div class="tx-amount ${isInc?'income':'expense'}">${isInc?'+':'−'}${fmt(t.amount)}</div>
+          <div class="tx-date">${fmtDate(t.date)}</div>
+        </div>
         ${actions}
       </div>
     </div>`;
