@@ -45,12 +45,11 @@
     body::before { content:''; position:fixed; inset:0; background-image:radial-gradient(circle,#ccc9c3 1px,transparent 1px); background-size:28px 28px; opacity:.3; pointer-events:none; z-index:0; }
     body.dark::before { opacity:.06; }
 
-    /* ── SHELL: flex row, sidebar fijo a la izquierda ── */
+    /* ── SHELL: contenedor simple ── */
     .shell {
-      display:flex;
-      flex-direction:row;
-      height:100vh;
-      overflow:hidden;
+      display:block;
+      height:calc(100vh - 26px);
+      margin-top:26px;
     }
 
     /* ── SIDEBAR: columna fija izquierda ── */
@@ -58,7 +57,10 @@
       width:224px;
       min-width:224px;
       flex-shrink:0;
-      position:relative;
+      position:fixed;
+      top:26px;
+      left:0;
+      bottom:0;
       z-index:200;
       background:#1e4d8c;
       display:flex;
@@ -70,12 +72,12 @@
       scrollbar-width:none;
     }
 
-    /* ── MAIN: flex:1 ocupa todo lo que queda ── */
+    /* ── MAIN: margen izquierdo por sidebar fixed + top por ticker ── */
     main {
-      flex:1;
-      min-width:0;
+      margin-left:224px;
+      margin-top:26px;
       padding:48px 52px;
-      height:100vh;
+      height:calc(100vh - 26px);
       overflow-y:auto;
       overscroll-behavior:contain;
       scrollbar-width:none;
@@ -325,6 +327,47 @@
     .presup-warn    { color:var(--accent2); }
     .presup-over    { color:var(--red); }
 
+
+    /* ── TICKER FINHUB BUSINESS ── */
+    .biz-ticker {
+      position:fixed; top:0; left:0; right:0; z-index:1000;
+      height:26px; overflow:hidden;
+      background:#1a2535; color:#7eaecb;
+      font-family:'DM Sans',sans-serif; font-size:.68rem; font-weight:500;
+      display:flex; align-items:center;
+    }
+    .biz-ticker-label {
+      background:#1e4d8c; color:white; padding:0 14px;
+      font-size:.58rem; font-weight:700; letter-spacing:.14em;
+      text-transform:uppercase; height:100%; display:flex; align-items:center;
+      flex-shrink:0; white-space:nowrap; gap:6px;
+    }
+    body.dark .biz-ticker { background:#0d1420; }
+    body.dark .biz-ticker-label { background:#2a5fa0; }
+    .biz-ticker-scroll { overflow:hidden; flex:1; }
+    .biz-ticker-track {
+      display:flex; gap:0; white-space:nowrap;
+      animation:biz-scroll 40s linear infinite;
+    }
+    .biz-ticker-track:hover { animation-play-state:paused; }
+    @keyframes biz-scroll {
+      0%   { transform:translateX(100vw); }
+      100% { transform:translateX(-50%); }
+    }
+    .biz-ticker-item {
+      padding:0 22px; display:flex; align-items:center; gap:6px;
+      border-right:1px solid #253548;
+      cursor:pointer;
+    }
+    .biz-ticker-item:hover { background:rgba(255,255,255,.05); }
+    .biz-ticker-icon { font-size:.75rem; flex-shrink:0; }
+    .biz-ticker-text { color:#c8dce8; }
+    .biz-ticker-val  { font-weight:600; color:#e8f0f5; }
+    .biz-ticker-alert { color:#e07070; }
+    .biz-ticker-warn  { color:#e8b84b; }
+    .biz-ticker-ok    { color:#7ecba1; }
+    body.dark .biz-ticker-item { border-right-color:#1a2535; }
+
     /* ── INSTRUCTIVO ── */
     .inst-overlay { display:none; position:fixed; inset:0; background:rgba(26,26,20,.5); backdrop-filter:blur(6px); z-index:500; }
     .inst-overlay.open { display:flex; align-items:center; justify-content:center; padding:20px; }
@@ -482,7 +525,8 @@
       .sidebar {
         position:fixed !important;
         left:-290px !important;
-        top:0 !important; bottom:0 !important;
+        top:0 !important;
+        bottom:0 !important;
         width:280px !important;
         height:100% !important;
         z-index:9999 !important;
@@ -495,13 +539,22 @@
 
       .hamburger { display:flex !important; }
 
-      /* Main: ocupa todo el ancho */
+      /* Ticker: ocultar en mobile para ganar espacio */
+      .biz-ticker { display:none !important; }
+
+      /* Main: ocupa todo el ancho, sin ticker */
       main {
+        margin-left:0 !important;
+        margin-top:0 !important;
         width:100% !important;
         padding:68px 14px 32px 14px !important;
         height:100vh !important;
         overflow-y:auto !important;
         box-sizing:border-box !important;
+      }
+      .shell {
+        margin-top:0 !important;
+        height:100vh !important;
       }
 
       .page-title { font-size:1.3rem !important; }
@@ -658,6 +711,17 @@
   </style>
 </head>
 <body>
+<div class="biz-ticker" id="biz-ticker">
+  <div class="biz-ticker-label">
+    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+    finHub Business
+  </div>
+  <div class="biz-ticker-scroll">
+    <div class="biz-ticker-track" id="biz-ticker-track">
+      <div class="biz-ticker-item"><span class="biz-ticker-text">Cargando datos...</span></div>
+    </div>
+  </div>
+</div>
 <div class="shell" id="shell">
 <!-- ── SIDEBAR ── -->
 <aside class="sidebar" id="sidebar">
@@ -2428,6 +2492,7 @@
     loadOC();
     loadCRM();
     loadPresupuestos();
+    setTimeout(actualizarTicker, 2000); // dar tiempo a que carguen los datos
   }
 
   function mostrarSelectorEmpresa(misEmpresas, user) {
@@ -7788,6 +7853,124 @@
       alert(`✓ Backup exportado correctamente.\n${filename}`);
     });
   };
+
+
+  // ══════════════════════════════════════════════════
+  // TICKER FINHUB BUSINESS
+  // ══════════════════════════════════════════════════
+  function actualizarTicker() {
+    const track = document.getElementById('biz-ticker-track');
+    if (!track) return;
+
+    const hoy = new Date();
+    const mesActual = hoy.toISOString().slice(0,7);
+    const items = [];
+
+    // ── Nombre de empresa ──
+    const nombreEmpresa = document.getElementById('empresa-nombre')?.textContent || '';
+    if (nombreEmpresa) {
+      items.push({ icon:'🏢', text: nombreEmpresa, val:'', cls:'' });
+    }
+
+    // ── Resultado del mes ──
+    const txArr = Object.values(transactions).filter(t => t.type !== 'transferencia' && (t.date||'').startsWith(mesActual));
+    const ing  = txArr.filter(t=>t.type==='income').reduce((s,t)=>s+t.amount,0);
+    const gast = txArr.filter(t=>t.type==='expense').reduce((s,t)=>s+t.amount,0);
+    const res  = ing - gast;
+    items.push({ icon:'📊', text:'Resultado del mes', val: fmt(res), cls: res>=0 ? 'biz-ticker-ok' : 'biz-ticker-alert' });
+    items.push({ icon:'💰', text:'Ingresos', val: fmt(ing), cls:'biz-ticker-ok' });
+    items.push({ icon:'📉', text:'Gastos', val: fmt(gast), cls:'biz-ticker-alert' });
+
+    // ── Saldo cuentas ──
+    const saldoTotal = Object.keys(accounts).reduce((s,id)=>s+calcSaldoCuenta(id),0);
+    items.push({ icon:'🏦', text:'Saldo cuentas', val: fmt(saldoTotal), cls: saldoTotal>=0?'biz-ticker-ok':'biz-ticker-alert' });
+
+    // ── Stock crítico ──
+    const criticos = Object.entries(productos).filter(([id,p])=>p.estado==='activo'&&calcularStock(id)<=(p.stockMinimo||0));
+    if (criticos.length > 0) {
+      items.push({ icon:'📦', text:`${criticos.length} producto${criticos.length!==1?'s':''} sin stock`, val:'', cls:'biz-ticker-alert' });
+      criticos.slice(0,2).forEach(([,p])=>{
+        items.push({ icon:'⚠️', text: esc(p.nombre), val:`${calcularStock(criticos.find(([id])=>productos[id]===p)?.[0]||'')||0} ${p.unidad||'u.'}`, cls:'biz-ticker-alert' });
+      });
+    }
+
+    // ── OC vencidas ──
+    const ocVenc = Object.values(ordenesCompra).filter(o=>o.estado==='enviada'&&o.fechaEntrega&&o.fechaEntrega<hoy.toISOString().slice(0,10));
+    if (ocVenc.length > 0) {
+      items.push({ icon:'📋', text:`${ocVenc.length} OC con entrega vencida`, val:'', cls:'biz-ticker-warn' });
+    }
+
+    // ── OC a facturar ──
+    const ocFact = Object.values(ordenesCompra).filter(o=>['recibida','parcial'].includes(o.estado));
+    if (ocFact.length > 0) {
+      items.push({ icon:'🧾', text:`${ocFact.length} OC sin facturar`, val:'', cls:'biz-ticker-warn' });
+    }
+
+    // ── IVA del mes ──
+    const ivaDeb = txArr.filter(t=>t.type==='income'&&t.ivaAlicuota).reduce((s,t)=>s+t.amount*(t.ivaAlicuota/100),0);
+    const ivaCre = txArr.filter(t=>t.type==='expense'&&t.ivaAlicuota).reduce((s,t)=>s+t.amount*(t.ivaAlicuota/100),0);
+    const saldoIva = ivaDeb - ivaCre;
+    if (saldoIva > 0) {
+      items.push({ icon:'🧾', text:'IVA a pagar', val: fmt(saldoIva), cls:'biz-ticker-warn' });
+    }
+
+    // ── Períodos de prueba vencidos ──
+    const empPrueba = Object.values(empleados).filter(e => {
+      if (e.estado !== 'activo' || e.contrato !== 'prueba' || !e.ingreso) return false;
+      const fin = new Date(e.ingreso + 'T12:00:00');
+      fin.setMonth(fin.getMonth() + 3);
+      return fin <= hoy;
+    });
+    if (empPrueba.length > 0) {
+      items.push({ icon:'👤', text:`${empPrueba.length} período${empPrueba.length!==1?'s':''} de prueba vencido${empPrueba.length!==1?'s':''}`, val:'', cls:'biz-ticker-warn' });
+    }
+
+    // ── CRM: pipeline activo ──
+    const opActivas = Object.values(oportunidades).filter(o=>!['ganado','perdido'].includes(o.etapa));
+    if (opActivas.length > 0) {
+      const totalPipeline = opActivas.reduce((s,o)=>s+(o.monto||0),0);
+      items.push({ icon:'🤝', text:'Pipeline CRM', val: fmt(totalPipeline), cls:'biz-ticker-ok' });
+    }
+
+    // ── OC próximas a vencer (en 3 días) ──
+    const en3dias = new Date(hoy); en3dias.setDate(en3dias.getDate()+3);
+    const ocProximas = Object.values(ordenesCompra).filter(o=>
+      o.estado==='enviada' && o.fechaEntrega &&
+      o.fechaEntrega >= hoy.toISOString().slice(0,10) &&
+      o.fechaEntrega <= en3dias.toISOString().slice(0,10)
+    );
+    if (ocProximas.length > 0) {
+      items.push({ icon:'🚚', text:`${ocProximas.length} OC con entrega próxima`, val:'', cls:'biz-ticker-warn' });
+    }
+
+    // Si no hay alertas, mostrar estado OK
+    const alertas = items.filter(i => i.cls === 'biz-ticker-alert');
+    if (alertas.length === 0 && items.length <= 5) {
+      items.push({ icon:'✅', text:'Todo en orden', val:'', cls:'biz-ticker-ok' });
+    }
+
+    // Duplicar items para scroll continuo
+    const makeItem = ({icon, text, val, cls}) =>
+      `<div class="biz-ticker-item">
+        <span class="biz-ticker-icon">${icon}</span>
+        <span class="biz-ticker-text">${text}</span>
+        ${val ? `<span class="biz-ticker-val ${cls}">${val}</span>` : (cls ? `<span class="${cls}">●</span>` : '')}
+      </div>`;
+
+    const html = [...items, ...items].map(makeItem).join('');
+    track.innerHTML = html;
+
+    // Ajustar velocidad según cantidad de items
+    const duration = Math.max(30, items.length * 6);
+    track.style.animationDuration = duration + 's';
+  }
+
+  // Actualizar ticker cuando cambian datos
+  function actualizarTickerSiVisible() {
+    if (document.getElementById('biz-ticker')) {
+      actualizarTicker();
+    }
+  }
 
   // ── NAV ──
   const ADMIN_SECTIONS = ['contador','asesor','rrhh','usuarios'];
