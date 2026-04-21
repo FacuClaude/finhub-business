@@ -720,7 +720,7 @@
 <main id="main-content" style="opacity:0;transition:opacity .3s">
 <div class="page" id="page-vistarapida">
   <div class="page-title">Vista rápida</div>
-  <div id="vr-fecha" style="font-size:.78rem;color:var(--muted);margin-top:-14px;margin-bottom:24px;"></div>
+  <div id="vr-fecha" style="font-size:.78rem;color:var(--muted);margin-top:4px;margin-bottom:28px;"></div>
   <div class="cards-row" style="margin-bottom:20px;">
     <div class="card" style="border-top:3px solid var(--accent);cursor:pointer;" onclick="goTo('movimientos')">
       <div class="card-label">Ingresos del mes</div>
@@ -6609,7 +6609,7 @@
     if(stockBajo.length) pend.push({icon:'📦', txt:`${stockBajo.length} productos con stock bajo`, go:'inventario'});
 
     if(E('vr-pendientes')) E('vr-pendientes').innerHTML = pend.length
-      ? pend.map(p=>`<div onclick="goTo('${p.go}')" style="display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid var(--border);font-size:.8rem;cursor:pointer;color:var(--ink2);" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--ink2)'"><span>${p.icon}</span><span>${p.txt}</span><span style="margin-left:auto;">→</span></div>`).join('')
+      ? pend.map(p=>`<div onclick="goTo('${p.go}')" style="display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid var(--border);font-size:.8rem;cursor:pointer;color:var(--ink2);" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--ink2)'"><span>${p.icon}</span><span>${p.txt}</span><span style="margin-left:auto;font-size:.68rem;color:var(--accent);background:var(--accent-bg);padding:2px 8px;border-radius:10px;flex-shrink:0;">Ver →</span></div>`).join('')
       : '<div style="color:var(--green);font-size:.8rem;">✅ Sin pendientes</div>';
 
     // OC abiertas
