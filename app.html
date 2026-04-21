@@ -368,6 +368,38 @@
     .biz-ticker-ok    { color:#7ecba1; }
     body.dark .biz-ticker-item { border-right-color:#1a2535; }
 
+
+    /* ── TOAST ── */
+    #toast-container { position:fixed; bottom:24px; right:24px; z-index:9999; display:flex; flex-direction:column; gap:8px; pointer-events:none; }
+    .toast { display:flex; align-items:center; gap:10px; padding:12px 16px; border-radius:6px; font-size:.8rem; font-weight:500; color:white; min-width:220px; max-width:340px; box-shadow:0 4px 20px rgba(0,0,0,.2); animation:toast-in .25s ease; pointer-events:auto; cursor:pointer; transition:opacity .3s; }
+    .toast.out { opacity:0; }
+    .toast.success { background:#2d6a4f; }
+    .toast.error   { background:#9b3030; }
+    .toast.warn    { background:#8a5a1a; }
+    .toast.info    { background:#1e4d8c; }
+    .toast-icon { font-size:1rem; flex-shrink:0; }
+    .toast-msg  { flex:1; line-height:1.4; }
+    @keyframes toast-in { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+
+    /* ── EMPTY STATE mejorado ── */
+    .empty-state { display:flex; flex-direction:column; align-items:center; justify-content:center; padding:64px 40px; text-align:center; }
+    .empty-state-icon { font-size:3rem; margin-bottom:16px; opacity:.35; }
+    .empty-state-title { font-family:'Plus Jakarta Sans',sans-serif; font-size:1rem; font-weight:600; color:var(--ink); margin-bottom:8px; }
+    .empty-state-sub { font-size:.8rem; color:var(--muted); line-height:1.7; max-width:300px; margin-bottom:20px; }
+    .empty-state-btn { font-family:'DM Sans',sans-serif; font-size:.72rem; font-weight:600; letter-spacing:.08em; text-transform:uppercase; padding:9px 20px; background:var(--accent); color:white; border:none; border-radius:4px; cursor:pointer; transition:opacity .2s; }
+    .empty-state-btn:hover { opacity:.85; }
+
+    /* ── ONBOARDING ── */
+    .onboarding-overlay { position:fixed; inset:0; background:rgba(10,15,12,.75); backdrop-filter:blur(4px); z-index:8000; display:flex; align-items:center; justify-content:center; padding:20px; }
+    .onboarding-modal { background:var(--bg); border:1px solid var(--border); border-radius:10px; width:100%; max-width:520px; padding:40px; box-shadow:0 32px 80px rgba(0,0,0,.25); animation:slideUp .35s cubic-bezier(.16,1,.3,1); }
+    .onboarding-step-num { font-size:.62rem; font-weight:700; letter-spacing:.14em; text-transform:uppercase; color:var(--accent); margin-bottom:12px; }
+    .onboarding-title { font-family:'Plus Jakarta Sans',sans-serif; font-size:1.5rem; font-weight:700; color:var(--ink); margin-bottom:8px; line-height:1.25; }
+    .onboarding-sub { font-size:.88rem; color:var(--muted); line-height:1.7; margin-bottom:28px; }
+    .onboarding-dots { display:flex; gap:6px; margin-bottom:28px; }
+    .onboarding-dot { width:6px; height:6px; border-radius:50%; background:var(--border); transition:background .2s; }
+    .onboarding-dot.active { background:var(--accent); width:20px; border-radius:3px; }
+    .onboarding-actions { display:flex; gap:10px; }
+
     /* ── INSTRUCTIVO ── */
     .inst-overlay { display:none; position:fixed; inset:0; background:rgba(26,26,20,.5); backdrop-filter:blur(6px); z-index:500; }
     .inst-overlay.open { display:flex; align-items:center; justify-content:center; padding:20px; }
@@ -711,6 +743,29 @@
   </style>
 </head>
 <body>
+<!-- TOAST CONTAINER -->
+<div id="toast-container"></div>
+
+<!-- ONBOARDING -->
+<div id="onboarding-overlay" class="onboarding-overlay" style="display:none;">
+  <div class="onboarding-modal">
+    <div class="onboarding-step-num" id="ob-step-num">Paso 1 de 4</div>
+    <div class="onboarding-title" id="ob-title">Bienvenido a finHub Business</div>
+    <div class="onboarding-sub" id="ob-sub">Tu plataforma de gestión financiera para PyMEs. En 4 pasos rápidos vas a tener todo configurado.</div>
+    <div class="onboarding-dots" id="ob-dots">
+      <div class="onboarding-dot active"></div>
+      <div class="onboarding-dot"></div>
+      <div class="onboarding-dot"></div>
+      <div class="onboarding-dot"></div>
+    </div>
+    <div id="ob-content"></div>
+    <div class="onboarding-actions">
+      <button class="btn-secondary" id="ob-skip" onclick="skipOnboarding()" style="flex:1;">Omitir</button>
+      <button class="btn-primary" id="ob-next" onclick="nextOnboardingStep()" style="flex:2;">Comenzar →</button>
+    </div>
+  </div>
+</div>
+
 <div class="biz-ticker" id="biz-ticker">
   <div class="biz-ticker-label">
     <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
@@ -1533,7 +1588,7 @@
 </div>
 <div style="font-size:.7rem;color:var(--muted);margin-top:4px;">Al seleccionar un convenio se precargan los porcentajes típicos. Podés editarlos manualmente.</div>
 <div style="margin-top:20px;">
-<button class="btn-primary" onclick="guardarConfig();alert('Configuración guardada ✓')">Guardar configuración</button>
+<button class="btn-primary" onclick="guardarConfig();toastOk('Configuración guardada ✓')">Guardar configuración</button>
 <button class="btn-secondary" onclick="resetConfig()" style="margin-left:8px;">Restaurar valores por defecto</button>
 </div>
 </div>
@@ -2492,7 +2547,8 @@
     loadOC();
     loadCRM();
     loadPresupuestos();
-    setTimeout(actualizarTicker, 2000); // dar tiempo a que carguen los datos
+    setTimeout(actualizarTicker, 2000);
+    setTimeout(checkOnboarding, 1500); // dar tiempo a que carguen los datos
   }
 
   function mostrarSelectorEmpresa(misEmpresas, user) {
@@ -2890,7 +2946,7 @@
     const desc=document.getElementById('tx-desc').value.trim();
     const amount=parseFloat(document.getElementById('tx-amount').value);
     const date=document.getElementById('tx-date').value;
-    if(!desc||!amount||!date){alert('Completá los campos obligatorios.');return;}
+    if(!desc||!amount||!date){toastErr('Completá los campos obligatorios.'); return;return;}
     const tieneIva=document.getElementById('tx-tiene-iva').checked;
     await push(ref(db,`empresas/${empresaId}/movimientos`),{
       type:currentType, description:desc, amount, category:document.getElementById('tx-cat').value, date,
@@ -2901,6 +2957,7 @@
       ivaAlicuota:tieneIva?parseFloat(document.getElementById('tx-iva-alicuota').value):null,
       createdAt:Date.now()
     });
+    toastOk(editingTxId ? 'Movimiento actualizado' : 'Movimiento guardado');
     closeModal('tx');
   };
 
@@ -2930,7 +2987,7 @@
     const desc=document.getElementById('edit-tx-desc').value.trim();
     const amount=parseFloat(document.getElementById('edit-tx-amount').value);
     const date=document.getElementById('edit-tx-date').value;
-    if(!desc||!amount||!date){alert('Completá los campos obligatorios.');return;}
+    if(!desc||!amount||!date){toastErr('Completá los campos obligatorios.'); return;return;}
     const ti=document.getElementById('edit-tx-tiene-iva').checked;
     await update(ref(db,`empresas/${empresaId}/movimientos/${editingTxId}`),{
       type:editCurrentType, description:desc, amount, category:document.getElementById('edit-tx-cat').value, date,
@@ -2992,14 +3049,14 @@
 
   window.handleImport=async function(input){
     const file=input.files[0]; if(!file) return;
-    if(!window.XLSX){alert('Librería no cargada, intentá de nuevo.');return;}
+    if(!window.XLSX){toastErr('Error cargando librería. Recargá la página.'); return;return;}
     const reader=new FileReader();
     reader.onload=async(e)=>{
       try{
         const wb=XLSX.read(e.target.result,{type:'array',cellDates:true});
         // Validar que sea el template de movimientos
         if(!wb.SheetNames.includes('Movimientos')){
-          alert('Este archivo no corresponde al template de Movimientos.\nUsá el botón "↓ Template" para descargar el formato correcto.'); return;
+          toastErr('Template incorrecto. Usá el botón "↓ Template" para descargar el formato.'); return;
         }
         const ws=wb.Sheets['Movimientos'];
         const rows=XLSX.utils.sheet_to_json(ws,{defval:''});
@@ -3029,7 +3086,7 @@
         document.getElementById('import-step2').style.display='block';
         document.getElementById('import-result').textContent=`${ok} movimiento${ok!==1?'s':''} importado${ok!==1?'s':''}`;
         document.getElementById('import-result-sub').textContent=errors>0?`${errors} fila${errors!==1?'s':''} omitida${errors!==1?'s':''} (datos incompletos)`:'Todo importado correctamente';
-      }catch(err){alert('Error al leer el archivo. Verificá que sea el template correcto.\n'+err.message);console.error(err);}
+      }catch(err){toastErr('Error al leer el archivo. '+err.message);console.error(err);}
     };
     reader.readAsArrayBuffer(file);
   };
@@ -3073,7 +3130,7 @@
         try {
           const wb=XLSX.read(e.target.result,{type:'binary'});
           if(!wb.SheetNames.includes('Cuentas')) {
-            alert('Este archivo no tiene la hoja "Cuentas".\nUsá el botón "↓ Template" para descargar el formato correcto.'); return;
+            toastErr('Este archivo no tiene la hoja "Cuentas".\nUsá el botón "↓ Template" para descargar el formato correcto.'); return;
           }
           const rows=XLSX.utils.sheet_to_json(wb.Sheets['Cuentas'],{defval:''});
           const batch={}; let ok=0, err=0;
@@ -3088,10 +3145,10 @@
               notas:String(row.notas||'').trim()||null, createdAt:Date.now()
             }; ok++;
           });
-          if(!ok){alert('No se encontraron cuentas válidas. Verificá el archivo.');return;}
+          if(!ok){toastErr('No se encontraron cuentas válidas. Verificá el archivo.');return;}
           await update(ref(db),batch);
-          alert(`✓ ${ok} cuenta${ok!==1?'s':''} importada${ok!==1?'s':''}${err?`\n⚠️ ${err} filas ignoradas.`:''}`);
-        } catch(e){alert('Error al procesar el archivo.\n'+e.message);}
+          toastOk(`✓ ${ok} cuenta${ok!==1?'s':''} importada${ok!==1?'s':''}${err?`\n⚠️ ${err} filas ignoradas.`:''}`);
+        } catch(e){toastErr('Error al procesar: '+e.message);}
       };
       reader.readAsBinaryString(file);
     });
@@ -3134,7 +3191,7 @@
         try {
           const wb=XLSX.read(e.target.result,{type:'binary'});
           if(!wb.SheetNames.includes('Contactos')) {
-            alert('Este archivo no tiene la hoja "Contactos".\nUsá el botón "↓ Template" para descargar el formato correcto.'); return;
+            toastErr('Este archivo no tiene la hoja "Contactos".\nUsá el botón "↓ Template" para descargar el formato correcto.'); return;
           }
           const rows=XLSX.utils.sheet_to_json(wb.Sheets['Contactos'],{defval:''});
           const batch={}; let ok=0, err=0;
@@ -3152,10 +3209,10 @@
               notas:String(row.notas||'').trim()||null, createdAt:Date.now()
             }; ok++;
           });
-          if(!ok){alert('No se encontraron contactos válidos. Verificá el archivo.');return;}
+          if(!ok){toastErr('No se encontraron contactos válidos. Verificá el archivo.');return;}
           await update(ref(db),batch);
-          alert(`✓ ${ok} contacto${ok!==1?'s':''} importado${ok!==1?'s':''}${err?`\n⚠️ ${err} filas ignoradas.`:''}`);
-        } catch(e){alert('Error al procesar el archivo.\n'+e.message);}
+          toastOk(`✓ ${ok} contacto${ok!==1?'s':''} importado${ok!==1?'s':''}${err?`\n⚠️ ${err} filas ignoradas.`:''}`);
+        } catch(e){toastErr('Error al procesar: '+e.message);}
       };
       reader.readAsBinaryString(file);
     });
@@ -3201,7 +3258,7 @@
         try {
           const wb=XLSX.read(e.target.result,{type:'binary'});
           if(!wb.SheetNames.includes('Empleados')) {
-            alert('Este archivo no tiene la hoja "Empleados".\nUsá el botón "↓ Template" para descargar el formato correcto.'); return;
+            toastErr('Este archivo no tiene la hoja "Empleados".\nUsá el botón "↓ Template" para descargar el formato correcto.'); return;
           }
           const rows=XLSX.utils.sheet_to_json(wb.Sheets['Empleados'],{defval:''});
           const batch={}; let ok=0, err=0;
@@ -3232,10 +3289,10 @@
               createdAt:Date.now()
             }; ok++;
           });
-          if(!ok){alert('No se encontraron empleados válidos. Verificá el archivo.');return;}
+          if(!ok){toastErr('No se encontraron empleados válidos. Verificá el archivo.');return;}
           await update(ref(db),batch);
-          alert(`✓ ${ok} empleado${ok!==1?'s':''} importado${ok!==1?'s':''}${err?`\n⚠️ ${err} filas ignoradas.`:''}`);
-        } catch(e){alert('Error al procesar el archivo.\n'+e.message);}
+          toastOk(`✓ ${ok} empleado${ok!==1?'s':''} importado${ok!==1?'s':''}${err?`\n⚠️ ${err} filas ignoradas.`:''}`);
+        } catch(e){toastErr('Error al procesar: '+e.message);}
       };
       reader.readAsBinaryString(file);
     });
@@ -3359,7 +3416,7 @@
     const det  = document.getElementById('cuentas-detalle');
     if(!grid||!det) return;
     if(!arr.length) {
-      grid.innerHTML=`<div class="coming-soon" style="grid-column:1/-1;"><div class="coming-soon-icon">🏦</div><div class="coming-soon-title">No hay cuentas todavía</div><div class="coming-soon-sub">Creá tu primera cuenta con el botón + Nueva cuenta</div></div>`;
+      grid.innerHTML=`<div class="empty-state" style="grid-column:1/-1;"><div class="empty-state-icon">🏦</div><div class="empty-state-title">Sin cuentas todavía</div><div class="empty-state-sub">Cargá tus cuentas bancarias, cajas y billeteras para trackear tu saldo en tiempo real.</div><button class="empty-state-btn" onclick="openModal('cuenta')">+ Crear primera cuenta</button></div>`;
       det.innerHTML=''; return;
     }
     const totalARS = arr.filter(c=>c.moneda!=='USD').reduce((s,c)=>s+calcSaldoCuenta(c.id),0);
@@ -3451,7 +3508,8 @@
 
   window.saveCuenta=async function(){
     const nombre=document.getElementById('c-nombre-cuenta').value.trim();
-    if(!nombre){alert('Ingresá un nombre.');return;}
+    if(!nombre){toastErr('Ingresá un nombre.'); return;;return;}
+    toastOk(editingCuentaId ? 'Cuenta actualizada' : 'Cuenta creada');
     const data={tipo:document.getElementById('c-tipo').value,nombre,saldoInicial:parseFloat(document.getElementById('c-saldo-inicial').value)||0,moneda:document.getElementById('c-moneda').value,notas:document.getElementById('c-notas-cuenta').value.trim()||null,updatedAt:Date.now()};
     closeModal('cuenta');
     if(editingCuentaId){await update(ref(db,`empresas/${empresaId}/cuentas/${editingCuentaId}`),data);editingCuentaId=null;}
@@ -3464,10 +3522,10 @@
     const monto=parseFloat(document.getElementById('transf-monto').value);
     const fecha=document.getElementById('transf-fecha').value;
     const desc=document.getElementById('transf-desc').value.trim()||'Transferencia entre cuentas';
-    if(!origen||!destino){alert('Seleccioná origen y destino.');return;}
-    if(origen===destino){alert('Origen y destino no pueden ser la misma cuenta.');return;}
-    if(!monto||monto<=0){alert('Ingresá un monto válido.');return;}
-    if(!fecha){alert('Seleccioná una fecha.');return;}
+    if(!origen||!destino){toastErr('Seleccioná origen y destino.'); return;;return;}
+    if(origen===destino){toastErr('Origen y destino no pueden ser iguales.'); return;;return;}
+    if(!monto||monto<=0){toastErr('Ingresá un monto válido.'); return;;return;}
+    if(!fecha){toastErr('Seleccioná una fecha.'); return;;return;}
     const idS=push(ref(db,`empresas/${empresaId}/movimientos`)).key;
     const idE=push(ref(db,`empresas/${empresaId}/movimientos`)).key;
     const batch={};
@@ -3572,7 +3630,7 @@
   window.formatCUIT=function(input){let v=input.value.replace(/\D/g,'').slice(0,11);if(v.length>2)v=v.slice(0,2)+'-'+v.slice(2);if(v.length>11)v=v.slice(0,11)+'-'+v.slice(11);input.value=v;};
   window.saveContacto=async function(){
     const nombre=document.getElementById('c-nombre').value.trim();
-    if(!nombre){alert('Ingresá un nombre.');return;}
+    if(!nombre){toastErr('Ingresá un nombre.'); return;;return;}
     const data={tipo:currentContactoType,nombre,cuit:document.getElementById('c-cuit').value.trim()||null,condicionIva:document.getElementById('c-iva').value,email:document.getElementById('c-email').value.trim()||null,telefono:document.getElementById('c-tel').value.trim()||null,notas:document.getElementById('c-notas').value.trim()||null,updatedAt:Date.now()};
     closeModal('contacto'); // cerrar antes del await para respuesta inmediata
     if(editingContactoId){await update(ref(db,`empresas/${empresaId}/contactos/${editingContactoId}`),data);editingContactoId=null;}
@@ -4944,7 +5002,7 @@
   // EXPORTAR A EXCEL (XLSX)
   // ══════════════════════════════════════════════════
   function buildExcelAndDownload(sheetData, sheetName, filename) {
-    if (!window.XLSX) { alert('Librería Excel no cargada, intentá de nuevo.'); return; }
+    if (!window.XLSX) { toastErr('Error cargando Excel. Recargá la página.'); return;; return; }
     const wb = XLSX.utils.book_new();
     const ws = XLSX.utils.aoa_to_sheet(sheetData);
     // Ancho de columnas automático
@@ -5087,7 +5145,7 @@
   window.resetConfig = function() {
     localStorage.removeItem('finhub-rrhh-cfg');
     cargarConfigUI();
-    alert('Valores restaurados por defecto ✓');
+    toastOk('Valores restaurados por defecto');
   };
 
   window.aplicarConvenio = function(conv) {
@@ -5371,7 +5429,7 @@
     if (alertasEl) alertasEl.innerHTML = alertas.map(a => `<div style="background:var(--red-bg);border-left:4px solid var(--red);padding:10px 16px;border-radius:0 4px 4px 0;margin-bottom:8px;font-size:.82rem;color:var(--ink2);">${a}</div>`).join('');
 
     if (!arr.length) {
-      lista.innerHTML = '<div class="coming-soon"><div class="coming-soon-icon">👥</div><div class="coming-soon-title">No hay empleados cargados</div><div class="coming-soon-sub">Agregá el primer empleado con el botón + Nuevo empleado</div></div>';
+      lista.innerHTML = '<div class="empty-state"><div class="empty-state-icon">👤</div><div class="empty-state-title">Sin empleados cargados</div><div class="empty-state-sub">Cargá el legajo de tu equipo para gestionar sueldos, liquidaciones y alertas de períodos de prueba.</div><button class="empty-state-btn" onclick="openModal(\'empleado\')">+ Agregar primer empleado</button></div>';
       return;
     }
 
@@ -5485,7 +5543,7 @@
 
   window.saveEmpleado = async function() {
     const nombre = document.getElementById('emp-nombre').value.trim();
-    if (!nombre) { alert('Ingresá el nombre del empleado.'); return; }
+    if (!nombre) { toastErr('Ingresá el nombre del empleado.'); return;; return; }
     const data = {
       nombre,
       cuil:       document.getElementById('emp-cuil').value.trim()||null,
@@ -5607,7 +5665,7 @@
     const email = document.getElementById('inv-email').value.trim().toLowerCase();
     const nombre = document.getElementById('inv-nombre').value.trim();
     const tipoRol = document.getElementById('inv-rol').value;
-    if (!email) { alert('Ingresá el email del usuario.'); return; }
+    if (!email) { toastErr('Ingresá el email del usuario.'); return;; return; }
 
     const campos = ['verTodo','editarMovimientos','editarCuentas','editarContactos','verReportes','exportar','verRRHH','editarRRHH','configurar','gestionarUsuarios'];
     const permisos = { tipoRol, email, nombre: nombre || email };
@@ -5627,13 +5685,13 @@
     editandoUsuarioUid = null;
     closeModal('invitar-usuario');
     renderUsuarios();
-    alert(`✓ Acceso configurado para ${email}.\nLa próxima vez que inicie sesión con ese email en finHub Business tendrá acceso automáticamente.`);
+    toastOk(`✓ Acceso configurado para ${email}.\nLa próxima vez que inicie sesión con ese email en finHub Business tendrá acceso automáticamente.`);
   };
 
   window.editarUsuario = function(userKey) {
     // Buscar los datos del usuario en usuariosEmpresa por su clave (emailKey o uid)
     const u = usuariosEmpresa[userKey];
-    if (!u) { alert('No se encontraron los datos del usuario.'); return; }
+    if (!u) { toastErr('No se encontraron los datos del usuario.'); return; }
 
     editandoUsuarioUid = userKey;
 
@@ -5672,7 +5730,7 @@
   window.guardarEmpresa = async function() {
     const nombre = document.getElementById('edit-empresa-nombre').value.trim();
     const cuit   = document.getElementById('edit-empresa-cuit').value.trim();
-    if (!nombre) { alert('Ingresá el nombre de la empresa.'); return; }
+    if (!nombre) { toastErr('Ingresá el nombre de la empresa.'); return; return; }
     await update(ref(db, `empresas/${empresaId}/info`), { nombre, cuit: cuit||null, updatedAt: Date.now() });
     closeModal('editar-empresa');
     // Actualizar nombre en switcher y en módulo usuarios
@@ -5847,7 +5905,7 @@
   window.abrirEliminarEmpresa = function() {
     // No se puede eliminar si es la única empresa
     if (Object.keys(misEmpresas).length <= 1) {
-      alert('No podés eliminar tu única empresa. Creá otra primero y luego eliminá esta.');
+      toastWarn('No podés eliminar tu única empresa.');
       return;
     }
     // Obtener nombre actual para la confirmación
@@ -5990,7 +6048,7 @@
     }
 
     if (!arr.length) {
-      lista.innerHTML = '<div class="coming-soon"><div class="coming-soon-icon">📦</div><div class="coming-soon-title">Sin productos cargados</div><div class="coming-soon-sub">Agregá tu primer producto con el botón + Producto o importá desde Excel.</div></div>';
+      lista.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📦</div><div class="empty-state-title">Sin productos en inventario</div><div class="empty-state-sub">Cargá tu catálogo de productos para controlar stock, alertas de reposición y valorización.</div><button class="empty-state-btn" onclick="openModal(\'producto\')">+ Agregar primer producto</button></div>';
       return;
     }
 
@@ -6143,7 +6201,7 @@
     const cantidad = parseFloat(document.getElementById('ms-cantidad').value);
     const motivo   = document.getElementById('ms-motivo').value.trim();
     const fecha    = document.getElementById('ms-fecha').value;
-    if (!cantidad || cantidad <= 0) { alert('Ingresá una cantidad válida.'); return; }
+    if (!cantidad || cantidad <= 0) { toastErr('Ingresá una cantidad válida.'); return; return; }
     closeModal('mov-stock');
     await push(ref(db, `empresas/${empresaId}/movStock`), {
       prodId: detalleProdId, tipo, cantidad, motivo: motivo||null,
@@ -6173,7 +6231,7 @@
 
   window.saveProducto = async function() {
     const nombre = document.getElementById('prod-nombre').value.trim();
-    if (!nombre) { alert('Ingresá el nombre del producto.'); return; }
+    if (!nombre) { toastErr('Ingresá el nombre del producto.'); return; return; }
     const data = {
       nombre,
       sku:          document.getElementById('prod-sku').value.trim()||null,
@@ -6253,7 +6311,7 @@
         try {
           const wb=XLSX.read(e.target.result,{type:'binary'});
           if(!wb.SheetNames.includes('Inventario')){
-            alert('Este archivo no tiene la hoja "Inventario".\nUsá el botón "↓ Template" para descargar el formato correcto.'); return;
+            toastErr('Este archivo no tiene la hoja "Inventario".\nUsá el botón "↓ Template" para descargar el formato correcto.'); return;
           }
           const rows=XLSX.utils.sheet_to_json(wb.Sheets['Inventario'],{defval:''});
           const batch={}; let ok=0,err=0;
@@ -6280,11 +6338,11 @@
               createdAt:Date.now()
             }; ok++;
           });
-          if(!ok){alert('No se encontraron productos válidos.');return;}
+          if(!ok){toastErr('No se encontraron productos válidos.');return;}
           await update(ref(db),batch);
-          alert(`✓ ${ok} producto${ok!==1?'s':''} importado${ok!==1?'s':''}${err?`
+          toastOk(`✓ ${ok} producto${ok!==1?'s':''} importado${ok!==1?'s':''}${err?`
 ⚠️ ${err} filas ignoradas.`:''}`);
-        } catch(e){alert('Error al procesar el archivo.\n'+e.message);}
+        } catch(e){toastErr('Error al procesar: '+e.message);}
       };
       reader.readAsBinaryString(file);
     });
@@ -6347,7 +6405,7 @@
     if (e('oc-kpi-total'))      e('oc-kpi-total').textContent      = fmt(totalComp);
 
     if (!arr.length) {
-      lista.innerHTML = '<div class="coming-soon"><div class="coming-soon-icon">📋</div><div class="coming-soon-title">Sin órdenes de compra</div><div class="coming-soon-sub">Creá tu primera OC con el botón + Nueva OC</div></div>';
+      lista.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📋</div><div class="empty-state-title">Sin órdenes de compra</div><div class="empty-state-sub">Gestioná compras a proveedores: desde la orden hasta el pago, con actualización automática del inventario.</div><button class="empty-state-btn" onclick="openModal(\'oc-nueva\')">+ Crear primera OC</button></div>';
       return;
     }
 
@@ -6514,8 +6572,8 @@
     const fechaEm  = document.getElementById('oc-fecha-emision').value;
     const fechaEnt = document.getElementById('oc-fecha-entrega').value;
     const notas    = document.getElementById('oc-notas').value.trim();
-    if (!provId)              { alert('Seleccioná un proveedor.'); return; }
-    if (!ocItemsEditor.length){ alert('Agregá al menos un ítem.'); return; }
+    if (!provId)              { toastErr('Seleccioná un proveedor.'); return; return; }
+    if (!ocItemsEditor.length){ toastErr('Agregá al menos un ítem.'); return; return; }
     const totalOC = ocItemsEditor.reduce((s,it) => s + (it.cantidad||0)*(it.precioUnitario||0), 0);
     const data = {
       proveedorId: provId,
@@ -6638,7 +6696,7 @@
 
     closeModal('oc-recepcion');
     await update(ref(db), batchData);
-    alert(todoRecibido ? '✓ Recepción completa registrada. El inventario fue actualizado.' : '✓ Recepción parcial registrada. El inventario fue actualizado.');
+    toastOk(todoRecibido ? 'Recepción completa. Inventario actualizado.' : 'Recepción parcial. Inventario actualizado.');
   };
 
   // ── Factura ──
@@ -6659,8 +6717,8 @@
     const fecha  = document.getElementById('oc-factura-fecha').value;
     const monto  = parseFloat(document.getElementById('oc-factura-monto').value) || 0;
     const iva    = document.getElementById('oc-factura-iva').value;
-    if (!numero) { alert('Ingresá el número de factura.'); return; }
-    if (!monto)  { alert('Ingresá el monto de la factura.'); return; }
+    if (!numero) { toastErr('Ingresá el número de factura.'); return; return; }
+    if (!monto)  { toastErr('Ingresá el monto de la factura.'); return; return; }
     const prov = contacts[oc.proveedorId];
 
     // Crear movimiento de gasto en Movimientos
@@ -6689,7 +6747,7 @@
 
     closeModal('oc-factura');
     await update(ref(db), batchData);
-    alert('✓ Factura registrada y gasto creado en Movimientos automáticamente.');
+    toastOk('✓ Factura registrada y gasto creado en Movimientos automáticamente.');
   };
 
   // ── Pago ──
@@ -6730,7 +6788,7 @@
 
     closeModal('oc-pago');
     await update(ref(db), batchData);
-    alert('✓ Pago registrado. La orden de compra quedó cerrada.');
+    toastOk('✓ Pago registrado. La orden de compra quedó cerrada.');
   };
 
   function populateProveedorSelectOC() {
@@ -6791,7 +6849,7 @@
         try {
           const wb = XLSX.read(e.target.result, {type:'binary'});
           if (!wb.SheetNames.includes('OrdeneCompra')) {
-            alert('Este archivo no tiene la hoja "OrdeneCompra".\nUsá el botón "\u2193 Template" para descargar el formato correcto.'); return;
+            toastErr('Este archivo no tiene la hoja "OrdeneCompra".\nUsá el botón "\u2193 Template" para descargar el formato correcto.'); return;
           }
           const rows = XLSX.utils.sheet_to_json(wb.Sheets['OrdeneCompra'], {defval:''});
           const batch = {}; let ok = 0, err = 0;
@@ -6825,11 +6883,11 @@
             };
             ok++;
           });
-          if (!ok) { alert('No se encontraron órdenes válidas. Verificá el archivo.'); return; }
+          if (!ok) { toastErr('No se encontraron órdenes válidas. Verificá el archivo.'); return; }
           await update(ref(db), batch);
-          alert(`✓ ${ok} orden${ok!==1?'es':''} de compra importada${ok!==1?'s':''}${err?`
+          toastOk(`✓ ${ok} orden${ok!==1?'es':''} de compra importada${ok!==1?'s':''}${err?`
 ⚠️ ${err} filas ignoradas.`:''}`);
-        } catch(ex) { alert('Error al procesar el archivo.\n'+ex.message); }
+        } catch(ex) { toastErr('Error al procesar: '+ex.message); }
       };
       reader.readAsBinaryString(file);
     });
@@ -7022,7 +7080,7 @@
         try {
           const wb=XLSX.read(e.target.result,{type:'binary'});
           if(!wb.SheetNames.includes('OrdenesCopra')){
-            alert('Este archivo no tiene la hoja "OrdenesCopra".\nUsá el botón "↓ Template" para descargar el formato correcto.'); return;
+            toastErr('Este archivo no tiene la hoja "OrdenesCopra".\nUsá el botón "↓ Template" para descargar el formato correcto.'); return;
           }
           const rows=XLSX.utils.sheet_to_json(wb.Sheets['OrdenesCopra'],{defval:''});
           const estadosValidos=['borrador','enviada','recibida','parcial','facturada','pagada'];
@@ -7055,10 +7113,10 @@
               items,totalOC,createdAt:Date.now()
             }; ok++;
           });
-          if(!ok){alert('No se encontraron OC válidas. Verificá el archivo.');return;}
+          if(!ok){toastErr('No se encontraron OC válidas. Verificá el archivo.');return;}
           await update(ref(db),batch);
-          alert(`✓ ${ok} orden${ok!==1?'es':''} de compra importada${ok!==1?'s':''}${err?`\n⚠️ ${err} filas ignoradas.`:''}`);
-        } catch(e){alert('Error al procesar el archivo.\n'+e.message);}
+          toastOk(`✓ ${ok} orden${ok!==1?'es':''} de compra importada${ok!==1?'s':''}${err?`\n⚠️ ${err} filas ignoradas.`:''}`);
+        } catch(e){toastErr('Error al procesar: '+e.message);}
       };
       reader.readAsBinaryString(file);
     });
@@ -7332,7 +7390,7 @@
           <div class="crm-col-total">${tarjetas.length} · ${fmt(totalEtapa)}</div>
         </div>
         <div class="crm-col-body">
-          ${isEmpty ? `<div style="text-align:center;padding:24px 0;color:var(--muted);font-size:.75rem;">Sin oportunidades</div>` : cards}
+          ${isEmpty ? `<div style="text-align:center;padding:20px 12px;color:var(--muted);font-size:.72rem;line-height:1.6;">Sin oportunidades<br><span style="font-size:.65rem;">+ Agregar</span></div>` : cards}
           <button onclick="openNuevaOpEtapa('${etapa.id}')" style="margin-top:auto;width:100%;padding:7px;background:none;border:1px dashed var(--border);border-radius:4px;color:var(--muted);font-size:.72rem;cursor:pointer;font-family:'DM Sans',sans-serif;" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--muted)'">+ Agregar</button>
         </div>
       </div>`;
@@ -7405,6 +7463,8 @@
       updates.fechaCierre = new Date().toISOString().slice(0,10);
     }
     await update(ref(db, `empresas/${empresaId}/oportunidades/${id}`), updates);
+    const etapaLbl = CRM_ETAPAS.find(e=>e.id===nuevaEtapa)?.label||nuevaEtapa;
+    toastOk(`Movida a: ${etapaLbl}`);
   };
 
   window.deleteOportunidad = async function(id) {
@@ -7431,7 +7491,7 @@
 
   window.saveOportunidad = async function() {
     const nombre = document.getElementById('op-nombre').value.trim();
-    if (!nombre) { alert('Ingresá el nombre de la oportunidad.'); return; }
+    if (!nombre) { toastErr('Ingresá el nombre de la oportunidad.'); return; return; }
     const data = {
       nombre,
       clienteId:    document.getElementById('op-cliente').value || null,
@@ -7447,9 +7507,11 @@
     if (editingOpId) {
       await update(ref(db, `empresas/${empresaId}/oportunidades/${editingOpId}`), data);
       editingOpId = null;
+      toastOk('Oportunidad actualizada');
     } else {
       data.createdAt = Date.now();
       await push(ref(db, `empresas/${empresaId}/oportunidades`), data);
+      toastOk('Oportunidad creada');
     }
   };
 
@@ -7597,6 +7659,7 @@
     });
     await update(ref(db, `empresas/${empresaId}/presupuestos/${mes}`), { ing, gast, updatedAt: Date.now() });
     closeModal('presup-editar');
+    toastOk('Presupuesto guardado');
     const selMes = document.getElementById('presup-mes');
     if (selMes) selMes.value = mes;
     renderPresupuestos();
@@ -7607,7 +7670,7 @@
     const [y, m] = mes.split('-').map(Number);
     const anterior = new Date(y, m-2, 1).toISOString().slice(0,7);
     const budgetAnt = presupuestos[anterior];
-    if (!budgetAnt) { alert('No hay presupuesto cargado para el mes anterior.'); return; }
+    if (!budgetAnt) { toastWarn('No hay presupuesto para el mes anterior.'); return; return; }
     CATS_ING.forEach(cat => {
       const el = document.getElementById('presup-ing-'+cat.replace(/\W/g,'_'));
       if (el) el.value = budgetAnt.ing?.[cat] || '';
@@ -7696,7 +7759,7 @@
         try {
           const wb=XLSX.read(e.target.result,{type:'binary'});
           if(!wb.SheetNames.includes('Oportunidades')){
-            alert('Este archivo no tiene la hoja "Oportunidades".\nUsá el botón "↓ Template" para descargar el formato correcto.'); return;
+            toastErr('Este archivo no tiene la hoja "Oportunidades".\nUsá el botón "↓ Template" para descargar el formato correcto.'); return;
           }
           const rows=XLSX.utils.sheet_to_json(wb.Sheets['Oportunidades'],{defval:''});
           const etapasValidas=['prospecto','contactado','propuesta','negociacion','ganado','perdido'];
@@ -7721,10 +7784,10 @@
               createdAt: Date.now(),
             }; ok++;
           });
-          if(!ok){alert('No se encontraron oportunidades válidas.');return;}
+          if(!ok){toastErr('No se encontraron oportunidades válidas.');return;}
           await update(ref(db),batch);
-          alert(`✓ ${ok} oportunidad${ok!==1?'es':''} importada${ok!==1?'s':''}${err?`\n⚠️ ${err} filas ignoradas.`:''}`);
-        } catch(e2){alert('Error al procesar el archivo.\n'+e2.message);}
+          toastOk(`✓ ${ok} oportunidad${ok!==1?'es':''} importada${ok!==1?'s':''}${err?`\n⚠️ ${err} filas ignoradas.`:''}`);
+        } catch(e2){ toastErr('Error al procesar: '+e2.message); }
       };
       reader.readAsBinaryString(file);
     });
@@ -7850,7 +7913,7 @@
 
       const filename = `finhub_backup_${nombreEmpresa.replace(/\s+/g,'_')}_${fecha}.xlsx`;
       XLSX.writeFile(wb, filename);
-      alert(`✓ Backup exportado correctamente.\n${filename}`);
+      toastOk(`✓ Backup exportado correctamente.\n${filename}`);
     });
   };
 
@@ -7970,6 +8033,178 @@
     if (document.getElementById('biz-ticker')) {
       actualizarTicker();
     }
+  }
+
+
+  // ══════════════════════════════════════════════════
+  // SISTEMA DE TOASTS
+  // ══════════════════════════════════════════════════
+  window.toast = function(msg, tipo='success', duracion=3500) {
+    const container = document.getElementById('toast-container');
+    if (!container) { console.log('[Toast]', msg); return; }
+    const icons = { success:'✓', error:'✕', warn:'⚠', info:'ℹ' };
+    const el = document.createElement('div');
+    el.className = `toast ${tipo}`;
+    el.innerHTML = `<span class="toast-icon">${icons[tipo]||'ℹ'}</span><span class="toast-msg">${msg}</span>`;
+    el.onclick = () => dismissToast(el);
+    container.appendChild(el);
+    setTimeout(() => dismissToast(el), duracion);
+    return el;
+  };
+
+  function dismissToast(el) {
+    el.classList.add('out');
+    setTimeout(() => el.remove(), 320);
+  }
+
+  // Alias semánticos
+  window.toastOk   = (msg) => toast(msg, 'success');
+  window.toastErr  = (msg) => toast(msg, 'error', 5000);
+  window.toastWarn = (msg) => toast(msg, 'warn', 4500);
+  window.toastInfo = (msg) => toast(msg, 'info');
+
+  // ══════════════════════════════════════════════════
+  // ONBOARDING
+  // ══════════════════════════════════════════════════
+  let obStep = 0;
+  const OB_KEY = () => `finhub-biz-onboarded-${uid}`;
+
+  const OB_STEPS = [
+    {
+      num: 'Bienvenida · 1 de 4',
+      title: '¡Bienvenido a finHub Business! 👋',
+      sub: 'Tu plataforma de gestión financiera para PyMEs argentinas. En 4 pasos rápidos vas a tener todo listo para arrancar.',
+      content: `<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:4px;">
+        ${[['📊','Dashboard','Panorama financiero'],['💳','Cuentas','Bancos y cajas'],['📋','Movimientos','Ingresos y gastos'],['🤝','CRM','Pipeline de ventas']].map(([icon,title,sub])=>`
+        <div style="background:var(--surface);border:1px solid var(--border);padding:12px;border-radius:4px;display:flex;gap:10px;align-items:center;">
+          <span style="font-size:1.3rem;">${icon}</span>
+          <div><div style="font-size:.8rem;font-weight:600;color:var(--ink);">${title}</div><div style="font-size:.7rem;color:var(--muted);">${sub}</div></div>
+        </div>`).join('')}
+      </div>`,
+      btn: 'Empezar →'
+    },
+    {
+      num: 'Paso 2 de 4',
+      title: 'Configurá tu empresa',
+      sub: 'Poné el nombre de tu empresa y el CUIT. Después vas a poder cargar logo, múltiples empresas y usuarios con roles.',
+      content: `<div style="display:flex;flex-direction:column;gap:10px;">
+        <div class="field" style="margin:0;"><label>Nombre de la empresa</label><input type="text" id="ob-nombre-empresa" placeholder="Ej: Sidersa S.A." style="font-size:.88rem;"/></div>
+        <div class="field" style="margin:0;"><label>CUIT (opcional)</label><input type="text" id="ob-cuit" placeholder="30-12345678-9" style="font-size:.88rem;"/></div>
+      </div>`,
+      btn: 'Guardar y seguir →'
+    },
+    {
+      num: 'Paso 3 de 4',
+      title: 'Agregá tu primera cuenta',
+      sub: 'Las cuentas son el corazón de la app. Cargá tus cuentas bancarias, cajas y billeteras digitales para empezar a trackear el saldo.',
+      content: `<div style="display:flex;flex-direction:column;gap:10px;">
+        <div class="field" style="margin:0;"><label>Nombre</label><input type="text" id="ob-cuenta-nombre" placeholder="Ej: Banco Nación CC" style="font-size:.88rem;"/></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+          <div class="field" style="margin:0;"><label>Tipo</label><select id="ob-cuenta-tipo" style="font-size:.88rem;"><option value="banco">Banco</option><option value="caja">Caja</option><option value="digital">Digital</option><option value="inversion">Inversión</option></select></div>
+          <div class="field" style="margin:0;"><label>Saldo inicial ($)</label><input type="number" id="ob-cuenta-saldo" placeholder="0" min="0" style="font-size:.88rem;"/></div>
+        </div>
+      </div>`,
+      btn: 'Guardar y seguir →'
+    },
+    {
+      num: 'Paso 4 de 4',
+      title: '¡Casi listo!',
+      sub: 'Tu empresa está configurada. Ahora podés cargar tus primeros movimientos, importar datos desde Excel o explorar la app.',
+      content: `<div style="display:flex;flex-direction:column;gap:8px;">
+        ${[
+          ['📋','Cargar un movimiento','Registrá tu primer ingreso o gasto'],
+          ['📦','Importar desde Excel','Subí tu historial completo de una vez'],
+          ['👥','Invitar un usuario','Compartí el acceso con tu contador'],
+        ].map(([icon,title,sub])=>`
+        <div style="background:var(--surface);border:1px solid var(--border);padding:12px 14px;border-radius:4px;display:flex;gap:12px;align-items:center;">
+          <span style="font-size:1.2rem;">${icon}</span>
+          <div><div style="font-size:.82rem;font-weight:600;color:var(--ink);">${title}</div><div style="font-size:.72rem;color:var(--muted);">${sub}</div></div>
+        </div>`).join('')}
+      </div>`,
+      btn: '¡Ir al Dashboard!'
+    }
+  ];
+
+  function renderOnboardingStep() {
+    const step = OB_STEPS[obStep];
+    const numEl    = document.getElementById('ob-step-num');
+    const titleEl  = document.getElementById('ob-title');
+    const subEl    = document.getElementById('ob-sub');
+    const contentEl= document.getElementById('ob-content');
+    const nextEl   = document.getElementById('ob-next');
+    const dotsEl   = document.getElementById('ob-dots');
+    if (!numEl) return;
+    numEl.textContent  = step.num;
+    titleEl.textContent= step.title;
+    subEl.textContent  = step.sub;
+    contentEl.innerHTML= step.content || '';
+    nextEl.textContent = step.btn;
+    // Dots
+    dotsEl.innerHTML = OB_STEPS.map((_,i) =>
+      `<div class="onboarding-dot ${i===obStep?'active':''}"></div>`).join('');
+  }
+
+  window.nextOnboardingStep = async function() {
+    // Ejecutar acción del paso actual
+    if (obStep === 1) {
+      // Guardar nombre empresa
+      const nombre = document.getElementById('ob-nombre-empresa')?.value.trim();
+      const cuit   = document.getElementById('ob-cuit')?.value.trim();
+      if (nombre) {
+        const upd = { nombre, updatedAt: Date.now() };
+        if (cuit) upd.cuit = cuit;
+        await update(ref(db, `empresas/${empresaId}/info`), upd);
+        const el = document.getElementById('empresa-nombre');
+        if (el) el.textContent = nombre;
+        toastOk('Empresa configurada');
+      }
+    } else if (obStep === 2) {
+      // Guardar cuenta
+      const nombre = document.getElementById('ob-cuenta-nombre')?.value.trim();
+      const tipo   = document.getElementById('ob-cuenta-tipo')?.value || 'banco';
+      const saldo  = parseFloat(document.getElementById('ob-cuenta-saldo')?.value) || 0;
+      if (nombre) {
+        await push(ref(db, `empresas/${empresaId}/cuentas`), {
+          nombre, tipo, saldoInicial: saldo, moneda: 'ARS', createdAt: Date.now()
+        });
+        toastOk(`Cuenta "${nombre}" creada`);
+      }
+    }
+
+    obStep++;
+    if (obStep >= OB_STEPS.length) {
+      // Finalizar onboarding
+      localStorage.setItem(OB_KEY(), '1');
+      document.getElementById('onboarding-overlay').style.display = 'none';
+      toastOk('¡Todo listo! Bienvenido a finHub Business 🎉');
+      goTo('dashboard');
+    } else {
+      renderOnboardingStep();
+    }
+  };
+
+  window.skipOnboarding = function() {
+    localStorage.setItem(OB_KEY(), '1');
+    document.getElementById('onboarding-overlay').style.display = 'none';
+  };
+
+  function checkOnboarding() {
+    // Solo mostrar si es la primera vez Y no tiene movimientos
+    const yaVisto = localStorage.getItem(OB_KEY());
+    if (yaVisto) return;
+    const txCount = Object.keys(transactions).length;
+    const cuentasCount = Object.keys(accounts).length;
+    if (txCount > 0 || cuentasCount > 1) {
+      // Usuario con datos — no mostrar onboarding
+      localStorage.setItem(OB_KEY(), '1');
+      return;
+    }
+    // Mostrar onboarding después de 800ms para que cargue la UI
+    setTimeout(() => {
+      obStep = 0;
+      renderOnboardingStep();
+      document.getElementById('onboarding-overlay').style.display = 'flex';
+    }, 800);
   }
 
   // ── NAV ──
@@ -8175,7 +8410,7 @@
         }
 
         if (!empresaActualizada && !usuariosImportados) {
-          alert('No se encontraron datos válidos.\nUsá el template con las hojas "Empresa" y/o "Usuarios".');
+          toastErr('No se encontraron datos válidos.\nUsá el template con las hojas "Empresa" y/o "Usuarios".');
           return;
         }
 
@@ -8186,10 +8421,10 @@
         if (empresaActualizada) msg += '• Datos de empresa actualizados\n';
         if (usuariosImportados) msg += `• ${usuariosImportados} usuario${usuariosImportados!==1?'s':''} importado${usuariosImportados!==1?'s':''}\n`;
         if (errores.length) msg += `\n⚠️ ${errores.length} filas ignoradas.`;
-        alert(msg);
+        toastOk(msg);
 
       } catch(err) {
-        alert('Error al procesar el archivo.\n' + err.message);
+        toastErr('Error al procesar: ' + err.message);
       }
     };
     reader.readAsBinaryString(file);
