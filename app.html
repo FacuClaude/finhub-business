@@ -83,10 +83,7 @@
       scrollbar-width:none;
       box-sizing:border-box;
       animation:fadeIn .4s ease both;
-      scroll-snap-type:y proximity;
     }
-    #page-bienvenida { scroll-snap-align:start; }
-    #page-dashboard  { scroll-snap-align:start; padding-top:32px; }
 
     /* ── SIDEBAR ESTILOS DECORATIVOS ── */
     .sidebar::-webkit-scrollbar { display:none; }
@@ -2707,15 +2704,30 @@
       // Guardar permisos y cargar info de empresas para la bienvenida
       misEmpresasPermisos = todasEmpresas;
 
-      // Precargar nombres de empresas para mostrarlos en la bienvenida
+      // Precargar nombres de empresas
       await Promise.all(ids.map(async id => {
         const infoSnap = await get(ref(db, `empresas/${id}/info`));
         empresasInfo[id] = infoSnap.val() || {};
       }));
 
-      // Siempre ir a la pantalla de bienvenida
+      // Determinar empresa activa: última usada, o la única que tiene
+      const ultimaEmpresa = localStorage.getItem(`finhub-last-empresa-${uid}`);
+      if (ultimaEmpresa && todasEmpresas[ultimaEmpresa]) {
+        empresaId = ultimaEmpresa;
+        miRol = todasEmpresas[ultimaEmpresa];
+      } else {
+        // Primera vez — usar la primera empresa disponible
+        empresaId = ids[0];
+        miRol = todasEmpresas[ids[0]];
+        localStorage.setItem(`finhub-last-empresa-${uid}`, empresaId);
+      }
+
+      // Arrancar app completa con la empresa seleccionada
       appIniciada = true;
-      iniciarAppSinEmpresa(user);
+      iniciarApp(user);
+      // Ir a bienvenida en lugar del dashboard
+      // (iniciarApp no hace goTo, así que lo llamamos después)
+      setTimeout(() => goTo('bienvenida'), 100);
     }
   });
 
