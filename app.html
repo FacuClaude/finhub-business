@@ -791,6 +791,10 @@
 <svg fill="none" height="13" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="13"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><path d="M12 17h.01"></path></svg>
         Instructivo
       </button>
+<button onclick="exportarBackupCompleto()" onmouseout="this.style.color='rgba(255,255,255,.65)';this.style.background='rgba(255,255,255,.08)'" onmouseover="this.style.color='white';this.style.background='rgba(255,255,255,.15)'" style="display:flex;align-items:center;justify-content:center;gap:6px;width:100%;margin-bottom:8px;font-family:'DM Sans',sans-serif;font-size:.68rem;font-weight:400;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.65);background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.2);padding:8px 14px;cursor:pointer;border-radius:4px;transition:all .2s;">
+<svg fill="none" height="13" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="13"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Exportar backup
+      </button>
 <button class="btn-logout" onclick="logout()" style="width:100%;text-align:center;">Salir</button>
 </div>
 </aside>
@@ -7658,6 +7662,130 @@
         } catch(e2){alert('Error al procesar el archivo.\n'+e2.message);}
       };
       reader.readAsBinaryString(file);
+    });
+  };
+
+
+  // ══════════════════════════════════════════════════
+  // EXPORTAR BACKUP COMPLETO
+  // ══════════════════════════════════════════════════
+  window.exportarBackupCompleto = function() {
+    _cargarXLSX(() => {
+      const wb = XLSX.utils.book_new();
+      const fecha = new Date().toISOString().slice(0,10);
+      const nombreEmpresa = document.getElementById('empresa-nombre')?.textContent || 'empresa';
+
+      // ── Hoja 1: Movimientos ──
+      const movRows = [['fecha','tipo','descripcion','monto','categoria','comprobante','notas','iva_alicuota','cuenta','contacto']];
+      Object.values(transactions).forEach(t => {
+        movRows.push([
+          t.date||'', t.type==='income'?'ingreso':'gasto', t.description||'', t.amount||0,
+          t.category||'', t.comprobante||'', t.notas||'',
+          t.ivaAlicuota||'',
+          t.cuentaId ? (accounts[t.cuentaId]?.nombre||t.cuentaId) : '',
+          t.contactoId ? (contacts[t.contactoId]?.nombre||t.contactoId) : '',
+        ]);
+      });
+      const wsM = XLSX.utils.aoa_to_sheet(movRows);
+      wsM['!cols']=[{wch:13},{wch:10},{wch:40},{wch:13},{wch:28},{wch:16},{wch:24},{wch:12},{wch:22},{wch:22}];
+      XLSX.utils.book_append_sheet(wb, wsM, 'Movimientos');
+
+      // ── Hoja 2: Cuentas ──
+      const cuentaRows = [['nombre','tipo','saldo_inicial','saldo_actual','moneda','notas']];
+      Object.entries(accounts).forEach(([id,a]) => {
+        cuentaRows.push([a.nombre||'', a.tipo||'', a.saldoInicial||0, calcSaldoCuenta(id), a.moneda||'ARS', a.notas||'']);
+      });
+      const wsC = XLSX.utils.aoa_to_sheet(cuentaRows);
+      wsC['!cols']=[{wch:26},{wch:14},{wch:15},{wch:15},{wch:10},{wch:32}];
+      XLSX.utils.book_append_sheet(wb, wsC, 'Cuentas');
+
+      // ── Hoja 3: Contactos ──
+      const ctRows = [['tipo','nombre','cuit','condicion_iva','email','telefono','notas']];
+      Object.values(contacts).forEach(c => {
+        ctRows.push([c.tipo||'', c.nombre||'', c.cuit||'', c.condicionIva||'', c.email||'', c.telefono||'', c.notas||'']);
+      });
+      const wsCo = XLSX.utils.aoa_to_sheet(ctRows);
+      wsCo['!cols']=[{wch:12},{wch:30},{wch:18},{wch:22},{wch:28},{wch:16},{wch:24}];
+      XLSX.utils.book_append_sheet(wb, wsCo, 'Contactos');
+
+      // ── Hoja 4: Empleados ──
+      const empRows = [['nombre','cuil','dni','ingreso','estado','categoria','convenio','contrato','sueldo','obra_social','email','telefono']];
+      Object.values(empleados).forEach(e => {
+        empRows.push([e.nombre||'', e.cuil||'', e.dni||'', e.ingreso||'', e.estado||'', e.categoria||'',
+          e.convenio||'', e.contrato||'', e.sueldo||0, e.obraSocial||'', e.email||'', e.telefono||'']);
+      });
+      const wsE = XLSX.utils.aoa_to_sheet(empRows);
+      wsE['!cols']=[{wch:26},{wch:18},{wch:12},{wch:13},{wch:12},{wch:22},{wch:14},{wch:14},{wch:13},{wch:18},{wch:26},{wch:16}];
+      XLSX.utils.book_append_sheet(wb, wsE, 'Empleados');
+
+      // ── Hoja 5: Inventario ──
+      const invRows = [['nombre','sku','categoria','unidad','precio_costo','precio_venta','stock_inicial','stock_actual','stock_minimo','estado']];
+      Object.entries(productos).forEach(([id,p]) => {
+        invRows.push([p.nombre||'', p.sku||'', p.categoria||'', p.unidad||'', p.precioCosto||0,
+          p.precioVenta||0, p.stockActual||0, calcularStock(id), p.stockMinimo||0, p.estado||'activo']);
+      });
+      const wsI = XLSX.utils.aoa_to_sheet(invRows);
+      wsI['!cols']=[{wch:32},{wch:16},{wch:16},{wch:10},{wch:14},{wch:14},{wch:14},{wch:14},{wch:14},{wch:12}];
+      XLSX.utils.book_append_sheet(wb, wsI, 'Inventario');
+
+      // ── Hoja 6: Órdenes de compra ──
+      const ocRows = [['numero','proveedor','estado','total','fecha_emision','fecha_entrega','fecha_recepcion','factura_numero','notas']];
+      Object.values(ordenesCompra).forEach(o => {
+        const prov = contacts[o.proveedorId]?.nombre || '';
+        ocRows.push([o.numero||'', prov, o.estado||'', o.totalOC||0, o.fechaEmision||'',
+          o.fechaEntrega||'', o.fechaRecepcion||'', o.facturaNumero||'', o.notas||'']);
+      });
+      const wsOC = XLSX.utils.aoa_to_sheet(ocRows);
+      wsOC['!cols']=[{wch:16},{wch:28},{wch:13},{wch:14},{wch:14},{wch:14},{wch:16},{wch:16},{wch:28}];
+      XLSX.utils.book_append_sheet(wb, wsOC, 'OrdenesCopra');
+
+      // ── Hoja 7: CRM ──
+      const crmRows = [['nombre','cliente','etapa','monto','probabilidad','fecha_cierre','responsable','notas']];
+      Object.values(oportunidades).forEach(o => {
+        const cli = contacts[o.clienteId]?.nombre || '';
+        crmRows.push([o.nombre||'', cli, o.etapa||'', o.monto||0, o.probabilidad||0,
+          o.fechaCierre||'', o.responsable||'', o.notas||'']);
+      });
+      const wsCRM = XLSX.utils.aoa_to_sheet(crmRows);
+      wsCRM['!cols']=[{wch:36},{wch:26},{wch:14},{wch:14},{wch:13},{wch:14},{wch:20},{wch:36}];
+      XLSX.utils.book_append_sheet(wb, wsCRM, 'CRM');
+
+      // ── Hoja 8: Presupuestos ──
+      const presupRows = [['mes','tipo','categoria','monto_presupuestado']];
+      Object.entries(presupuestos).forEach(([mes, data]) => {
+        Object.entries(data.ing  || {}).forEach(([cat, v]) => presupRows.push([mes,'ingreso', cat, v]));
+        Object.entries(data.gast || {}).forEach(([cat, v]) => presupRows.push([mes,'gasto',   cat, v]));
+      });
+      const wsP = XLSX.utils.aoa_to_sheet(presupRows);
+      wsP['!cols']=[{wch:10},{wch:10},{wch:30},{wch:18}];
+      XLSX.utils.book_append_sheet(wb, wsP, 'Presupuestos');
+
+      // ── Hoja 9: Resumen ──
+      const hoy = new Date();
+      const resRows = [
+        ['BACKUP — finHub Business'],
+        [''],
+        ['Empresa', nombreEmpresa],
+        ['Fecha exportación', hoy.toLocaleDateString('es-AR')],
+        ['Hora', hoy.toLocaleTimeString('es-AR')],
+        [''],
+        ['RESUMEN DE DATOS'],
+        ['Movimientos', Object.keys(transactions).length],
+        ['Cuentas', Object.keys(accounts).length],
+        ['Contactos', Object.keys(contacts).length],
+        ['Empleados', Object.keys(empleados).length],
+        ['Productos', Object.keys(productos).length],
+        ['Órdenes de compra', Object.keys(ordenesCompra).length],
+        ['Oportunidades CRM', Object.keys(oportunidades).length],
+        ['Meses con presupuesto', Object.keys(presupuestos).length],
+      ];
+      const wsR = XLSX.utils.aoa_to_sheet(resRows);
+      wsR['!cols']=[{wch:24},{wch:20}];
+      XLSX.utils.book_append_sheet(wb, wsR, 'Resumen');
+
+      const filename = `finhub_backup_${nombreEmpresa.replace(/\s+/g,'_')}_${fecha}.xlsx`;
+      XLSX.writeFile(wb, filename);
+      alert(`✓ Backup exportado correctamente.\n${filename}`);
     });
   };
 
