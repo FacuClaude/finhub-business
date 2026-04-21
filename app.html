@@ -401,6 +401,112 @@
     .onboarding-dot.active { background:var(--accent); width:20px; border-radius:3px; }
     .onboarding-actions { display:flex; gap:10px; }
 
+
+    /* ── BIENVENIDA ── */
+    #page-bienvenida {
+      background: linear-gradient(145deg, #1a3a6b 0%, #1e4d8c 45%, #2a5fa0 100%) !important;
+      min-height:calc(100dvh - 26px);
+      display:flex; flex-direction:column;
+      padding:0 !important;
+    }
+    .wc-wrap {
+      flex:1; display:flex; flex-direction:column;
+      padding:52px 64px 40px;
+      max-width:900px; width:100%;
+      margin:0 auto;
+    }
+    .wc-greeting {
+      font-family:'Plus Jakarta Sans',sans-serif;
+      font-size:2.8rem; font-weight:800;
+      color:white; line-height:1.1; margin-bottom:6px;
+      letter-spacing:-.02em;
+    }
+    .wc-date {
+      font-size:.85rem; color:rgba(255,255,255,.5);
+      margin-bottom:52px; font-weight:400;
+    }
+    .wc-numbers {
+      display:grid; grid-template-columns:1fr 1fr 1fr;
+      gap:3px; margin-bottom:40px;
+    }
+    .wc-num-card {
+      background:rgba(255,255,255,.07);
+      border:1px solid rgba(255,255,255,.1);
+      padding:24px 22px;
+      transition:background .15s;
+    }
+    .wc-num-card:hover { background:rgba(255,255,255,.11); cursor:pointer; }
+    .wc-num-label {
+      font-size:.65rem; font-weight:600; letter-spacing:.18em;
+      text-transform:uppercase; color:rgba(255,255,255,.45);
+      margin-bottom:10px;
+    }
+    .wc-num-val {
+      font-family:'Plus Jakarta Sans',sans-serif;
+      font-size:2rem; font-weight:800; line-height:1;
+      color:white; margin-bottom:6px;
+    }
+    .wc-num-val.positive { color:#7ecba1; }
+    .wc-num-val.negative { color:#e07878; }
+    .wc-num-sub { font-size:.72rem; color:rgba(255,255,255,.4); }
+
+    /* Alertas */
+    .wc-alerts { display:flex; flex-direction:column; gap:8px; margin-bottom:40px; }
+    .wc-alert-item {
+      display:flex; align-items:center; gap:12px;
+      background:rgba(255,255,255,.06);
+      border:1px solid rgba(255,255,255,.1);
+      padding:12px 16px; cursor:pointer;
+      transition:background .15s;
+    }
+    .wc-alert-item:hover { background:rgba(255,255,255,.1); }
+    .wc-alert-icon { font-size:1rem; flex-shrink:0; }
+    .wc-alert-text { font-size:.82rem; color:rgba(255,255,255,.8); flex:1; }
+    .wc-alert-arrow { color:rgba(255,255,255,.3); font-size:.9rem; transition:color .15s; }
+    .wc-alert-item:hover .wc-alert-arrow { color:rgba(255,255,255,.7); }
+
+    /* Empresa activa (para multi-empresa) */
+    .wc-empresa-btn {
+      display:inline-flex; align-items:center; gap:8px;
+      background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.2);
+      padding:6px 14px; border-radius:20px; cursor:pointer;
+      font-size:.75rem; color:rgba(255,255,255,.8);
+      font-family:'DM Sans',sans-serif; margin-bottom:52px;
+      transition:background .15s; max-width:fit-content;
+    }
+    .wc-empresa-btn:hover { background:rgba(255,255,255,.16); }
+    .wc-empresa-dot { width:6px; height:6px; background:#7ecba1; border-radius:50%; flex-shrink:0; }
+
+    /* Footer */
+    .wc-footer {
+      padding:20px 64px 28px;
+      display:flex; justify-content:space-between; align-items:center;
+      border-top:1px solid rgba(255,255,255,.08);
+    }
+    .wc-footer-cta {
+      font-family:'Plus Jakarta Sans',sans-serif;
+      font-size:.8rem; font-weight:600;
+      color:rgba(255,255,255,.4);
+    }
+    .wc-footer-brand {
+      display:flex; align-items:center; gap:7px;
+      font-size:.72rem; color:rgba(255,255,255,.3);
+    }
+
+    @media(max-width:900px){
+      #page-bienvenida { min-height:100dvh !important; }
+      .wc-wrap { padding:40px 22px 28px; }
+      .wc-greeting { font-size:2rem; margin-bottom:4px; }
+      .wc-date { margin-bottom:36px; }
+      .wc-numbers { grid-template-columns:1fr 1fr; gap:3px; }
+      .wc-num-val { font-size:1.5rem; }
+      .wc-footer { padding:16px 22px 24px; }
+    }
+    @media(max-width:380px){
+      .wc-numbers { grid-template-columns:1fr; }
+      .wc-greeting { font-size:1.7rem; }
+    }
+
     /* ── INSTRUCTIVO ── */
     .inst-overlay { display:none; position:fixed; inset:0; background:rgba(26,26,20,.5); backdrop-filter:blur(6px); z-index:10000; }
     .inst-overlay.open { display:flex; align-items:center; justify-content:center; padding:20px; }
@@ -849,6 +955,10 @@
 </div>
 <nav>
 <div class="nav-section">Principal</div>
+<button class="nav-item" onclick="goTo('bienvenida')">
+  <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+  Inicio
+</button>
 <button class="nav-item" onclick="goTo('vistarapida')">
 <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.5" viewbox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
         Vista rápida
@@ -947,13 +1057,15 @@
 </aside>
 <!-- ── MAIN ── -->
 <!-- kippcode watermark -->
-<div id="kippcode-badge" style="position:fixed;bottom:14px;right:18px;z-index:10;pointer-events:none;user-select:none;">
-<div onmouseenter="this.style.opacity='.45'" onmouseleave="this.style.opacity='.22'" style="pointer-events:auto;display:flex;align-items:center;gap:4px;opacity:.22;">
-<svg fill="none" height="14" style="flex-shrink:0;" viewbox="0 0 24 24" width="14">
-<rect height="20" rx="4" stroke="#888" stroke-width="1.5" width="20" x="2" y="2"></rect>
-<circle cx="12" cy="12" fill="#e86c2a" r="2.5"></circle>
+<div id="kippcode-badge" style="position:fixed;bottom:14px;right:18px;z-index:10;pointer-events:none;user-select:none;display:flex;align-items:center;gap:5px;opacity:.22;">
+<div onmouseenter="this.style.opacity='.5'" onmouseleave="this.style.opacity='.22'" style="pointer-events:auto;display:flex;align-items:center;gap:5px;opacity:.22;">
+<svg width="14" height="14" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0;">
+  <rect x="6" y="6" width="36" height="36" rx="7" stroke="#1a1a18" stroke-width="8" fill="none"/>
+  <rect x="58" y="6" width="36" height="36" rx="7" stroke="#1a1a18" stroke-width="8" fill="none"/>
+  <rect x="6" y="58" width="36" height="36" rx="7" stroke="#1a1a18" stroke-width="8" fill="none"/>
+  <circle cx="76" cy="76" r="16" fill="#e86c2a"/>
 </svg>
-<span style="font-family:'DM Sans',sans-serif;font-size:.65rem;font-weight:500;letter-spacing:.04em;color:var(--ink);white-space:nowrap;">kippcode</span>
+<span style="font-family:'DM Sans',sans-serif;font-size:.65rem;font-weight:600;letter-spacing:.04em;color:var(--ink);white-space:nowrap;">kippcode</span>
 </div>
 </div>
 <main id="main-content" style="opacity:0;transition:opacity .3s">
@@ -1020,6 +1132,56 @@
 <div class="page-sub" id="busqueda-sub">Resultados de la búsqueda</div>
 <div id="busqueda-resultados"></div>
 </div>
+<!-- BIENVENIDA -->
+<div class="page" id="page-bienvenida">
+  <div class="wc-wrap">
+
+    <!-- Empresa activa (solo visible con 2+ empresas) -->
+    <div id="wc-empresa-selector" style="display:none;"></div>
+
+    <!-- Saludo -->
+    <div class="wc-greeting" id="wc-greeting">Buen día.</div>
+    <div class="wc-date" id="wc-date"></div>
+
+    <!-- 3 números grandes -->
+    <div class="wc-numbers">
+      <div class="wc-num-card" onclick="goTo('movimientos')">
+        <div class="wc-num-label">Resultado del mes</div>
+        <div class="wc-num-val" id="wc-resultado">—</div>
+        <div class="wc-num-sub" id="wc-resultado-sub"></div>
+      </div>
+      <div class="wc-num-card" onclick="goTo('cuentas')">
+        <div class="wc-num-label">Saldo total</div>
+        <div class="wc-num-val" id="wc-saldo">—</div>
+        <div class="wc-num-sub">Todas las cuentas</div>
+      </div>
+      <div class="wc-num-card" onclick="goTo('crm')">
+        <div class="wc-num-label">Pipeline CRM</div>
+        <div class="wc-num-val" id="wc-pipeline">—</div>
+        <div class="wc-num-sub" id="wc-pipeline-sub"></div>
+      </div>
+    </div>
+
+    <!-- Alertas accionables -->
+    <div class="wc-alerts" id="wc-alerts"></div>
+
+  </div>
+
+  <!-- Footer -->
+  <div class="wc-footer">
+    <div class="wc-footer-cta" id="wc-footer-text">Seleccioná una sección para empezar</div>
+    <div class="wc-footer-brand">
+      <svg width="13" height="13" viewBox="0 0 100 100" fill="none">
+        <rect x="6" y="6" width="36" height="36" rx="7" stroke="rgba(255,255,255,.5)" stroke-width="9" fill="none"/>
+        <rect x="58" y="6" width="36" height="36" rx="7" stroke="rgba(255,255,255,.5)" stroke-width="9" fill="none"/>
+        <rect x="6" y="58" width="36" height="36" rx="7" stroke="rgba(255,255,255,.5)" stroke-width="9" fill="none"/>
+        <circle cx="76" cy="76" r="15" fill="#e86c2a"/>
+      </svg>
+      <span>kippcode</span>
+    </div>
+  </div>
+</div>
+
 <!-- DASHBOARD -->
 <!-- CRM -->
 <div class="page" id="page-crm">
@@ -2510,16 +2672,16 @@
 
   onAuthStateChanged(auth, async user => {
     if (!user) { window.location.href = 'index.html'; return; }
-    if (appIniciada) return; // Evitar doble ejecución por reconexiones de Firebase
+    if (appIniciada) return;
     uid = user.uid;
 
-    // Leer empresas del usuario — get() es lectura única garantizada
+    // Leer todas las empresas del usuario
     const snap = await get(ref(db, `usuarios/${uid}/empresas`));
     const todasEmpresas = snap.val() || {};
     const ids = Object.keys(todasEmpresas);
 
     if (ids.length === 0) {
-      // Usuario nuevo — crear empresa automáticamente
+      // Usuario nuevo — crear empresa automáticamente y arrancar onboarding
       empresaId = push(ref(db, 'empresas')).key;
       const rolAdmin = { ...PERMISOS_DEFAULT.admin, tipoRol: 'admin', nombre: user.email, email: user.email };
       const batch = {};
@@ -2529,42 +2691,54 @@
       await update(ref(db), batch);
       miRol = rolAdmin;
       localStorage.setItem(`finhub-last-empresa-${uid}`, empresaId);
-      appIniciada = true;
-      iniciarApp(user);
-
-    } else if (ids.length === 1) {
-      // Un solo acceso — entrar directo
-      empresaId = ids[0];
-      miRol = todasEmpresas[empresaId];
-      localStorage.setItem(`finhub-last-empresa-${uid}`, empresaId);
+      misEmpresasPermisos = { [empresaId]: rolAdmin };
+      empresasInfo[empresaId] = { nombre: 'Mi empresa' };
       appIniciada = true;
       iniciarApp(user);
 
     } else {
-      // Múltiples empresas — intentar restaurar la última usada
-      const ultimaEmpresa = localStorage.getItem(`finhub-last-empresa-${uid}`);
-      if (ultimaEmpresa && todasEmpresas[ultimaEmpresa]) {
-        empresaId = ultimaEmpresa;
-        miRol = todasEmpresas[ultimaEmpresa];
-        appIniciada = true;
-        iniciarApp(user);
-      } else {
-        // Primera vez con múltiples empresas — mostrar selector
-        mostrarSelectorEmpresa(todasEmpresas, user);
-      }
+      // Guardar permisos y cargar info de empresas para la bienvenida
+      misEmpresasPermisos = todasEmpresas;
+
+      // Precargar nombres de empresas para mostrarlos en la bienvenida
+      await Promise.all(ids.map(async id => {
+        const infoSnap = await get(ref(db, `empresas/${id}/info`));
+        empresasInfo[id] = infoSnap.val() || {};
+      }));
+
+      // Siempre ir a la pantalla de bienvenida
+      appIniciada = true;
+      iniciarAppSinEmpresa(user);
     }
   });
+
+  function iniciarAppSinEmpresa(user) {
+    // Arrancar la app sin cargar datos de empresa todavía
+    document.getElementById('user-email').textContent = user.email;
+    document.getElementById('main-content').style.opacity = '1';
+    aplicarPermisosSinEmpresa();
+    // Ir a bienvenida
+    goTo('bienvenida');
+  }
+
+  function aplicarPermisosSinEmpresa() {
+    // Ocultar ticker hasta que se elija empresa
+    const ticker = document.getElementById('biz-ticker');
+    if (ticker) ticker.style.display = 'none';
+  }
 
   function iniciarApp(user) {
     document.getElementById('user-email').textContent = user.email;
     verificarInvitacionesPendientes(user);
+    // Mostrar ticker
+    const ticker = document.getElementById('biz-ticker');
+    if (ticker) ticker.style.display = 'flex';
     // Cargar nombre de empresa en el switcher
     onValue(ref(db, `empresas/${empresaId}/info`), snap => {
       const info = snap.val() || {};
       const el = document.getElementById('empresa-nombre');
       if (el) el.textContent = info.nombre || 'Mi empresa';
     }, { onlyOnce: true });
-    // Cargar todas las empresas del usuario para el switcher
     cargarMisEmpresas();
     aplicarPermisos();
     loadTransactions();
@@ -2576,39 +2750,11 @@
     loadCRM();
     loadPresupuestos();
     setTimeout(actualizarTicker, 2000);
-    setTimeout(checkOnboarding, 1500); // dar tiempo a que carguen los datos
+    setTimeout(checkOnboarding, 1500);
   }
 
   function mostrarSelectorEmpresa(misEmpresas, user) {
-    // Overlay de selección de empresa
-    const overlay = document.createElement('div');
-    overlay.style.cssText = 'position:fixed;inset:0;background:var(--bg);z-index:9999;display:flex;align-items:center;justify-content:center;';
-    overlay.innerHTML = `
-      <div style="background:var(--surface);border:1px solid var(--border);padding:32px;border-radius:8px;max-width:400px;width:90%;box-shadow:0 24px 60px rgba(0,0,0,.15);">
-        <div style="font-family:'Plus Jakarta Sans',sans-serif;font-size:1.2rem;font-weight:700;color:var(--ink);margin-bottom:6px;">Seleccioná una empresa</div>
-        <div style="font-size:.78rem;color:var(--muted);margin-bottom:20px;">${user.email} tiene acceso a múltiples empresas</div>
-        <div id="empresa-lista"></div>
-      </div>`;
-    document.body.appendChild(overlay);
-    const lista = overlay.querySelector('#empresa-lista');
-    Object.entries(misEmpresas).forEach(([empId, rol]) => {
-      onValue(ref(db, `empresas/${empId}/info`), snap => {
-        const info = snap.val() || {};
-        const btn = document.createElement('button');
-        btn.style.cssText = 'display:block;width:100%;text-align:left;padding:14px 16px;margin-bottom:8px;background:var(--bg);border:1px solid var(--border);border-radius:6px;cursor:pointer;font-family:"DM Sans",sans-serif;font-size:.88rem;color:var(--ink);transition:border-color .15s;';
-        btn.innerHTML = `<strong>${esc(info.nombre||empId)}</strong><span style="font-size:.7rem;color:var(--muted);margin-left:8px;">${rol.tipoRol||'usuario'}</span>`;
-        btn.onmouseover = () => btn.style.borderColor = 'var(--accent)';
-        btn.onmouseout  = () => btn.style.borderColor = 'var(--border)';
-        btn.onclick = () => {
-          empresaId = empId; miRol = rol;
-          localStorage.setItem(`finhub-last-empresa-${uid}`, empId);
-          appIniciada = true;
-          document.body.removeChild(overlay);
-          iniciarApp(user);
-        };
-        lista.appendChild(btn);
-      }, { onlyOnce: true });
-    });
+    // Ya no se usa — reemplazado por la página de bienvenida
   }
 
   function aplicarPermisos() {
@@ -8237,6 +8383,118 @@
     }, 800);
   }
 
+
+  // ══════════════════════════════════════════════════
+  // PÁGINA DE BIENVENIDA
+  // ══════════════════════════════════════════════════
+  window.renderBienvenida = function() {
+    const hoy   = new Date();
+    const hora  = hoy.getHours();
+    const saludo = hora < 12 ? 'Buen día.' : hora < 19 ? 'Buenas tardes.' : 'Buenas noches.';
+    const diasSemana = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
+    const meses = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+    const fechaStr = `${diasSemana[hoy.getDay()]}, ${hoy.getDate()} de ${meses[hoy.getMonth()]} de ${hoy.getFullYear()}`;
+
+    const E = id => document.getElementById(id);
+    if (E('wc-greeting')) E('wc-greeting').textContent = saludo;
+    if (E('wc-date'))     E('wc-date').textContent     = fechaStr;
+
+    // Footer con nombre empresa
+    const nombreEmp = E('empresa-nombre')?.textContent || '';
+    if (E('wc-footer-text') && nombreEmp && nombreEmp !== 'Mi empresa') {
+      E('wc-footer-text').textContent = nombreEmp;
+    }
+
+    // ── Números grandes ──
+    const mesActual = hoy.toISOString().slice(0,7);
+    const txArr = Object.values(transactions).filter(t => t.type !== 'transferencia');
+    const txMes = txArr.filter(t => (t.date||'').startsWith(mesActual));
+    const ing   = txMes.filter(t=>t.type==='income').reduce((s,t)=>s+t.amount,0);
+    const gast  = txMes.filter(t=>t.type==='expense').reduce((s,t)=>s+t.amount,0);
+    const res   = ing - gast;
+    const saldo = Object.keys(accounts).reduce((s,id)=>s+calcSaldoCuenta(id),0);
+    const opActivas = Object.values(oportunidades).filter(o=>!['ganado','perdido'].includes(o.etapa));
+    const pipeline  = opActivas.reduce((s,o)=>s+(o.monto||0),0);
+
+    if (E('wc-resultado')) {
+      E('wc-resultado').textContent = fmt(res);
+      E('wc-resultado').className   = 'wc-num-val ' + (res>0?'positive':res<0?'negative':'');
+      if (E('wc-resultado-sub')) E('wc-resultado-sub').textContent =
+        `↑ ${fmt(ing)} ingresos`;
+    }
+    if (E('wc-saldo')) {
+      E('wc-saldo').textContent = fmt(saldo);
+      E('wc-saldo').className   = 'wc-num-val ' + (saldo>=0?'positive':'negative');
+    }
+    if (E('wc-pipeline')) {
+      E('wc-pipeline').textContent = pipeline > 0 ? fmt(pipeline) : '—';
+      if (E('wc-pipeline-sub')) E('wc-pipeline-sub').textContent =
+        opActivas.length ? `${opActivas.length} oportunidad${opActivas.length!==1?'es':''}` : 'Sin oportunidades activas';
+    }
+
+    // ── Alertas ──
+    const alertas = [];
+    const criticos = Object.entries(productos).filter(([id,p])=>p.estado==='activo'&&calcularStock(id)<=(p.stockMinimo||0));
+    if (criticos.length)
+      alertas.push({ icon:'📦', text:`${criticos.length} producto${criticos.length!==1?'s':''} con stock crítico`, go:'inventario', color:'#e07878' });
+    const ocVenc = Object.values(ordenesCompra).filter(o=>o.estado==='enviada'&&o.fechaEntrega&&o.fechaEntrega<hoy.toISOString().slice(0,10));
+    if (ocVenc.length)
+      alertas.push({ icon:'🛒', text:`${ocVenc.length} OC con entrega vencida`, go:'oc', color:'#e8b84b' });
+    const ocFact = Object.values(ordenesCompra).filter(o=>['recibida','parcial'].includes(o.estado));
+    if (ocFact.length)
+      alertas.push({ icon:'🧾', text:`${ocFact.length} OC esperando factura`, go:'oc', color:'#e8b84b' });
+    const ivaDeb = txMes.filter(t=>t.type==='income'&&t.ivaAlicuota).reduce((s,t)=>s+t.amount*(t.ivaAlicuota/100),0);
+    const ivaCre = txMes.filter(t=>t.type==='expense'&&t.ivaAlicuota).reduce((s,t)=>s+t.amount*(t.ivaAlicuota/100),0);
+    if (ivaDeb-ivaCre>0)
+      alertas.push({ icon:'📋', text:`IVA a pagar: ${fmt(ivaDeb-ivaCre)}`, go:'iva', color:'rgba(255,255,255,.5)' });
+    const ocProx = Object.values(oportunidades).filter(o=>!['ganado','perdido'].includes(o.etapa)&&o.fechaCierre);
+    const proxima = ocProx.sort((a,b)=>a.fechaCierre>b.fechaCierre?1:-1)[0];
+    if (proxima)
+      alertas.push({ icon:'🤝', text:`Próxima a cerrar: ${esc(proxima.nombre||'')} — ${fmt(proxima.monto||0)}`, go:'crm', color:'rgba(255,255,255,.5)' });
+
+    const alertsEl = E('wc-alerts');
+    if (alertsEl) {
+      if (!alertas.length && !Object.keys(transactions).length) {
+        alertsEl.innerHTML = `<div class="wc-alert-item" onclick="goTo('movimientos')" style="border-color:rgba(255,255,255,.15);">
+          <span class="wc-alert-icon">✨</span>
+          <span class="wc-alert-text">Empezá cargando tu primer movimiento</span>
+          <span class="wc-alert-arrow">→</span>
+        </div>`;
+      } else if (!alertas.length) {
+        alertsEl.innerHTML = `<div style="font-size:.8rem;color:rgba(255,255,255,.35);padding:4px 0;">✓ Sin alertas — todo en orden</div>`;
+      } else {
+        alertsEl.innerHTML = alertas.map(a=>
+          `<div class="wc-alert-item" onclick="goTo('${a.go}')">
+            <span class="wc-alert-icon">${a.icon}</span>
+            <span class="wc-alert-text" style="color:${a.color||'rgba(255,255,255,.8)'};">${a.text}</span>
+            <span class="wc-alert-arrow">→</span>
+          </div>`
+        ).join('');
+      }
+    }
+
+    // ── Selector empresa (solo si tiene 2+) ──
+    const selEl = E('wc-empresa-selector');
+    if (selEl) {
+      const misIds = Object.keys(misEmpresasPermisos||{});
+      if (misIds.length > 1 && empresaId) {
+        const nombreActual = empresasInfo[empresaId]?.nombre || 'Mi empresa';
+        selEl.style.display = 'block';
+        selEl.innerHTML = `<button class="wc-empresa-btn" onclick="toggleEmpresaSwitcher()">
+          <span class="wc-empresa-dot"></span>
+          ${esc(nombreActual)}
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>`;
+      } else {
+        selEl.style.display = 'none';
+      }
+    }
+  };
+
+    // Cache de info de empresas para la bienvenida
+  let empresasInfo = {};
+  let misEmpresasPermisos = {};
+
   // ── NAV ──
   const ADMIN_SECTIONS = ['contador','asesor','rrhh','usuarios'];
 
@@ -8281,7 +8539,7 @@
     }
 
     // Header mobile
-    const titleMap={vistarapida:'Vista rápida',dashboard:'Dashboard',movimientos:'Movimientos',cuentas:'Cuentas',contactos:'Contactos',iva:'IVA',reportes:'Reportes',inventario:'Inventario',oc:'Órdenes de compra',crm:'CRM',presupuestos:'Presupuestos vs Real',contador:'Contador IA',asesor:'Asesor Legal IA',rrhh:'RRHH',usuarios:'Usuarios',busqueda:'Búsqueda'};
+    const titleMap={bienvenida:'Inicio',vistarapida:'Vista rápida',dashboard:'Dashboard',movimientos:'Movimientos',cuentas:'Cuentas',contactos:'Contactos',iva:'IVA',reportes:'Reportes',inventario:'Inventario',oc:'Órdenes de compra',crm:'CRM',presupuestos:'Presupuestos vs Real',contador:'Contador IA',asesor:'Asesor Legal IA',rrhh:'RRHH',usuarios:'Usuarios',busqueda:'Búsqueda'};
     const mTitle=document.getElementById('mobile-header-title');
     if(mTitle) mTitle.textContent=titleMap[section]||section;
 
@@ -8310,6 +8568,7 @@
     if(section==='asesor')     renderAsesor();
     if(section==='rrhh')       renderRRHH();
     if(section==='inventario')  { renderInventario(); populateProveedorSelectInv(); }
+    if(section==='bienvenida')  renderBienvenida();
     if(section==='vistarapida') renderVistaRapida();
     if(section==='oc')          { renderOCPage(); }
     if(section==='crm')         { renderCRMPage(); }
