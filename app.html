@@ -411,74 +411,62 @@
       overflow:hidden;
     }
     body.dark #page-bienvenida {
-      background: #0d0d0d !important;
+      background: #141414 !important;
     }
     #page-bienvenida.active {
       display:flex !important;
       flex-direction:column;
     }
-    /* Dark mode: sin cajas de fondo, texto naranja/blanco */
+    /* Dark mode — sin cajas, estilo editorial naranja/blanco */
     body.dark .wc-num-card {
       background: transparent !important;
-      border-color: rgba(255,255,255,.08) !important;
+      border: none !important;
       border-left: 2px solid #e86c2a !important;
-      border-top:none !important; border-right:none !important; border-bottom:none !important;
-      padding-left: 20px !important;
+      padding-left: 18px !important;
+      border-radius: 0 !important;
     }
-    body.dark .wc-num-label { color:rgba(255,255,255,.35) !important; }
+    body.dark .wc-num-card:hover { background: rgba(255,255,255,.03) !important; }
+    body.dark .wc-num-label { color:rgba(255,255,255,.3) !important; }
     body.dark .wc-num-val { color: white !important; }
     body.dark .wc-num-val.positive { color: #e86c2a !important; }
     body.dark .wc-num-val.negative { color: #e07878 !important; }
-    body.dark .wc-num-sub { color:rgba(255,255,255,.3) !important; }
+    body.dark .wc-num-sub { color:rgba(255,255,255,.28) !important; }
+    body.dark .wc-numbers { gap: 32px !important; grid-template-columns: repeat(3,auto) !important; justify-content:start; }
     body.dark .wc-alert-item {
       background: transparent !important;
-      border-color: rgba(255,255,255,.08) !important;
-      border-left: 2px solid rgba(232,108,42,.4) !important;
-      border-top:none !important; border-right:none !important; border-bottom:none !important;
-      padding-left: 20px !important;
+      border: none !important;
+      border-bottom: 1px solid rgba(255,255,255,.06) !important;
+      padding-left: 0 !important;
     }
-    body.dark .wc-alert-item:hover { background: rgba(255,255,255,.04) !important; }
-    body.dark .wc-greeting { color: white !important; }
-    body.dark .wc-date { color: rgba(255,255,255,.4) !important; }
+    body.dark .wc-alert-item:hover { background: rgba(255,255,255,.03) !important; }
+    body.dark .wc-alerts { gap: 0 !important; }
     body.dark .wc-footer { border-top-color: rgba(255,255,255,.06) !important; }
-    body.dark .wc-footer-cta { color: rgba(255,255,255,.3) !important; }
-    body.dark .wc-numbers { gap: 24px !important; }
-    body.dark .wc-alerts { gap: 4px !important; }
+    body.dark .wc-footer-cta { color: rgba(255,255,255,.28) !important; }
 
     .wc-wrap {
       flex:1; display:flex; flex-direction:column;
       justify-content:space-evenly;
       padding:clamp(16px,3.5vh,48px) clamp(20px,4vw,64px) clamp(12px,2.5vh,32px);
-      max-width:900px; width:100%;
+      max-width:860px; width:100%;
       margin:0 auto;
       min-height:0; overflow:hidden;
-      gap:clamp(12px,2vh,32px);
+      gap:clamp(10px,1.8vh,28px);
     }
     .wc-greeting {
       font-family:'Plus Jakarta Sans',sans-serif;
       font-size:clamp(1.5rem,3.2vh,2.6rem); font-weight:800;
-      color:white; line-height:1.1;
-      letter-spacing:-.02em;
+      color:white; line-height:1.1; letter-spacing:-.02em;
     }
-    .wc-date { font-size:.8rem; color:rgba(255,255,255,.5); font-weight:400; margin-top:3px; }
-    .wc-numbers {
-      display:grid; grid-template-columns:1fr 1fr 1fr; gap:3px;
-    }
+    .wc-date { font-size:.78rem; color:rgba(255,255,255,.5); font-weight:400; margin-top:3px; }
+    .wc-numbers { display:grid; grid-template-columns:1fr 1fr 1fr; gap:3px; }
     .wc-num-card {
       background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.1);
-      padding:clamp(12px,2vh,22px) clamp(12px,2vw,20px);
+      padding:clamp(12px,2vh,20px) clamp(12px,2vw,18px);
       transition:background .15s; cursor:pointer;
     }
     .wc-num-card:hover { background:rgba(255,255,255,.11); }
-    .wc-num-label {
-      font-size:.6rem; font-weight:600; letter-spacing:.18em;
-      text-transform:uppercase; color:rgba(255,255,255,.45); margin-bottom:6px;
-    }
-    .wc-num-val {
-      font-family:'Plus Jakarta Sans',sans-serif;
-      font-size:clamp(1.1rem,2.2vh,1.8rem); font-weight:800; line-height:1;
-      color:white; margin-bottom:3px;
-    }
+    .wc-num-label { font-size:.58rem; font-weight:600; letter-spacing:.18em; text-transform:uppercase; color:rgba(255,255,255,.45); margin-bottom:6px; }
+    .wc-num-val { font-family:'Plus Jakarta Sans',sans-serif; font-size:clamp(1.1rem,2.2vh,1.8rem); font-weight:800; line-height:1; color:white; margin-bottom:3px; }
     .wc-num-val.positive { color:#7ecba1; }
     .wc-num-val.negative { color:#e07878; }
     .wc-num-sub { font-size:.62rem; color:rgba(255,255,255,.4); }
@@ -486,37 +474,37 @@
     .wc-alert-item {
       display:flex; align-items:center; gap:10px;
       background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.1);
-      padding:clamp(6px,1.2vh,10px) 14px; cursor:pointer;
-      transition:background .15s;
+      padding:clamp(6px,1.1vh,9px) 14px; cursor:pointer; transition:background .15s;
     }
     .wc-alert-item:hover { background:rgba(255,255,255,.1); }
-    .wc-alert-icon { font-size:.85rem; flex-shrink:0; }
-    .wc-alert-text { font-size:.75rem; color:rgba(255,255,255,.8); flex:1; }
-    .wc-alert-arrow { color:rgba(255,255,255,.3); font-size:.8rem; }
+    .wc-alert-icon { font-size:.8rem; flex-shrink:0; }
+    .wc-alert-text { font-size:.73rem; color:rgba(255,255,255,.8); flex:1; }
+    .wc-alert-arrow { color:rgba(255,255,255,.3); font-size:.78rem; }
     .wc-alert-item:hover .wc-alert-arrow { color:rgba(255,255,255,.7); }
     .wc-empresa-btn {
       display:inline-flex; align-items:center; gap:7px;
       background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.2);
       padding:4px 12px; border-radius:20px; cursor:pointer;
-      font-size:.7rem; color:rgba(255,255,255,.8);
+      font-size:.68rem; color:rgba(255,255,255,.8);
       font-family:'DM Sans',sans-serif; transition:background .15s;
     }
     .wc-empresa-btn:hover { background:rgba(255,255,255,.16); }
     .wc-empresa-dot { width:5px; height:5px; background:#7ecba1; border-radius:50%; flex-shrink:0; }
     .wc-footer {
-      padding:clamp(8px,1.5vh,16px) clamp(20px,4vw,64px) clamp(10px,2vh,24px);
+      padding:clamp(8px,1.4vh,14px) clamp(20px,4vw,64px) clamp(10px,1.8vh,20px);
       display:flex; justify-content:space-between; align-items:center;
       border-top:1px solid rgba(255,255,255,.08); flex-shrink:0;
     }
-    .wc-footer-cta { font-family:'Plus Jakarta Sans',sans-serif; font-size:.72rem; font-weight:600; color:rgba(255,255,255,.4); }
-    .wc-footer-brand { display:flex; align-items:center; gap:6px; font-size:.68rem; color:rgba(255,255,255,.3); }
+    .wc-footer-cta { font-family:'Plus Jakarta Sans',sans-serif; font-size:.7rem; font-weight:600; color:rgba(255,255,255,.4); }
+    .wc-footer-brand { display:flex; align-items:center; gap:6px; font-size:.66rem; color:rgba(255,255,255,.3); }
     @media(max-width:900px){
       #page-bienvenida { height:100dvh !important; max-height:100dvh !important; }
-      .wc-numbers { grid-template-columns:1fr 1fr; gap:3px; }
-      body.dark .wc-numbers { gap:16px !important; }
+      .wc-numbers { grid-template-columns:1fr 1fr; }
+      body.dark .wc-numbers { gap:20px !important; grid-template-columns:repeat(3,1fr) !important; }
     }
     @media(max-width:380px){
       .wc-numbers { grid-template-columns:1fr 1fr; }
+      body.dark .wc-numbers { grid-template-columns:1fr 1fr !important; gap:16px !important; }
     }
     /* ── INSTRUCTIVO ── */
     .inst-overlay { display:none; position:fixed; inset:0; background:rgba(26,26,20,.5); backdrop-filter:blur(6px); z-index:10000; }
@@ -1147,14 +1135,12 @@
 <div class="page" id="page-bienvenida">
   <div class="wc-wrap">
 
-    <!-- Empresa (solo 2+) + Saludo -->
     <div>
-      <div id="wc-empresa-selector" style="display:none;margin-bottom:12px;"></div>
+      <div id="wc-empresa-selector" style="display:none;margin-bottom:10px;"></div>
       <div class="wc-greeting" id="wc-greeting">Buen día.</div>
       <div class="wc-date" id="wc-date"></div>
     </div>
 
-    <!-- 3 números -->
     <div class="wc-numbers">
       <div class="wc-num-card" onclick="goTo('movimientos')">
         <div class="wc-num-label">Resultado del mes</div>
@@ -1172,9 +1158,6 @@
         <div class="wc-num-sub" id="wc-pipeline-sub"></div>
       </div>
     </div>
-
-    <!-- Alertas -->
-    <div class="wc-alerts" id="wc-alerts"></div>
 
   </div>
 
