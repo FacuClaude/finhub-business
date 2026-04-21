@@ -2522,7 +2522,7 @@
       '6m':  'Últimos 6 meses',
       year:  'Último año',
     };
-    document.getElementById('dash-mes-label').textContent = periodoTexto[currentPeriod] || getEffectiveLabel();
+    document.getElementById('dash-mes-label').textContent = periodoTexto[activePeriod] || getEffectiveLabel();
 
     document.getElementById('dash-ventas').textContent  = fmt(ing);
     document.getElementById('dash-gastos').textContent  = fmt(gast);
