@@ -863,7 +863,12 @@
         <option value="perdido">Perdido</option>
       </select>
     </div>
-    <button class="btn-primary" onclick="openModal('oportunidad')">+ Oportunidad</button>
+    <div style="display:flex;gap:8px;">
+          <button class="btn-export" onclick="descargarTemplateCRM()">↓ Template</button>
+          <button class="btn-export" onclick="document.getElementById('import-crm-file').click()">↑ Importar</button>
+          <input type="file" id="import-crm-file" accept=".xlsx,.xls" style="display:none" onchange="importarCRMExcel(this)"/>
+          <button class="btn-primary" onclick="openModal('oportunidad')">+ Oportunidad</button>
+        </div>
   </div>
 
   <!-- Pipeline Kanban -->
@@ -1906,6 +1911,10 @@
 <button class="inst-nav-item" onclick="instIr('contador',this)"><span class="inst-nav-icon">🧮</span>Contador IA</button>
 <button class="inst-nav-item" onclick="instIr('asesor',this)"><span class="inst-nav-icon">⚖️</span>Asesor Legal IA</button>
 <button class="inst-nav-item" onclick="instIr('rrhh',this)"><span class="inst-nav-icon">👤</span>RRHH</button>
+<button class="inst-nav-item" onclick="instIr('inventario',this)"><span class="inst-nav-icon">📦</span>Inventario</button>
+<button class="inst-nav-item" onclick="instIr('oc',this)"><span class="inst-nav-icon">📋</span>Órdenes de compra</button>
+<button class="inst-nav-item" onclick="instIr('crm',this)"><span class="inst-nav-icon">🤝</span>CRM</button>
+<button class="inst-nav-item" onclick="instIr('presupuestos',this)"><span class="inst-nav-icon">📊</span>Presupuestos</button>
 <button class="inst-nav-item" onclick="instIr('configuracion',this)"><span class="inst-nav-icon">⚙️</span>Configuración</button>
 </div>
 <!-- Contenido -->
@@ -2043,6 +2052,57 @@
 <div class="inst-step"><div class="inst-step-num">4</div><div class="inst-step-body"><div class="inst-step-title">Cerrar sesión</div><div class="inst-step-desc">El botón <span class="inst-badge">Salir</span> al pie del sidebar cierra la sesión y te devuelve a la pantalla de login. Los datos permanecen en Firebase y estarán disponibles al volver a ingresar.</div></div></div>
 <div class="inst-tip">💡 finHub Business funciona en cualquier dispositivo con un navegador moderno. Podés usarla desde el celular, tablet o computadora con la misma cuenta.</div>
 </div>
+
+<!-- INVENTARIO -->
+<div class="inst-section" id="inst-inventario">
+<div class="inst-section-title">Inventario</div>
+<div class="inst-section-sub">Gestión de productos, stock en tiempo real y alertas de reposición.</div>
+<hr class="inst-divider"/>
+<div class="inst-step"><div class="inst-step-num">1</div><div class="inst-step-body"><div class="inst-step-title">Agregar productos</div><div class="inst-step-desc">Hacé clic en <span class="inst-badge">+ Producto</span>. Completá nombre, categoría, unidad de medida, precio de costo, stock actual y stock mínimo. El SKU y la imagen son opcionales.</div></div></div>
+<div class="inst-step"><div class="inst-step-num">2</div><div class="inst-step-body"><div class="inst-step-title">Stock en tiempo real</div><div class="inst-step-desc">El stock se calcula dinámicamente: stock inicial + entradas − salidas. Cada movimiento queda registrado con fecha, tipo y motivo. Podés ver el historial completo en el detalle de cada producto.</div></div></div>
+<div class="inst-step"><div class="inst-step-num">3</div><div class="inst-step-body"><div class="inst-step-title">Alertas automáticas</div><div class="inst-step-desc">Si el stock llega al mínimo configurado, el producto aparece en rojo en la lista y en la sección Vista rápida. Si está cerca del mínimo (menos de 1.5×), aparece en naranja.</div></div></div>
+<div class="inst-step"><div class="inst-step-num">4</div><div class="inst-step-body"><div class="inst-step-title">Movimientos de stock</div><div class="inst-step-desc">Desde el detalle de cada producto podés registrar: <strong>Entrada</strong> (recepción de mercadería), <strong>Salida</strong> (venta o consumo), <strong>Ajuste</strong> (corrección por conteo físico) o <strong>Devolución</strong>.</div></div></div>
+<div class="inst-step"><div class="inst-step-num">5</div><div class="inst-step-body"><div class="inst-step-title">Importar y exportar</div><div class="inst-step-desc">Usá <span class="inst-badge">↓ Template</span> para descargar el formato correcto, completalo con tus productos y subilo con <span class="inst-badge">↑ Importar</span>. El exportar genera un Excel con el stock calculado al momento de la descarga.</div></div></div>
+<div class="inst-tip">💡 La valorización total del inventario (stock × precio costo) se muestra en los KPIs superiores. Es el costo de lo que tenés en tu depósito.</div>
+</div>
+
+<!-- ÓRDENES DE COMPRA -->
+<div class="inst-section" id="inst-oc">
+<div class="inst-section-title">Órdenes de compra</div>
+<div class="inst-section-sub">Flujo completo desde la orden hasta el pago al proveedor.</div>
+<hr class="inst-divider"/>
+<div class="inst-step"><div class="inst-step-num">1</div><div class="inst-step-body"><div class="inst-step-title">Crear una OC</div><div class="inst-step-desc">Hacé clic en <span class="inst-badge">+ Nueva OC</span>. Seleccioná el proveedor, la fecha de entrega estimada y agregá los ítems. Podés vincularlos a productos del Inventario (autocompletará el precio de costo) o ingresarlos manualmente.</div></div></div>
+<div class="inst-step"><div class="inst-step-num">2</div><div class="inst-step-body"><div class="inst-step-title">Flujo de estados</div><div class="inst-step-desc">Cada OC avanza por etapas: <strong>Borrador</strong> → <strong>Enviada</strong> → <strong>Recibida</strong> → <strong>Facturada</strong> → <strong>Pagada</strong>. El timeline en el detalle muestra en qué paso está cada una.</div></div></div>
+<div class="inst-step"><div class="inst-step-num">3</div><div class="inst-step-body"><div class="inst-step-title">Recepción y stock automático</div><div class="inst-step-desc">Al registrar una recepción, el sistema sube automáticamente el stock de los productos vinculados en el Inventario. Podés registrar recepciones parciales si llegó solo parte del pedido.</div></div></div>
+<div class="inst-step"><div class="inst-step-num">4</div><div class="inst-step-body"><div class="inst-step-title">Factura y gasto automático</div><div class="inst-step-desc">Al registrar la factura del proveedor, se crea automáticamente un gasto en la sección Movimientos vinculado al proveedor con el número de comprobante.</div></div></div>
+<div class="inst-step"><div class="inst-step-num">5</div><div class="inst-step-body"><div class="inst-step-title">Pago</div><div class="inst-step-desc">Al registrar el pago, seleccionás la cuenta desde la que se paga. El movimiento de gasto se actualiza con esa cuenta y la OC queda cerrada como <strong>Pagada</strong>.</div></div></div>
+<div class="inst-tip">💡 Los KPIs superiores muestran OC abiertas, recibidas sin facturar y facturadas sin pagar — para que nunca pierdas una factura pendiente.</div>
+</div>
+
+<!-- CRM -->
+<div class="inst-section" id="inst-crm">
+<div class="inst-section-title">CRM</div>
+<div class="inst-section-sub">Pipeline visual de oportunidades comerciales.</div>
+<hr class="inst-divider"/>
+<div class="inst-step"><div class="inst-step-num">1</div><div class="inst-step-body"><div class="inst-step-title">Crear una oportunidad</div><div class="inst-step-desc">Hacé clic en <span class="inst-badge">+ Oportunidad</span> o en el botón <span class="inst-badge">+ Agregar</span> dentro de la columna donde querés empezar. Ingresá el nombre, el cliente, el monto estimado y la probabilidad de cierre.</div></div></div>
+<div class="inst-step"><div class="inst-step-num">2</div><div class="inst-step-body"><div class="inst-step-title">Pipeline Kanban</div><div class="inst-step-desc">Las oportunidades se organizan en 6 columnas: <strong>Prospecto → Contactado → Propuesta enviada → Negociación → Ganado → Perdido</strong>. Cada columna muestra el total de oportunidades y el monto acumulado.</div></div></div>
+<div class="inst-step"><div class="inst-step-num">3</div><div class="inst-step-body"><div class="inst-step-title">Mover entre etapas</div><div class="inst-step-desc">Hacé clic en una tarjeta para ver el detalle. Desde ahí podés moverla a cualquier otra etapa con un clic. Al mover a Ganado o Perdido se registra automáticamente la fecha de cierre real.</div></div></div>
+<div class="inst-step"><div class="inst-step-num">4</div><div class="inst-step-body"><div class="inst-step-title">KPIs y tasa de conversión</div><div class="inst-step-desc">Los KPIs superiores muestran el valor total del pipeline activo, ganadas y perdidas del mes en curso, y la tasa de conversión histórica (oportunidades ganadas sobre el total cerrado).</div></div></div>
+<div class="inst-tip">💡 La barra de probabilidad cambia de color: verde ≥70%, naranja ≥40%, rojo menor a 40%. Usá el campo probabilidad para priorizar en qué oportunidades enfocarte.</div>
+</div>
+
+<!-- PRESUPUESTOS -->
+<div class="inst-section" id="inst-presupuestos">
+<div class="inst-section-title">Presupuestos vs Real</div>
+<div class="inst-section-sub">Compará lo planificado contra lo ejecutado por categoría y mes.</div>
+<hr class="inst-divider"/>
+<div class="inst-step"><div class="inst-step-num">1</div><div class="inst-step-body"><div class="inst-step-title">Cargar un presupuesto</div><div class="inst-step-desc">Hacé clic en <span class="inst-badge">✏️ Editar presupuesto</span>. Seleccioná el mes y completá los montos esperados por categoría, tanto para ingresos como para gastos. Guardá con <span class="inst-badge">Guardar presupuesto</span>.</div></div></div>
+<div class="inst-step"><div class="inst-step-num">2</div><div class="inst-step-body"><div class="inst-step-title">Copiar mes anterior</div><div class="inst-step-desc">Si el presupuesto del mes siguiente es similar al actual, usá <span class="inst-badge">Copiar mes anterior</span> para precargar todos los valores. Solo tenés que ajustar las diferencias.</div></div></div>
+<div class="inst-step"><div class="inst-step-num">3</div><div class="inst-step-body"><div class="inst-step-title">Leer la tabla</div><div class="inst-step-desc">Por cada categoría ves: monto presupuestado, monto real (calculado automáticamente desde tus Movimientos), diferencia en pesos y porcentaje de ejecución. La barra de progreso cambia de color según el desvío.</div></div></div>
+<div class="inst-step"><div class="inst-step-num">4</div><div class="inst-step-body"><div class="inst-step-title">Colores de semáforo</div><div class="inst-step-desc">Para <strong>gastos</strong>: verde = dentro del presupuesto, naranja = entre 90–110%, rojo = más de 110% del presupuesto. Para <strong>ingresos</strong>: verde = ≥90% del objetivo, naranja = 60–90%, rojo = menos del 60%.</div></div></div>
+<div class="inst-tip">💡 Los datos reales se calculan automáticamente desde los Movimientos del período. No hace falta cargar nada extra — si cargaste tus movimientos, la comparación está lista.</div>
+</div>
+
 </div><!-- /inst-content -->
 </div><!-- /inst-modal -->
 </div><!-- /inst-overlay -->
@@ -7316,6 +7376,79 @@
 
   window.actualizarTotalPresup = function() {}; // placeholder para oninput
 
+
+
+  // ── EXCEL CRM ──
+  window.descargarTemplateCRM = function() {
+    _cargarXLSX(() => {
+      const wb = XLSX.utils.book_new();
+      const data = [
+        ['nombre','cliente_nombre','etapa','monto','probabilidad','fecha_cierre','responsable','notas'],
+        ['Venta chapas cliente ABC','Distribuidora Pérez S.A.','propuesta','5000000','60','2026-06-30','Juan García','Presupuesto enviado. Esperando respuesta.'],
+        ['Servicio mantenimiento anual','Hospital Privado del Sur','negociacion','2800000','75','2026-05-15','','Negociando condiciones de pago.'],
+      ];
+      const ws = XLSX.utils.aoa_to_sheet(data);
+      ws['!cols']=[{wch:38},{wch:26},{wch:14},{wch:13},{wch:13},{wch:14},{wch:20},{wch:40}];
+      const instr=[
+        ['INSTRUCCIONES — Importar CRM · finHub Business'],[''],
+        ['nombre','Nombre de la oportunidad. OBLIGATORIO.'],
+        ['cliente_nombre','Nombre del cliente (debe existir en Contactos).'],
+        ['etapa','prospecto / contactado / propuesta / negociacion / ganado / perdido'],
+        ['monto','Monto estimado en ARS. Número.'],
+        ['probabilidad','0 a 100. Porcentaje estimado de cierre.'],
+        ['fecha_cierre','Fecha YYYY-MM-DD. Opcional.'],
+        ['responsable','Nombre del responsable comercial. Opcional.'],
+        ['notas','Contexto y próximos pasos. Opcional.'],
+      ];
+      const wsI=XLSX.utils.aoa_to_sheet(instr);
+      wsI['!cols']=[{wch:18},{wch:55}];
+      XLSX.utils.book_append_sheet(wb,ws,'Oportunidades');
+      XLSX.utils.book_append_sheet(wb,wsI,'Instrucciones');
+      XLSX.writeFile(wb,'finhub_template_crm.xlsx');
+    });
+  };
+
+  window.importarCRMExcel = function(input) {
+    const file=input.files[0]; if(!file) return; input.value='';
+    _cargarXLSX(() => {
+      const reader=new FileReader();
+      reader.onload=async e=>{
+        try {
+          const wb=XLSX.read(e.target.result,{type:'binary'});
+          if(!wb.SheetNames.includes('Oportunidades')){
+            alert('Este archivo no tiene la hoja "Oportunidades".\nUsá el botón "↓ Template" para descargar el formato correcto.'); return;
+          }
+          const rows=XLSX.utils.sheet_to_json(wb.Sheets['Oportunidades'],{defval:''});
+          const etapasValidas=['prospecto','contactado','propuesta','negociacion','ganado','perdido'];
+          const batch={}; let ok=0,err=0;
+          rows.forEach((row,i)=>{
+            const nombre=String(row.nombre||'').trim();
+            if(!nombre){err++;return;}
+            // Buscar cliente por nombre
+            const cliNombre=String(row.cliente_nombre||'').trim();
+            const cliEntry=cliNombre?Object.entries(contacts).find(([,c])=>c.nombre===cliNombre):null;
+            const etapa=String(row.etapa||'prospecto').trim().toLowerCase();
+            const id=push(ref(db,`empresas/${empresaId}/oportunidades`)).key;
+            batch[`empresas/${empresaId}/oportunidades/${id}`]={
+              nombre,
+              clienteId: cliEntry?cliEntry[0]:null,
+              etapa: etapasValidas.includes(etapa)?etapa:'prospecto',
+              monto: parseFloat(row.monto)||0,
+              probabilidad: parseFloat(row.probabilidad)||0,
+              fechaCierre: String(row.fecha_cierre||'').trim()||null,
+              responsable: String(row.responsable||'').trim()||null,
+              notas: String(row.notas||'').trim()||null,
+              createdAt: Date.now(),
+            }; ok++;
+          });
+          if(!ok){alert('No se encontraron oportunidades válidas.');return;}
+          await update(ref(db),batch);
+          alert(`✓ ${ok} oportunidad${ok!==1?'es':''} importada${ok!==1?'s':''}${err?`\n⚠️ ${err} filas ignoradas.`:''}`);
+        } catch(e2){alert('Error al procesar el archivo.\n'+e2.message);}
+      };
+      reader.readAsBinaryString(file);
+    });
+  };
 
   // ── NAV ──
   const ADMIN_SECTIONS = ['contador','asesor','rrhh','usuarios'];
