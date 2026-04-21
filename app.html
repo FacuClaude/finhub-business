@@ -2662,27 +2662,15 @@
 
   // ── AUTH ──
   let appIniciada = false;
-  let authResuelto = false;
 
-  onAuthStateChanged(auth, async user => {
-    // Ignorar el primer disparo vacío que Firebase emite antes de resolver
-    if (!authResuelto) {
-      authResuelto = true;
-      if (!user) {
-        // Sin sesión confirmada — redirigir al login
-        window.location.href = 'index.html';
-        return;
-      }
-    } else {
-      // Disparos posteriores (reconexiones, cambios de estado)
-      if (!user && appIniciada) {
-        // Sesión expiró mientras estaba usando la app
-        window.location.href = 'index.html';
-        return;
-      }
-      if (!user || appIniciada) return;
+  // Esperar a que Firebase resuelva el estado de auth definitivamente
+  auth.authStateReady().then(async () => {
+    const user = auth.currentUser;
+    if (!user) {
+      window.location.href = 'index.html';
+      return;
     }
-
+    if (appIniciada) return;
     uid = user.uid;
 
     // Leer todas las empresas del usuario
@@ -2734,6 +2722,13 @@
       // Ir a bienvenida en lugar del dashboard
       // (iniciarApp no hace goTo, así que lo llamamos después)
       setTimeout(() => goTo('bienvenida'), 100);
+    }
+  });
+
+  // Detectar cierre de sesión DESPUÉS de que la app ya arrancó
+  onAuthStateChanged(auth, user => {
+    if (!user && appIniciada) {
+      window.location.href = 'index.html';
     }
   });
 
