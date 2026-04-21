@@ -406,9 +406,12 @@
     #page-bienvenida {
       background: linear-gradient(145deg, #1a3a6b 0%, #1e4d8c 45%, #2a5fa0 100%) !important;
       height:calc(100dvh - 26px);
-      min-height:calc(100dvh - 26px);
+      max-height:calc(100dvh - 26px);
       padding:0 !important;
       overflow:hidden;
+    }
+    body.dark #page-bienvenida {
+      background: linear-gradient(145deg, #141a28 0%, #1a2236 50%, #1e2a44 100%) !important;
     }
     #page-bienvenida.active {
       display:flex !important;
@@ -417,103 +420,74 @@
     .wc-wrap {
       flex:1; display:flex; flex-direction:column;
       justify-content:space-between;
-      padding:52px 64px 40px;
+      padding:clamp(20px,4vh,52px) clamp(20px,4vw,64px) clamp(16px,3vh,40px);
       max-width:900px; width:100%;
       margin:0 auto;
-      overflow:hidden;
+      min-height:0; overflow:hidden;
     }
     .wc-greeting {
       font-family:'Plus Jakarta Sans',sans-serif;
-      font-size:2.8rem; font-weight:800;
-      color:white; line-height:1.1; margin-bottom:6px;
+      font-size:clamp(1.6rem,3.5vh,2.8rem); font-weight:800;
+      color:white; line-height:1.1; margin-bottom:4px;
       letter-spacing:-.02em;
     }
-    .wc-date {
-      font-size:.85rem; color:rgba(255,255,255,.5);
-      margin-bottom:0; font-weight:400;
-    }
+    .wc-date { font-size:.82rem; color:rgba(255,255,255,.5); font-weight:400; }
     .wc-numbers {
-      display:grid; grid-template-columns:1fr 1fr 1fr;
-      gap:3px; margin-bottom:0;
+      display:grid; grid-template-columns:1fr 1fr 1fr; gap:3px;
     }
     .wc-num-card {
-      background:rgba(255,255,255,.07);
-      border:1px solid rgba(255,255,255,.1);
-      padding:24px 22px;
+      background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.1);
+      padding:clamp(12px,2.2vh,24px) clamp(12px,2vw,22px);
       transition:background .15s;
     }
     .wc-num-card:hover { background:rgba(255,255,255,.11); cursor:pointer; }
     .wc-num-label {
-      font-size:.65rem; font-weight:600; letter-spacing:.18em;
-      text-transform:uppercase; color:rgba(255,255,255,.45);
-      margin-bottom:10px;
+      font-size:.6rem; font-weight:600; letter-spacing:.18em;
+      text-transform:uppercase; color:rgba(255,255,255,.45); margin-bottom:8px;
     }
     .wc-num-val {
       font-family:'Plus Jakarta Sans',sans-serif;
-      font-size:2rem; font-weight:800; line-height:1;
-      color:white; margin-bottom:6px;
+      font-size:clamp(1.2rem,2.5vh,2rem); font-weight:800; line-height:1;
+      color:white; margin-bottom:4px;
     }
     .wc-num-val.positive { color:#7ecba1; }
     .wc-num-val.negative { color:#e07878; }
-    .wc-num-sub { font-size:.72rem; color:rgba(255,255,255,.4); }
-
-    /* Alertas */
-    .wc-alerts { display:flex; flex-direction:column; gap:8px; margin-bottom:0; }
+    .wc-num-sub { font-size:.65rem; color:rgba(255,255,255,.4); }
+    .wc-alerts { display:flex; flex-direction:column; gap:5px; }
     .wc-alert-item {
       display:flex; align-items:center; gap:12px;
-      background:rgba(255,255,255,.06);
-      border:1px solid rgba(255,255,255,.1);
-      padding:12px 16px; cursor:pointer;
+      background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.1);
+      padding:clamp(7px,1.4vh,12px) 14px; cursor:pointer;
       transition:background .15s;
     }
     .wc-alert-item:hover { background:rgba(255,255,255,.1); }
-    .wc-alert-icon { font-size:1rem; flex-shrink:0; }
-    .wc-alert-text { font-size:.82rem; color:rgba(255,255,255,.8); flex:1; }
-    .wc-alert-arrow { color:rgba(255,255,255,.3); font-size:.9rem; transition:color .15s; }
+    .wc-alert-icon { font-size:.9rem; flex-shrink:0; }
+    .wc-alert-text { font-size:.78rem; color:rgba(255,255,255,.8); flex:1; }
+    .wc-alert-arrow { color:rgba(255,255,255,.3); font-size:.85rem; }
     .wc-alert-item:hover .wc-alert-arrow { color:rgba(255,255,255,.7); }
-
-    /* Empresa activa (para multi-empresa) */
     .wc-empresa-btn {
       display:inline-flex; align-items:center; gap:8px;
       background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.2);
-      padding:6px 14px; border-radius:20px; cursor:pointer;
-      font-size:.75rem; color:rgba(255,255,255,.8);
-      font-family:'DM Sans',sans-serif; margin-bottom:52px;
-      transition:background .15s; max-width:fit-content;
+      padding:5px 13px; border-radius:20px; cursor:pointer;
+      font-size:.72rem; color:rgba(255,255,255,.8);
+      font-family:'DM Sans',sans-serif; transition:background .15s;
     }
     .wc-empresa-btn:hover { background:rgba(255,255,255,.16); }
     .wc-empresa-dot { width:6px; height:6px; background:#7ecba1; border-radius:50%; flex-shrink:0; }
-
-    /* Footer */
     .wc-footer {
-      padding:20px 64px 28px;
+      padding:clamp(10px,1.8vh,20px) clamp(20px,4vw,64px) clamp(12px,2.2vh,28px);
       display:flex; justify-content:space-between; align-items:center;
-      border-top:1px solid rgba(255,255,255,.08);
+      border-top:1px solid rgba(255,255,255,.08); flex-shrink:0;
     }
-    .wc-footer-cta {
-      font-family:'Plus Jakarta Sans',sans-serif;
-      font-size:.8rem; font-weight:600;
-      color:rgba(255,255,255,.4);
-    }
-    .wc-footer-brand {
-      display:flex; align-items:center; gap:7px;
-      font-size:.72rem; color:rgba(255,255,255,.3);
-    }
-
+    .wc-footer-cta { font-family:'Plus Jakarta Sans',sans-serif; font-size:.75rem; font-weight:600; color:rgba(255,255,255,.4); }
+    .wc-footer-brand { display:flex; align-items:center; gap:7px; font-size:.7rem; color:rgba(255,255,255,.3); }
     @media(max-width:900px){
-      #page-bienvenida { height:100dvh !important; min-height:100dvh !important; }
-      .wc-wrap { padding:36px 20px 20px; }
-      .wc-greeting { font-size:1.9rem; }
-      .wc-numbers { grid-template-columns:1fr 1fr; gap:3px; }
-      .wc-num-card { padding:18px 16px; }
-      .wc-num-val { font-size:1.4rem; }
-      .wc-footer { padding:14px 20px 20px; }
+      #page-bienvenida { height:100dvh !important; max-height:100dvh !important; }
+      .wc-numbers { grid-template-columns:1fr 1fr; }
     }
     @media(max-width:380px){
-      .wc-numbers { grid-template-columns:1fr; }
-      .wc-greeting { font-size:1.7rem; }
+      .wc-numbers { grid-template-columns:1fr 1fr; }
     }
-
     /* ── INSTRUCTIVO ── */
     .inst-overlay { display:none; position:fixed; inset:0; background:rgba(26,26,20,.5); backdrop-filter:blur(6px); z-index:10000; }
     .inst-overlay.open { display:flex; align-items:center; justify-content:center; padding:20px; }
