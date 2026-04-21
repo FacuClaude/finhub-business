@@ -2662,10 +2662,27 @@
 
   // ── AUTH ──
   let appIniciada = false;
+  let authResuelto = false;
 
   onAuthStateChanged(auth, async user => {
-    if (!user) { window.location.href = 'index.html'; return; }
-    if (appIniciada) return;
+    // Ignorar el primer disparo vacío que Firebase emite antes de resolver
+    if (!authResuelto) {
+      authResuelto = true;
+      if (!user) {
+        // Sin sesión confirmada — redirigir al login
+        window.location.href = 'index.html';
+        return;
+      }
+    } else {
+      // Disparos posteriores (reconexiones, cambios de estado)
+      if (!user && appIniciada) {
+        // Sesión expiró mientras estaba usando la app
+        window.location.href = 'index.html';
+        return;
+      }
+      if (!user || appIniciada) return;
+    }
+
     uid = user.uid;
 
     // Leer todas las empresas del usuario
