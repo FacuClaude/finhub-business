@@ -609,6 +609,33 @@
 
       /* ── P&L categorías ── */
       #rep-pl > div:nth-child(5) { grid-template-columns:1fr!important; }
+
+      /* ── CRM pipeline ── */
+      .crm-pipeline { grid-template-columns:1fr!important; gap:10px; }
+      .crm-col { min-height:auto; }
+      .crm-col-body { max-height:320px; overflow-y:auto; }
+
+      /* ── Presupuestos ── */
+      .presup-row { grid-template-columns:1fr 80px 80px; gap:0; font-size:.72rem; }
+      .presup-row > div:nth-child(4),
+      .presup-row > div:nth-child(5) { display:none; }
+      .presup-header { grid-template-columns:1fr 80px 80px; }
+      .presup-header > span:nth-child(4),
+      .presup-header > span:nth-child(5) { display:none; }
+      #page-presupuestos .cards-row { grid-template-columns:1fr 1fr!important; }
+
+      /* ── OC detalle ── */
+      .oc-timeline { gap:2px; }
+      .oc-step-label { font-size:.55rem; }
+      .oc-items-table th, .oc-items-table td { padding:5px 6px; font-size:.72rem; }
+      .oc-items-table th:nth-child(3),
+      .oc-items-table td:nth-child(3) { display:none; }
+
+      /* ── Inventario cards ── */
+      .inv-card { grid-template-columns:auto 1fr auto; gap:10px; padding:12px 14px; }
+
+      /* ── Vista rápida — grids inline ── */
+      #page-vistarapida .cards-row { grid-template-columns:1fr 1fr!important; }
     }
 
     /* ── Extra pequeño (iPhone SE, etc.) ── */
@@ -617,6 +644,16 @@
       #cuentas-grid { grid-template-columns:1fr; }
       .period-btn { font-size:.58rem; padding:5px 8px; }
       main { padding:64px 10px 20px 10px !important; }
+      #page-presupuestos .cards-row { grid-template-columns:1fr!important; }
+      .presup-row { grid-template-columns:1fr 70px; }
+      .presup-row > div:nth-child(3),
+      .presup-row > div:nth-child(4),
+      .presup-row > div:nth-child(5) { display:none; }
+      .presup-header > span:nth-child(3),
+      .presup-header > span:nth-child(4),
+      .presup-header > span:nth-child(5) { display:none; }
+      .presup-header { grid-template-columns:1fr 70px; }
+      #page-vistarapida .cards-row { grid-template-columns:1fr!important; }
     }
   </style>
 </head>
