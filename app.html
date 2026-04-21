@@ -328,18 +328,18 @@
     /* ── INSTRUCTIVO ── */
     .inst-overlay { display:none; position:fixed; inset:0; background:rgba(26,26,20,.5); backdrop-filter:blur(6px); z-index:500; }
     .inst-overlay.open { display:flex; align-items:center; justify-content:center; padding:20px; }
-    .inst-modal { background:var(--bg); border:1px solid var(--border); border-radius:8px; width:100%; max-width:900px; max-height:90vh; display:grid; grid-template-columns:220px 1fr; overflow:hidden; box-shadow:0 32px 80px rgba(0,0,0,.2); animation:slideUp .3s cubic-bezier(.16,1,.3,1); position:relative; }
-    .inst-nav { background:var(--surface); border-right:1px solid var(--border); padding:0; display:flex; flex-direction:column; overflow-y:auto; scrollbar-width:none; }
-    .inst-nav::-webkit-scrollbar { display:none; }
-    .inst-nav-header { padding:20px 18px 14px; border-bottom:1px solid var(--border); }
+    .inst-modal { background:var(--bg); border:1px solid var(--border); border-radius:8px; width:100%; max-width:900px; height:88vh; display:grid; grid-template-columns:220px 1fr; grid-template-rows:1fr; overflow:hidden; box-shadow:0 32px 80px rgba(0,0,0,.2); animation:slideUp .3s cubic-bezier(.16,1,.3,1); position:relative; }
+    .inst-nav { background:var(--surface); border-right:1px solid var(--border); padding:0; display:flex; flex-direction:column; overflow-y:auto; overflow-x:hidden; min-height:0; scrollbar-width:thin; scrollbar-color:var(--border) transparent; }
+    .inst-nav::-webkit-scrollbar { width:3px; } .inst-nav::-webkit-scrollbar-thumb { background:var(--border); border-radius:2px; }
+    .inst-nav-header { padding:20px 18px 14px; border-bottom:1px solid var(--border); flex-shrink:0; }
     .inst-nav-title { font-family:'Plus Jakarta Sans',sans-serif; font-size:.95rem; font-weight:700; color:var(--ink); margin-bottom:2px; }
     .inst-nav-sub { font-size:.68rem; color:var(--muted); }
     .inst-nav-item { display:flex; align-items:center; gap:8px; padding:9px 18px; cursor:pointer; font-size:.78rem; color:var(--ink2); transition:background .15s,color .15s; border-left:3px solid transparent; border-right:none; border-top:none; border-bottom:none; background:transparent; width:100%; text-align:left; font-family:'DM Sans',sans-serif; }
     .inst-nav-item:hover { background:var(--surface2); color:var(--ink); }
     .inst-nav-item.active { background:var(--accent-bg); color:var(--accent); border-left-color:var(--accent); font-weight:500; }
     .inst-nav-icon { font-size:.95rem; flex-shrink:0; }
-    .inst-content { overflow-y:auto; padding:32px 36px; scrollbar-width:none; }
-    .inst-content::-webkit-scrollbar { display:none; }
+    .inst-content { overflow-y:auto; overflow-x:hidden; padding:32px 36px; min-height:0; scrollbar-width:thin; scrollbar-color:var(--border) transparent; }
+    .inst-content::-webkit-scrollbar { width:3px; } .inst-content::-webkit-scrollbar-thumb { background:var(--border); border-radius:2px; }
     .inst-section { display:none; }
     .inst-section.active { display:block; }
     .inst-section-title { font-family:'Plus Jakarta Sans',sans-serif; font-size:1.5rem; font-weight:700; color:var(--ink); margin-bottom:6px; }
@@ -354,7 +354,7 @@
     .inst-divider { border:none; border-top:1px solid var(--border); margin:24px 0; }
     .inst-badge { display:inline-block; background:var(--surface2); border:1px solid var(--border); border-radius:4px; padding:2px 8px; font-size:.72rem; font-family:'DM Sans',sans-serif; color:var(--ink2); margin:0 2px; }
     @media(max-width:900px){
-      .inst-modal { grid-template-columns:1fr; max-height:95vh; }
+      .inst-modal { grid-template-columns:1fr; height:95vh; grid-template-rows:auto 1fr; }
       .inst-nav { flex-direction:row; overflow-x:auto; overflow-y:hidden; border-right:none; border-bottom:1px solid var(--border); }
       .inst-nav-header { display:none; }
       .inst-nav-item { white-space:nowrap; padding:12px 12px; border-left:none; border-bottom:3px solid transparent; font-size:.72rem; }
@@ -4672,7 +4672,30 @@
       .filter(a => (a.nombre||'').toLowerCase().includes(ql) || (a.notas||'').toLowerCase().includes(ql))
       .slice(0,5);
 
-    const total = txRes.length + ctRes.length + acRes.length;
+    // Buscar en CRM — oportunidades
+    const crmRes = Object.entries(oportunidades).map(([id,o])=>({id,...o}))
+      .filter(o => (o.nombre||'').toLowerCase().includes(ql) ||
+        (o.notas||'').toLowerCase().includes(ql) ||
+        (o.responsable||'').toLowerCase().includes(ql) ||
+        (o.clienteId && (contacts[o.clienteId]?.nombre||'').toLowerCase().includes(ql)))
+      .slice(0,8);
+
+    // Buscar en Inventario — productos
+    const invRes = Object.entries(productos).map(([id,p])=>({id,...p}))
+      .filter(p => (p.nombre||'').toLowerCase().includes(ql) ||
+        (p.sku||'').toLowerCase().includes(ql) ||
+        (p.categoria||'').toLowerCase().includes(ql) ||
+        (p.descripcion||'').toLowerCase().includes(ql))
+      .slice(0,8);
+
+    // Buscar en OC
+    const ocRes = Object.entries(ordenesCompra).map(([id,o])=>({id,...o}))
+      .filter(o => (o.numero||'').toLowerCase().includes(ql) ||
+        (o.notas||'').toLowerCase().includes(ql) ||
+        (o.proveedorId && (contacts[o.proveedorId]?.nombre||'').toLowerCase().includes(ql)))
+      .slice(0,5);
+
+    const total = txRes.length + ctRes.length + acRes.length + crmRes.length + invRes.length + ocRes.length;
     document.getElementById('busqueda-sub').textContent = total
       ? `${total} resultado${total!==1?'s':''} para "${q}"`
       : `Sin resultados para "${q}"`;
@@ -4723,13 +4746,67 @@
 
     if (acRes.length) {
       html += `<div class="section-header" style="margin-bottom:12px;"><div class="section-title">Cuentas (${acRes.length})</div></div>
-        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;">${acRes.map(a=>{
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-bottom:28px;">${acRes.map(a=>{
           const saldo = calcSaldoCuenta(a.id);
           const color = CUENTA_COLORS[a.tipo]||'var(--accent)';
           return `<div class="card" style="cursor:pointer;border-top:3px solid ${color};" onclick="goTo('cuentas')">
             <div style="font-size:1.2rem;margin-bottom:6px;">${CUENTA_ICONS[a.tipo]||'💳'}</div>
             <div style="font-size:.88rem;font-weight:500;color:var(--ink);">${highlight(a.nombre||'Sin nombre')}</div>
             <div style="font-family:'Plus Jakarta Sans',sans-serif;font-size:1.1rem;font-weight:600;color:${saldo>=0?color:'var(--red)'};margin-top:6px;">${fmt(saldo)}</div>
+          </div>`;
+        }).join('')}</div>`;
+    }
+
+    if (crmRes.length) {
+      const etapaLabel = {prospecto:'Prospecto',contactado:'Contactado',propuesta:'Propuesta',negociacion:'Negociación',ganado:'Ganado',perdido:'Perdido'};
+      const etapaColor = {prospecto:'#8b9aba',contactado:'var(--accent)',propuesta:'var(--accent2)',negociacion:'#e8b84b',ganado:'var(--green)',perdido:'var(--red)'};
+      html += `<div class="section-header" style="margin-bottom:12px;"><div class="section-title">CRM — Oportunidades (${crmRes.length})</div></div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;margin-bottom:28px;">${crmRes.map(o=>{
+          const cli = contacts[o.clienteId];
+          const color = etapaColor[o.etapa]||'var(--muted)';
+          return `<div class="card" style="cursor:pointer;border-left:4px solid ${color};" onclick="goTo('crm')">
+            <div style="font-size:.85rem;font-weight:600;color:var(--ink);margin-bottom:4px;">${highlight(o.nombre||'Sin nombre')}</div>
+            ${cli?`<div style="font-size:.72rem;color:var(--muted);margin-bottom:6px;">👤 ${esc(cli.nombre)}</div>`:''}
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+              <span style="font-size:.62rem;font-weight:700;padding:2px 8px;border-radius:3px;background:var(--surface2);color:var(--muted);">${etapaLabel[o.etapa]||o.etapa}</span>
+              <span style="font-size:.88rem;font-weight:700;color:var(--accent);font-family:'Plus Jakarta Sans',sans-serif;">${fmt(o.monto||0)}</span>
+            </div>
+          </div>`;
+        }).join('')}</div>`;
+    }
+
+    if (invRes.length) {
+      html += `<div class="section-header" style="margin-bottom:12px;"><div class="section-title">Inventario (${invRes.length})</div></div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px;margin-bottom:28px;">${invRes.map(p=>{
+          const stock = calcularStock(p.id);
+          const est = stock<=(p.stockMinimo||0)?'var(--red)':stock<=(p.stockMinimo||0)*1.5?'var(--accent2)':'var(--green)';
+          return `<div class="card" style="cursor:pointer;" onclick="goTo('inventario')">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;">
+              <div style="flex:1;">
+                <div style="font-size:.85rem;font-weight:600;color:var(--ink);margin-bottom:2px;">${highlight(p.nombre||'Sin nombre')}</div>
+                <div style="font-size:.68rem;color:var(--muted);">${p.sku?'SKU: '+esc(p.sku)+' · ':''}${p.categoria?esc(p.categoria):''}</div>
+              </div>
+              <div style="text-align:right;flex-shrink:0;">
+                <div style="font-size:1rem;font-weight:700;color:${est};">${stock}</div>
+                <div style="font-size:.62rem;color:var(--muted);">${esc(p.unidad||'u.')}</div>
+              </div>
+            </div>
+          </div>`;
+        }).join('')}</div>`;
+    }
+
+    if (ocRes.length) {
+      const ocEstadoLabel = {borrador:'Borrador',enviada:'Enviada',recibida:'Recibida',parcial:'Parcial',facturada:'Facturada',pagada:'Pagada'};
+      html += `<div class="section-header" style="margin-bottom:12px;"><div class="section-title">Órdenes de compra (${ocRes.length})</div></div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px;margin-bottom:28px;">${ocRes.map(o=>{
+          const prov = contacts[o.proveedorId];
+          return `<div class="card" style="cursor:pointer;" onclick="goTo('oc')">
+            <div style="font-size:.85rem;font-weight:600;color:var(--ink);margin-bottom:4px;">${highlight(o.numero||'s/n')}</div>
+            ${prov?`<div style="font-size:.72rem;color:var(--muted);margin-bottom:6px;">🏭 ${esc(prov.nombre)}</div>`:''}
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+              <span style="font-size:.62rem;font-weight:700;padding:2px 8px;border-radius:3px;background:var(--surface2);color:var(--muted);">${ocEstadoLabel[o.estado]||o.estado}</span>
+              <span style="font-size:.88rem;font-weight:700;color:var(--accent);font-family:'Plus Jakarta Sans',sans-serif;">${fmt(o.totalOC||0)}</span>
+            </div>
           </div>`;
         }).join('')}</div>`;
     }
