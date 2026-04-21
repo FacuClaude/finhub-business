@@ -840,6 +840,19 @@
     <div class="card" style="cursor:pointer;" onclick="goTo('inventario')"><div class="card-label" style="margin-bottom:10px;">📦 Stock crítico</div><div id="vr-stock"></div></div>
     <div class="card" style="cursor:pointer;" onclick="goTo('iva')"><div class="card-label" style="margin-bottom:10px;">🧾 IVA del mes</div><div id="vr-iva"></div></div>
   </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px;">
+    <div class="card" style="cursor:pointer;" onclick="goTo('crm')">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+        <div class="card-label">🤝 CRM — próximas a cerrar</div>
+        <span id="vr-crm-total" style="font-size:.68rem;color:var(--accent);font-weight:600;"></span>
+      </div>
+      <div id="vr-crm"></div>
+    </div>
+    <div class="card" style="cursor:pointer;" onclick="goTo('presupuestos')">
+      <div class="card-label" style="margin-bottom:10px;">📊 Presupuesto del mes</div>
+      <div id="vr-presup"></div>
+    </div>
+  </div>
   <div class="card">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
       <div class="card-label">📊 Últimos movimientos</div>
@@ -7069,6 +7082,82 @@
       <div style="font-size:.78rem;color:var(--ink2);margin-bottom:4px;">Débito: <strong>${fmt(ivaDeb)}</strong></div>
       <div style="font-size:.78rem;color:var(--ink2);margin-bottom:8px;">Crédito: <strong>${fmt(ivaCre)}</strong></div>
       <div style="font-size:.82rem;font-weight:600;color:${saldoIva>=0?'var(--red)':'var(--green)'};">${saldoIva>=0?'A pagar':'A favor'}: ${fmt(Math.abs(saldoIva))}</div>`;
+
+    // ── CRM: oportunidades próximas a cerrar ──
+    const etapaColorVR = {prospecto:'#8b9aba',contactado:'var(--accent)',propuesta:'var(--accent2)',negociacion:'#e8b84b',ganado:'var(--green)',perdido:'var(--red)'};
+    const hoyStr = hoy.toISOString().slice(0,10);
+    const opActivas = Object.values(oportunidades)
+      .filter(o => !['ganado','perdido'].includes(o.etapa))
+      .sort((a,b) => {
+        // Primero las que tienen fecha de cierre próxima, luego las de mayor monto
+        if (a.fechaCierre && b.fechaCierre) return a.fechaCierre.localeCompare(b.fechaCierre);
+        if (a.fechaCierre) return -1;
+        if (b.fechaCierre) return 1;
+        return (b.monto||0) - (a.monto||0);
+      }).slice(0,5);
+
+    const totalPipelineVR = Object.values(oportunidades)
+      .filter(o => !['ganado','perdido'].includes(o.etapa))
+      .reduce((s,o) => s+(o.monto||0), 0);
+
+    if(E('vr-crm-total')) E('vr-crm-total').textContent = fmt(totalPipelineVR);
+    if(E('vr-crm')) E('vr-crm').innerHTML = !opActivas.length
+      ? '<span style="color:var(--muted);font-size:.82rem;">Sin oportunidades activas</span>'
+      : opActivas.map(o => {
+          const cli = contacts[o.clienteId];
+          const dias = o.fechaCierre ? Math.ceil((new Date(o.fechaCierre)-hoy)/(1000*60*60*24)) : null;
+          const vencida = dias !== null && dias < 0;
+          const color = etapaColorVR[o.etapa]||'var(--muted)';
+          return `<div style="padding:6px 0;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;gap:8px;">
+            <div style="flex:1;min-width:0;">
+              <div style="font-size:.78rem;font-weight:500;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${esc(o.nombre||'Sin nombre')}</div>
+              <div style="font-size:.65rem;color:var(--muted);">${cli?esc(cli.nombre)+'  · ':''}<span style="color:${color};">${o.etapa}</span></div>
+            </div>
+            <div style="text-align:right;flex-shrink:0;">
+              <div style="font-size:.78rem;font-weight:700;color:var(--accent);">${fmt(o.monto||0)}</div>
+              ${dias!==null?`<div style="font-size:.62rem;color:${vencida?'var(--red)':'var(--muted)'};">${vencida?'⚠️ Vencida':dias+'d'}</div>`:''}
+            </div>
+          </div>`;
+        }).join('');
+
+    // ── Presupuesto del mes ──
+    const budgetMes = presupuestos[mesActual] || { ing:{}, gast:{} };
+    const totalBudgIng  = Object.values(budgetMes.ing  || {}).reduce((s,v)=>s+v,0);
+    const totalBudgGast = Object.values(budgetMes.gast || {}).reduce((s,v)=>s+v,0);
+    const pctIngVR  = totalBudgIng  > 0 ? Math.round(ing /totalBudgIng *100) : null;
+    const pctGastVR = totalBudgGast > 0 ? Math.round(gast/totalBudgGast*100) : null;
+    const barIng  = pctIngVR  !== null ? Math.min(pctIngVR, 100)  : 0;
+    const barGast = pctGastVR !== null ? Math.min(pctGastVR, 100) : 0;
+    const colorIng  = pctIngVR  === null ? 'var(--muted)' : pctIngVR  >= 90 ? 'var(--green)' : pctIngVR  >= 60 ? '#e8b84b' : 'var(--red)';
+    const colorGast = pctGastVR === null ? 'var(--muted)' : pctGastVR > 110 ? 'var(--red)'   : pctGastVR > 90  ? '#e8b84b' : 'var(--green)';
+
+    if(E('vr-presup')) {
+      if (!totalBudgIng && !totalBudgGast) {
+        E('vr-presup').innerHTML = `<div style="font-size:.78rem;color:var(--muted);">Sin presupuesto cargado para este mes.<br><span onclick="goTo('presupuestos')" style="color:var(--accent);cursor:pointer;text-decoration:underline;">Cargar presupuesto →</span></div>`;
+      } else {
+        E('vr-presup').innerHTML = `
+          <div style="margin-bottom:10px;">
+            <div style="display:flex;justify-content:space-between;font-size:.72rem;color:var(--ink2);margin-bottom:4px;">
+              <span>Ingresos</span>
+              <span style="color:${colorIng};font-weight:600;">${pctIngVR!==null?pctIngVR+'%':'—'}</span>
+            </div>
+            <div style="height:5px;background:var(--border);border-radius:3px;">
+              <div style="height:100%;width:${barIng}%;background:${colorIng};border-radius:3px;transition:width .4s;"></div>
+            </div>
+            <div style="font-size:.65rem;color:var(--muted);margin-top:2px;">${fmt(ing)} de ${fmt(totalBudgIng)}</div>
+          </div>
+          <div>
+            <div style="display:flex;justify-content:space-between;font-size:.72rem;color:var(--ink2);margin-bottom:4px;">
+              <span>Gastos</span>
+              <span style="color:${colorGast};font-weight:600;">${pctGastVR!==null?pctGastVR+'%':'—'}</span>
+            </div>
+            <div style="height:5px;background:var(--border);border-radius:3px;">
+              <div style="height:100%;width:${barGast}%;background:${colorGast};border-radius:3px;transition:width .4s;"></div>
+            </div>
+            <div style="font-size:.65rem;color:var(--muted);margin-top:2px;">${fmt(gast)} de ${fmt(totalBudgGast)}</div>
+          </div>`;
+      }
+    }
 
     // Últimos movimientos
     const ultimos = [...txArr].sort((a,b)=>(b.date||'')>(a.date||'')?1:-1).slice(0,6);
