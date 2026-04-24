@@ -5638,9 +5638,9 @@
       // Deducciones adicionales manuales
       if (liq.totalDeducAdicional > 0) {
         filas += '<tr class="section-row"><td colspan="3">OTRAS DEDUCCIONES (ingreso manual)</td></tr>';
-        if (liq.retGanancias > 0) filas += `<tr><td>Retención Imp. Ganancias 4ª Cat. <span style="font-size:.62rem;color:#888;">(manual)</span></td><td></td><td style="color:#b85050;">-${f(liq.retGanancias)}</td></tr>`;
-        if (liq.retEmbargo   > 0) filas += `<tr><td>Embargo / Cuota alimentaria <span style="font-size:.62rem;color:#888;">(manual)</span></td><td></td><td style="color:#b85050;">-${f(liq.retEmbargo)}</td></tr>`;
-        if (liq.retOtra      > 0) filas += `<tr><td>Otra deducción <span style="font-size:.62rem;color:#888;">(manual)</span></td><td></td><td style="color:#b85050;">-${f(liq.retOtra)}</td></tr>`;
+        if (liq.retGanancias > 0) filas += `<tr><td colspan="2">Retención Imp. Ganancias 4ª Cat. <span style="font-size:.62rem;color:#888;">(manual)</span></td><td style="color:#b85050;">-${f(liq.retGanancias)}</td></tr>`;
+        if (liq.retEmbargo   > 0) filas += `<tr><td colspan="2">Embargo / Cuota alimentaria <span style="font-size:.62rem;color:#888;">(manual)</span></td><td style="color:#b85050;">-${f(liq.retEmbargo)}</td></tr>`;
+        if (liq.retOtra      > 0) filas += `<tr><td colspan="2">Otra deducción <span style="font-size:.62rem;color:#888;">(manual)</span></td><td style="color:#b85050;">-${f(liq.retOtra)}</td></tr>`;
         filas += `<tr class="subtotal-row"><td colspan="2"><strong>Total otras deducciones</strong></td><td style="color:#b85050;"><strong>-${f(liq.totalDeducAdicional)}</strong></td></tr>`;
       }
     }
@@ -5691,6 +5691,11 @@
         <div class="recibo-emp-field"><span class="recibo-emp-label">Contrato:</span><span>${emp.contrato==='indefinido'?'Tiempo indeterminado':emp.contrato||'—'}</span></div>
       </div>
       <table class="recibo-table">
+        <colgroup>
+          <col style="width:55%"/>
+          <col style="width:25%"/>
+          <col style="width:20%"/>
+        </colgroup>
         <thead><tr><th>Concepto</th><th>Detalle</th><th>Importe</th></tr></thead>
         <tbody>${filas}</tbody>
       </table>
@@ -5710,7 +5715,7 @@
   }
 
   window.setRrhhTab = function(tab, btn) {
-    ['empleados','liquidacion','config'].forEach(t => {
+    ['empleados','liquidacion','licencias','config'].forEach(t => {
       const el = document.getElementById('rrhh-' + t);
       if (el) el.style.display = t === tab ? 'block' : 'none';
     });
