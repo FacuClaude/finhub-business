@@ -2977,6 +2977,16 @@
     visualizador:{ verTodo:true,  editarMovimientos:false, editarCuentas:false, editarContactos:false, verReportes:true,  exportar:false, verRRHH:false, editarRRHH:false, gestionarUsuarios:false, configurar:false },
   };
 
+  function resolverRol(rolData) {
+    // Normalizar: puede ser string "admin" o un objeto {tipoRol:'admin', ...}
+    const tipoRol = typeof rolData === 'string' ? rolData : (rolData?.tipoRol || 'visualizador');
+    const base    = PERMISOS_DEFAULT[tipoRol] || PERMISOS_DEFAULT.visualizador;
+    // Fusionar con datos de Firebase (permite overrides por usuario)
+    return typeof rolData === 'object'
+      ? { ...base, ...rolData, tipoRol }
+      : { ...base, tipoRol };
+  }
+
   function puedo(permiso) {
     if (!miRol) return false;
     return miRol[permiso] === true;
@@ -3031,11 +3041,11 @@
       const ultimaEmpresa = localStorage.getItem(`finhub-last-empresa-${uid}`);
       if (ultimaEmpresa && todasEmpresas[ultimaEmpresa]) {
         empresaId = ultimaEmpresa;
-        miRol = todasEmpresas[ultimaEmpresa];
+        miRol = resolverRol(todasEmpresas[ultimaEmpresa]);
       } else {
         // Primera vez — usar la primera empresa disponible
         empresaId = ids[0];
-        miRol = todasEmpresas[ids[0]];
+        miRol = resolverRol(todasEmpresas[ids[0]]);
         localStorage.setItem(`finhub-last-empresa-${uid}`, empresaId);
       }
 
@@ -6491,7 +6501,7 @@
 
   window.cambiarEmpresa = function(nuevoEmpresaId, nuevoRol) {
     empresaId = nuevoEmpresaId;
-    miRol     = nuevoRol;
+    miRol     = resolverRol(nuevoRol);
     // Recordar para el próximo login
     if (uid) localStorage.setItem(`finhub-last-empresa-${uid}`, empresaId);
 
