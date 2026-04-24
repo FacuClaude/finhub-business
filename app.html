@@ -1640,6 +1640,7 @@
 <div style="display:flex;margin-bottom:28px;border:1px solid var(--border);width:fit-content;border-radius:4px;overflow:hidden;">
 <button class="period-btn active" id="rrhh-tab-empleados" onclick="setRrhhTab('empleados',this)">👥 Empleados</button>
 <button class="period-btn" id="rrhh-tab-liquidacion" onclick="setRrhhTab('liquidacion',this)">💰 Liquidación</button>
+<button class="period-btn" id="rrhh-tab-licencias" onclick="setRrhhTab('licencias',this)">📅 Licencias</button>
 <button class="period-btn" id="rrhh-tab-config" onclick="setRrhhTab('config',this)">⚙️ Configuración</button>
 </div>
 <!-- ── EMPLEADOS ── -->
@@ -1724,6 +1725,111 @@
           Seleccioná un empleado y período para generar el recibo.
         </div>
 </div>
+<!-- ── LICENCIAS ── -->
+<div id="rrhh-licencias" style="display:none;">
+
+  <!-- Aviso -->
+  <div style="background:rgba(30,77,140,.06);border:1px solid rgba(30,77,140,.15);border-left:3px solid var(--accent);padding:12px 16px;margin-bottom:20px;font-size:.78rem;color:var(--ink2);line-height:1.6;">
+    💡 <strong>Licencias LCT:</strong> registrá ausencias y licencias por empleado. El sistema descuenta automáticamente los días del sueldo mensual cuando corresponde, y trackea el cupo disponible de cada tipo.
+  </div>
+
+  <!-- Selector empleado + botón nueva licencia -->
+  <div class="section-header" style="margin-bottom:20px;">
+    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+      <select id="lic-empleado-sel" onchange="renderLicencias()" style="padding:8px 14px;font-size:.82rem;min-width:200px;">
+        <option value="">— Todos los empleados —</option>
+      </select>
+      <select id="lic-tipo-filtro" onchange="renderLicencias()" style="padding:8px 14px;font-size:.82rem;">
+        <option value="">Todos los tipos</option>
+        <option value="enfermedad">Enfermedad / accidente</option>
+        <option value="maternidad">Maternidad</option>
+        <option value="paternidad">Paternidad</option>
+        <option value="matrimonio">Matrimonio</option>
+        <option value="fallecimiento">Fallecimiento familiar</option>
+        <option value="examen">Examen / estudio</option>
+        <option value="vacaciones_extra">Vacaciones adicionales</option>
+        <option value="injustificada">Inasistencia injustificada</option>
+        <option value="otra">Otra</option>
+      </select>
+    </div>
+    <button class="btn-primary" onclick="openModal('nueva-licencia')">+ Nueva licencia</button>
+  </div>
+
+  <!-- Resumen cupos por empleado -->
+  <div id="lic-cupos-wrap" style="margin-bottom:24px;"></div>
+
+  <!-- Tabla de licencias -->
+  <div id="lic-tabla-wrap">
+    <div style="background:var(--surface);border:1px solid var(--border);">
+      <div style="display:grid;grid-template-columns:160px 1fr 80px 80px 100px 120px 80px;padding:8px 14px;font-size:.6rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);border-bottom:2px solid var(--border);gap:8px;">
+        <span>Empleado</span><span>Tipo</span><span>Desde</span><span>Hasta</span><span>Días</span><span>Pago</span><span></span>
+      </div>
+      <div id="lic-tabla"></div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: NUEVA LICENCIA -->
+<div class="overlay" id="modal-nueva-licencia" onclick="closeModal('nueva-licencia')">
+  <div class="modal" onclick="event.stopPropagation()" style="max-width:500px;">
+    <div class="modal-title">Registrar licencia</div>
+
+    <div style="background:rgba(193,122,74,.07);border:1px solid rgba(193,122,74,.2);padding:10px 14px;margin-bottom:16px;font-size:.75rem;color:var(--ink2);line-height:1.55;">
+      ⚠️ Las licencias marcadas como <strong>paga</strong> no descuentan días del sueldo mensual. Las <strong>no pagas</strong> y las inasistencias injustificadas sí descuentan en la liquidación del mes correspondiente.
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+      <div class="field" style="grid-column:1/-1;">
+        <label>Empleado</label>
+        <select id="lic-emp-modal"></select>
+      </div>
+      <div class="field" style="grid-column:1/-1;">
+        <label>Tipo de licencia</label>
+        <select id="lic-tipo-modal" onchange="actualizarInfoLicencia()">
+          <option value="enfermedad">Enfermedad / accidente inculpable</option>
+          <option value="maternidad">Maternidad (90 días)</option>
+          <option value="paternidad">Paternidad (2 días)</option>
+          <option value="matrimonio">Matrimonio (10 días)</option>
+          <option value="fallecimiento">Fallecimiento familiar</option>
+          <option value="examen">Examen / estudio</option>
+          <option value="vacaciones_extra">Vacaciones adicionales</option>
+          <option value="injustificada">Inasistencia injustificada</option>
+          <option value="otra">Otra</option>
+        </select>
+      </div>
+      <div id="lic-info-box" style="grid-column:1/-1;background:var(--surface);border:1px solid var(--border);padding:10px 14px;font-size:.75rem;color:var(--muted);line-height:1.6;display:none;"></div>
+      <div class="field">
+        <label>Fecha desde</label>
+        <input type="date" id="lic-desde" onchange="calcularDiasLicencia()"/>
+      </div>
+      <div class="field">
+        <label>Fecha hasta</label>
+        <input type="date" id="lic-hasta" onchange="calcularDiasLicencia()"/>
+      </div>
+      <div class="field">
+        <label>Días hábiles</label>
+        <input type="number" id="lic-dias" min="1" placeholder="0" readonly style="background:var(--surface);"/>
+      </div>
+      <div class="field">
+        <label>¿Licencia paga?</label>
+        <select id="lic-paga">
+          <option value="si">Sí — no descuenta del sueldo</option>
+          <option value="no">No — descuenta del sueldo</option>
+        </select>
+      </div>
+      <div class="field" style="grid-column:1/-1;">
+        <label>Notas (opcional)</label>
+        <input type="text" id="lic-notas" placeholder="Ej: Certificado médico presentado"/>
+      </div>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn-secondary" onclick="closeModal('nueva-licencia')" style="flex:1">Cancelar</button>
+      <button class="btn-primary" onclick="guardarLicencia()" style="flex:2">Guardar licencia</button>
+    </div>
+  </div>
+</div>
+
 <!-- ── CONFIGURACIÓN ── -->
 <div id="rrhh-config" style="display:none;">
 <div style="max-width:680px;">
@@ -2768,6 +2874,7 @@
     loadOC();
     loadCRM();
     loadPresupuestos();
+    loadLicencias();
     setTimeout(actualizarTicker, 2000);
     setTimeout(checkOnboarding, 1500);
   }
@@ -3095,6 +3202,12 @@
       ocItemsEditor = [];
       renderOCItemsEditor();
       populateProveedorSelectOC();
+    }
+    if(name==='nueva-licencia'){
+      populateLicEmpModal();
+      actualizarInfoLicencia();
+      ['lic-desde','lic-hasta','lic-notas'].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=''; });
+      const diasEl=document.getElementById('lic-dias'); if(diasEl) diasEl.value='';
     }
     if(name==='presup-editar'){
       renderEditorPresupuesto();
@@ -5414,12 +5527,16 @@
     const aSindical   = totalRemunerativo * cfg.sindical / 100;
     const totalAportes = aJubilacion + aObraSocial + aPami + aSindical;
 
+    // Descuento por licencias no pagas (solo liquidación mensual)
+    const diasNoRemunerados = tipo === 'mensual' ? getDiasADescontar(emp.id || emp._id, periodo) : 0;
+    const descuentoLicencia = diasNoRemunerados > 0 ? (totalRemunerativo / 30) * diasNoRemunerados : 0;
+
     // Neto del empleado
     const retGanancias  = parseFloat(document.getElementById('liq-ganancias')?.value)       || 0;
     const retEmbargo    = parseFloat(document.getElementById('liq-embargo')?.value)          || 0;
     const retOtra       = parseFloat(document.getElementById('liq-otra-deduccion')?.value)   || 0;
     const totalDeducAdicional = retGanancias + retEmbargo + retOtra;
-    const neto = totalRemunerativo - totalAportes - totalDeducAdicional;
+    const neto = totalRemunerativo - totalAportes - totalDeducAdicional - descuentoLicencia;
 
     // Contribuciones patronales
     const cJubilacion  = totalRemunerativo * cfg.jubilacion_pat / 100;
@@ -5470,6 +5587,7 @@
       bruto, adicAntiguedad, adicPresentismo, totalRemunerativo,
       aJubilacion, aObraSocial, aPami, aSindical, totalAportes,
       retGanancias, retEmbargo, retOtra, totalDeducAdicional,
+      diasNoRemunerados, descuentoLicencia,
       neto,
       cJubilacion, cObraSocial, cPami, cAsigFam, cArt, cDesempleo, totalContrib, costoTotal,
       años, cfg, conceptosEspeciales, tipo, periodo
@@ -5510,6 +5628,12 @@
       filas += `<tr><td>PAMI (${cfg.pami_emp}%)</td><td></td><td style="color:#b85050;">-${f(liq.aPami)}</td></tr>`;
       if (liq.aSindical > 0) filas += `<tr><td>Aporte sindical (${cfg.sindical}%)</td><td></td><td style="color:#b85050;">-${f(liq.aSindical)}</td></tr>`;
       filas += `<tr class="subtotal-row"><td colspan="2"><strong>Total aportes</strong></td><td style="color:#b85050;"><strong>-${f(liq.totalAportes)}</strong></td></tr>`;
+
+      // Descuento por licencias no pagas
+      if (liq.diasNoRemunerados > 0) {
+        filas += '<tr class="section-row"><td colspan="3">DESCUENTOS POR LICENCIAS NO REMUNERADAS</td></tr>';
+        filas += `<tr><td>Días sin remuneración (${liq.diasNoRemunerados} días × ${f(liq.totalRemunerativo/30)}/día)</td><td></td><td style="color:#b85050;">-${f(liq.descuentoLicencia)}</td></tr>`;
+      }
 
       // Deducciones adicionales manuales
       if (liq.totalDeducAdicional > 0) {
@@ -5595,6 +5719,7 @@
     if (tab === 'config') cargarConfigUI();
     if (tab === 'liquidacion') { populateEmpleadoSelect(); const now = new Date(); document.getElementById('liq-periodo').value = now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0'); }
     if (tab === 'empleados') renderEmpleados();
+    if (tab === 'licencias') { populateLicEmpModal(); renderLicencias(); }
   };
 
   window.renderRRHH = function() {
@@ -6051,7 +6176,7 @@
     if (uid) localStorage.setItem(`finhub-last-empresa-${uid}`, empresaId);
 
     // Limpiar estado local
-    transactions = {}; contacts = {}; accounts = {}; empleados = {}; productos = {}; movStock = {}; ordenesCompra = {}; oportunidades = {}; presupuestos = {};
+    transactions = {}; contacts = {}; accounts = {}; empleados = {}; productos = {}; movStock = {}; ordenesCompra = {}; oportunidades = {}; presupuestos = {}; licencias = {};
 
     // Actualizar nombre en el switcher
     onValue(ref(db, `empresas/${empresaId}/info`), snap => {
@@ -8478,6 +8603,195 @@
     // Cache de info de empresas para la bienvenida
   let empresasInfo = {};
   let misEmpresasPermisos = {};
+
+
+  // ══════════════════════════════════════════════════
+  // LICENCIAS
+  // ══════════════════════════════════════════════════
+  let licencias = {};
+
+  const LIC_TIPOS = {
+    enfermedad:      { label:'Enfermedad / accidente inculpable', paga:'si', cupo:'Según antigüedad: hasta 3 meses (menos de 5 años) o 6 meses (5+ años). Con familia a cargo: el doble.' },
+    maternidad:      { label:'Maternidad', paga:'si', cupo:'90 días (45 antes + 45 después del parto).' },
+    paternidad:      { label:'Paternidad', paga:'si', cupo:'2 días corridos.' },
+    matrimonio:      { label:'Matrimonio', paga:'si', cupo:'10 días corridos.' },
+    fallecimiento:   { label:'Fallecimiento familiar', paga:'si', cupo:'3 días (cónyuge, hijo, padre/madre) · 1 día (hermano, suegro/a).' },
+    examen:          { label:'Examen / estudio', paga:'si', cupo:'2 días por examen, máximo 10 días por año.' },
+    vacaciones_extra:{ label:'Vacaciones adicionales', paga:'si', cupo:'Días adicionales acordados por la empresa.' },
+    injustificada:   { label:'Inasistencia injustificada', paga:'no', cupo:'Descuenta del sueldo. Puede ser causal de despido con causa.' },
+    otra:            { label:'Otra licencia', paga:'si', cupo:'Definida por la empresa o convenio colectivo.' },
+  };
+
+  function loadLicencias() {
+    onValue(ref(db, `empresas/${empresaId}/licencias`), snap => {
+      licencias = snap.val() || {};
+      renderLicencias();
+    });
+  }
+
+  window.actualizarInfoLicencia = function() {
+    const tipo = document.getElementById('lic-tipo-modal')?.value;
+    const info = LIC_TIPOS[tipo];
+    const box  = document.getElementById('lic-info-box');
+    if (!box || !info) return;
+    box.style.display = 'block';
+    box.innerHTML = `<strong>${info.label}</strong><br>${info.cupo}`;
+    const selPaga = document.getElementById('lic-paga');
+    if (selPaga) selPaga.value = info.paga;
+  };
+
+  window.calcularDiasLicencia = function() {
+    const desde = document.getElementById('lic-desde')?.value;
+    const hasta = document.getElementById('lic-hasta')?.value;
+    if (!desde || !hasta) return;
+    const d1 = new Date(desde + 'T12:00:00');
+    const d2 = new Date(hasta + 'T12:00:00');
+    if (d2 < d1) { document.getElementById('lic-dias').value = ''; return; }
+    // Contar días corridos (incluyendo fines de semana, por LCT)
+    const diff = Math.round((d2 - d1) / (1000*60*60*24)) + 1;
+    document.getElementById('lic-dias').value = diff;
+  };
+
+  function populateLicEmpModal() {
+    const sel = document.getElementById('lic-emp-modal'); if (!sel) return;
+    sel.innerHTML = '<option value="">— Seleccioná empleado —</option>' +
+      Object.entries(empleados).filter(([,e])=>e.estado==='activo')
+        .map(([id,e])=>`<option value="${id}">${esc(e.nombre||'')}</option>`).join('');
+  }
+
+  function populateLicEmpSel() {
+    const sel = document.getElementById('lic-empleado-sel'); if (!sel) return;
+    const current = sel.value;
+    sel.innerHTML = '<option value="">— Todos los empleados —</option>' +
+      Object.entries(empleados).map(([id,e])=>`<option value="${id}" ${id===current?'selected':''}>${esc(e.nombre||'')}</option>`).join('');
+  }
+
+  window.renderLicencias = function() {
+    populateLicEmpSel();
+    const filtEmp  = document.getElementById('lic-empleado-sel')?.value  || '';
+    const filtTipo = document.getElementById('lic-tipo-filtro')?.value   || '';
+
+    const arr = Object.entries(licencias).map(([id,l])=>({id,...l}))
+      .sort((a,b) => (b.desde||'') > (a.desde||'') ? 1 : -1);
+
+    // ── Cupos por empleado ──
+    const cuposWrap = document.getElementById('lic-cupos-wrap');
+    if (cuposWrap && filtEmp) {
+      const emp  = empleados[filtEmp]; if (!emp) { cuposWrap.innerHTML=''; return; }
+      const años = getAntigüedad(emp.ingreso);
+      const misLics = arr.filter(l => l.empId === filtEmp);
+      const usados = (tipo) => misLics.filter(l=>l.tipo===tipo).reduce((s,l)=>s+(l.dias||0),0);
+      const cupoEnfermedad = años < 5 ? 90 : 180; // días
+      const cupoExamen = 10;
+
+      cuposWrap.innerHTML = `
+        <div style="background:var(--surface);border:1px solid var(--border);padding:16px 18px;margin-bottom:4px;">
+          <div style="font-size:.62rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:12px;">Cupos anuales — ${esc(emp.nombre||'')}</div>
+          <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px;">
+            ${[
+              { tipo:'enfermedad', label:'Enfermedad', cupo:cupoEnfermedad },
+              { tipo:'maternidad', label:'Maternidad', cupo:90 },
+              { tipo:'paternidad', label:'Paternidad', cupo:2 },
+              { tipo:'matrimonio', label:'Matrimonio', cupo:10 },
+              { tipo:'examen',     label:'Exámenes',   cupo:cupoExamen },
+            ].map(({tipo,label,cupo})=>{
+              const usado = usados(tipo);
+              const pct   = Math.min(Math.round(usado/cupo*100),100);
+              const color = pct>=100?'var(--red)':pct>=80?'var(--accent2)':'var(--green)';
+              return `<div style="background:var(--bg);border:1px solid var(--border);padding:12px 14px;">
+                <div style="font-size:.65rem;font-weight:600;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:6px;">${label}</div>
+                <div style="font-size:.88rem;font-weight:700;color:${color};">${usado} / ${cupo} días</div>
+                <div style="height:4px;background:var(--border);border-radius:2px;margin-top:6px;">
+                  <div style="height:100%;width:${pct}%;background:${color};border-radius:2px;"></div>
+                </div>
+              </div>`;
+            }).join('')}
+          </div>
+        </div>`;
+    } else if (cuposWrap) {
+      cuposWrap.innerHTML = '';
+    }
+
+    // ── Tabla ──
+    const tabla = document.getElementById('lic-tabla'); if (!tabla) return;
+    const filtered = arr.filter(l =>
+      (!filtEmp  || l.empId === filtEmp) &&
+      (!filtTipo || l.tipo  === filtTipo)
+    );
+
+    if (!filtered.length) {
+      tabla.innerHTML = `<div style="padding:32px;text-align:center;color:var(--muted);font-size:.82rem;">
+        ${arr.length ? 'Sin resultados para los filtros seleccionados.' : 'Sin licencias registradas. Usá + Nueva licencia para agregar.'}
+      </div>`; return;
+    }
+
+    tabla.innerHTML = filtered.map(l => {
+      const emp  = empleados[l.empId];
+      const tipo = LIC_TIPOS[l.tipo] || { label: l.tipo };
+      const paga = l.paga === 'si';
+      return `<div style="display:grid;grid-template-columns:160px 1fr 80px 80px 100px 120px 80px;padding:10px 14px;gap:8px;border-bottom:1px solid var(--border);font-size:.78rem;align-items:center;">
+        <div style="font-weight:500;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${esc(emp?.nombre||'—')}</div>
+        <div style="color:var(--ink2);">${esc(tipo.label)}</div>
+        <div style="color:var(--muted);">${l.desde||'—'}</div>
+        <div style="color:var(--muted);">${l.hasta||'—'}</div>
+        <div style="font-weight:600;color:var(--ink);">${l.dias||'—'} días</div>
+        <div><span style="font-size:.62rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:2px 8px;border-radius:10px;background:${paga?'rgba(45,106,79,.1)':'rgba(155,48,48,.1)'};color:${paga?'var(--green)':'var(--red)'};">${paga?'Paga':'No paga'}</span></div>
+        <div style="display:flex;gap:4px;">
+          <button onclick="eliminarLicencia('${l.id}')" style="font-size:.6rem;padding:3px 8px;background:var(--red-bg);color:var(--red);border:1px solid var(--red);cursor:pointer;border-radius:3px;font-family:'DM Sans',sans-serif;">✕</button>
+        </div>
+      </div>`;
+    }).join('');
+  };
+
+  window.guardarLicencia = async function() {
+    const empId = document.getElementById('lic-emp-modal')?.value;
+    const tipo  = document.getElementById('lic-tipo-modal')?.value;
+    const desde = document.getElementById('lic-desde')?.value;
+    const hasta = document.getElementById('lic-hasta')?.value;
+    const dias  = parseInt(document.getElementById('lic-dias')?.value) || 0;
+    const paga  = document.getElementById('lic-paga')?.value || 'si';
+    const notas = document.getElementById('lic-notas')?.value?.trim() || '';
+
+    if (!empId) { toastErr('Seleccioná un empleado.'); return; }
+    if (!tipo)  { toastErr('Seleccioná el tipo de licencia.'); return; }
+    if (!desde || !hasta) { toastErr('Ingresá las fechas.'); return; }
+    if (dias < 1) { toastErr('Los días deben ser mayor a 0.'); return; }
+
+    const data = { empId, tipo, desde, hasta, dias, paga, notas, createdAt: Date.now() };
+    await push(ref(db, `empresas/${empresaId}/licencias`), data);
+    closeModal('nueva-licencia');
+    toastOk(`Licencia registrada — ${dias} día${dias!==1?'s':''}`);
+  };
+
+  window.eliminarLicencia = async function(id) {
+    if (!confirm('¿Eliminar esta licencia?')) return;
+    await remove(ref(db, `empresas/${empresaId}/licencias/${id}`));
+    toastOk('Licencia eliminada');
+  };
+
+  // ── Integración con liquidación: días a descontar ──
+  window.getDiasADescontar = function(empId, anioMes) {
+    // Retorna los días no pagos de ese empleado en el período
+    if (!empId || !anioMes) return 0;
+    const [año, mes] = anioMes.split('-').map(Number);
+    const primerDia = new Date(año, mes-1, 1);
+    const ultimoDia = new Date(año, mes, 0);
+
+    return Object.values(licencias).filter(l => {
+      if (l.empId !== empId) return false;
+      if (l.paga === 'si') return false; // pagas no descuentan
+      if (!l.desde || !l.hasta) return false;
+      const d1 = new Date(l.desde + 'T12:00:00');
+      const d2 = new Date(l.hasta + 'T12:00:00');
+      // Intersecci  ón con el mes
+      return d1 <= ultimoDia && d2 >= primerDia;
+    }).reduce((s, l) => {
+      // Calcular días que caen dentro del mes
+      const d1 = new Date(Math.max(new Date(l.desde+'T12:00:00'), primerDia));
+      const d2 = new Date(Math.min(new Date(l.hasta+'T12:00:00'), ultimoDia));
+      return s + Math.round((d2-d1)/(1000*60*60*24)) + 1;
+    }, 0);
+  };
 
   // ── NAV ──
   const ADMIN_SECTIONS = ['contador','asesor','rrhh','usuarios'];
