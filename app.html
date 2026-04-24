@@ -1762,7 +1762,7 @@
   <!-- Tabla de licencias -->
   <div id="lic-tabla-wrap">
     <div style="background:var(--surface);border:1px solid var(--border);">
-      <div style="display:grid;grid-template-columns:160px 1fr 80px 80px 100px 120px 80px;padding:8px 14px;font-size:.6rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);border-bottom:2px solid var(--border);gap:8px;">
+      <div style="display:grid;grid-template-columns:160px 1fr 80px 80px 100px 120px 150px;padding:8px 14px;font-size:.6rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);border-bottom:2px solid var(--border);gap:8px;">
         <span>Empleado</span><span>Tipo</span><span>Desde</span><span>Hasta</span><span>Días</span><span>Pago</span><span></span>
       </div>
       <div id="lic-tabla"></div>
@@ -3354,6 +3354,7 @@
       populateCapEmpleadosCheck([]);
     }
     if(name==='nueva-licencia'){
+      window._editingLicId = null;
       populateLicEmpModal();
       actualizarInfoLicencia();
       ['lic-desde','lic-hasta','lic-notas'].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=''; });
@@ -8885,18 +8886,43 @@
       const emp  = empleados[l.empId];
       const tipo = LIC_TIPOS[l.tipo] || { label: l.tipo };
       const paga = l.paga === 'si';
-      return `<div style="display:grid;grid-template-columns:160px 1fr 80px 80px 100px 120px 80px;padding:10px 14px;gap:8px;border-bottom:1px solid var(--border);font-size:.78rem;align-items:center;">
+      return `<div style="display:grid;grid-template-columns:160px 1fr 80px 80px 100px 120px 150px;padding:10px 14px;gap:8px;border-bottom:1px solid var(--border);font-size:.78rem;align-items:center;">
         <div style="font-weight:500;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${esc(emp?.nombre||'—')}</div>
         <div style="color:var(--ink2);">${esc(tipo.label)}</div>
         <div style="color:var(--muted);">${l.desde||'—'}</div>
         <div style="color:var(--muted);">${l.hasta||'—'}</div>
         <div style="font-weight:600;color:var(--ink);">${l.dias||'—'} días</div>
         <div><span style="font-size:.62rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:2px 8px;border-radius:10px;background:${paga?'rgba(45,106,79,.1)':'rgba(155,48,48,.1)'};color:${paga?'var(--green)':'var(--red)'};">${paga?'Paga':'No paga'}</span></div>
-        <div style="display:flex;gap:4px;">
-          <button onclick="eliminarLicencia('${l.id}')" style="font-size:.6rem;padding:3px 8px;background:var(--red-bg);color:var(--red);border:1px solid var(--red);cursor:pointer;border-radius:3px;font-family:'DM Sans',sans-serif;">✕</button>
+        <div style="display:flex;gap:5px;">
+          <button class="tx-btn-action edit" onclick="event.stopPropagation();editarLicencia('${l.id}')">Editar</button>
+          <button class="tx-btn-action del"  onclick="event.stopPropagation();eliminarLicencia('${l.id}')">Eliminar</button>
         </div>
       </div>`;
     }).join('');
+  };
+
+  window.editarLicencia = function(id) {
+    const l = licencias[id]; if (!l) return;
+    // Reusar el modal de nueva licencia
+    const emp  = document.getElementById('lic-emp-modal');
+    const tipo = document.getElementById('lic-tipo-modal');
+    const desde= document.getElementById('lic-desde');
+    const hasta= document.getElementById('lic-hasta');
+    const dias = document.getElementById('lic-dias');
+    const paga = document.getElementById('lic-paga');
+    const nota = document.getElementById('lic-notas');
+    populateLicEmpModal();
+    if (emp)  emp.value  = l.empId  || '';
+    if (tipo) tipo.value = l.tipo   || 'enfermedad';
+    if (desde)desde.value= l.desde || '';
+    if (hasta)hasta.value= l.hasta || '';
+    if (dias) dias.value = l.dias  || '';
+    if (paga) paga.value = l.paga  || 'si';
+    if (nota) nota.value = l.notas || '';
+    actualizarInfoLicencia();
+    // Guardar el id para sobreescribir
+    window._editingLicId = id;
+    document.getElementById('modal-nueva-licencia').classList.add('open');
   };
 
   window.guardarLicencia = async function() {
@@ -8907,16 +8933,21 @@
     const dias  = parseInt(document.getElementById('lic-dias')?.value) || 0;
     const paga  = document.getElementById('lic-paga')?.value || 'si';
     const notas = document.getElementById('lic-notas')?.value?.trim() || '';
-
     if (!empId) { toastErr('Seleccioná un empleado.'); return; }
     if (!tipo)  { toastErr('Seleccioná el tipo de licencia.'); return; }
     if (!desde || !hasta) { toastErr('Ingresá las fechas.'); return; }
     if (dias < 1) { toastErr('Los días deben ser mayor a 0.'); return; }
-
-    const data = { empId, tipo, desde, hasta, dias, paga, notas, createdAt: Date.now() };
-    await push(ref(db, `empresas/${empresaId}/licencias`), data);
+    const data = { empId, tipo, desde, hasta, dias, paga, notas, updatedAt: Date.now() };
     closeModal('nueva-licencia');
-    toastOk(`Licencia registrada — ${dias} día${dias!==1?'s':''}`);
+    if (window._editingLicId) {
+      await update(ref(db, `empresas/${empresaId}/licencias/${window._editingLicId}`), data);
+      window._editingLicId = null;
+      toastOk('Licencia actualizada');
+    } else {
+      data.createdAt = Date.now();
+      await push(ref(db, `empresas/${empresaId}/licencias`), data);
+      toastOk(`Licencia registrada — ${dias} día${dias!==1?'s':''}`);
+    }
   };
 
   window.eliminarLicencia = async function(id) {
