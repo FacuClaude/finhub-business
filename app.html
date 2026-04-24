@@ -1730,8 +1730,12 @@
 </div>
 <!-- Recibo de sueldo -->
 <div id="liq-recibo-wrap" style="display:none;">
-<div style="display:flex;justify-content:flex-end;gap:8px;margin-bottom:12px;">
-<button class="btn-export" onclick="imprimirRecibo()">🖨️ Imprimir / PDF</button>
+<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap;">
+  <div style="display:flex;gap:8px;">
+    <button class="btn-export" onclick="imprimirRecibo()">🖨️ Imprimir / PDF</button>
+    <button class="btn-primary" onclick="registrarLiquidacionComoGasto()" id="btn-registrar-gasto">📋 Registrar en Movimientos</button>
+  </div>
+  <div id="liq-registrado-badge" style="display:none;font-size:.72rem;color:var(--green);font-weight:600;background:rgba(45,106,79,.1);border:1px solid rgba(45,106,79,.2);padding:5px 12px;border-radius:3px;">✓ Registrado en Movimientos</div>
 </div>
 <div id="liq-recibo"></div>
 </div>
@@ -6042,6 +6046,11 @@
   };
 
   window.actualizarLiquidacion = function() {
+    // Resetear badge de registrado
+    const badge = document.getElementById('liq-registrado-badge');
+    const btn   = document.getElementById('btn-registrar-gasto');
+    if (badge) badge.style.display = 'none';
+    if (btn)   btn.disabled = false;
     const empId = document.getElementById('liq-empleado').value;
     const tipo  = document.getElementById('liq-tipo').value;
     const periodo = document.getElementById('liq-periodo').value;
@@ -6057,6 +6066,75 @@
   };
 
   window.imprimirRecibo = function() { window.print(); };
+
+  window.registrarLiquidacionComoGasto = async function() {
+    const empId  = document.getElementById('liq-empleado')?.value;
+    const tipo   = document.getElementById('liq-tipo')?.value;
+    const periodo= document.getElementById('liq-periodo')?.value;
+    if (!empId || !periodo) { toastErr('Seleccioná empleado y período.'); return; }
+
+    const emp = empleados[empId]; if (!emp) return;
+    const liq = calcularLiquidacion(emp, tipo, periodo);
+
+    const tipoLabel = {
+      mensual:'Sueldo mensual', sac:'SAC (Aguinaldo)',
+      vacaciones:'Vacaciones', despido_sc:'Liquidación — Despido sin causa',
+      despido_cc:'Liquidación — Despido con causa', renuncia:'Liquidación — Renuncia',
+    };
+
+    // Determinar el monto según tipo
+    const esLiqEspecial = ['sac','vacaciones','despido_sc','despido_cc','renuncia'].includes(tipo);
+    const montoNeto     = esLiqEspecial
+      ? liq.conceptosEspeciales.reduce((s,c)=>s+c.monto,0)
+      : liq.neto;
+    const montoContrib  = esLiqEspecial ? 0 : liq.totalContrib;
+
+    // Fecha: último día del período
+    const [y, m] = periodo.split('-');
+    const fecha  = `${y}-${m}-${new Date(y, m, 0).getDate()}`;
+
+    // ── Movimiento 1: Sueldo neto (lo que cobra el empleado) ──
+    const movNeto = {
+      type:        'expense',
+      description: `${tipoLabel[tipo]||tipo} — ${esc(emp.nombre||'')}`,
+      amount:      Math.round(montoNeto),
+      category:    'Nómina / Sueldos',
+      date:        fecha,
+      notas:       `Período: ${periodo}. Bruto: ${liq.totalRemunerativo.toFixed(0)}. Aportes empleado: ${liq.totalAportes.toFixed(0)}.`,
+      createdAt:   Date.now(),
+    };
+
+    // ── Movimiento 2: Contribuciones patronales (costo adicional del empleador) ──
+    const batch = {};
+    const id1 = push(ref(db, `empresas/${empresaId}/movimientos`)).key;
+    batch[`empresas/${empresaId}/movimientos/${id1}`] = movNeto;
+
+    if (montoContrib > 0) {
+      const id2 = push(ref(db, `empresas/${empresaId}/movimientos`)).key;
+      batch[`empresas/${empresaId}/movimientos/${id2}`] = {
+        type:        'expense',
+        description: `Contribuciones patronales — ${esc(emp.nombre||'')}`,
+        amount:      Math.round(montoContrib),
+        category:    'Nómina / Sueldos',
+        date:        fecha,
+        notas:       `Período: ${periodo}. Jubilación: ${liq.cJubilacion.toFixed(0)}. OS: ${liq.cObraSocial.toFixed(0)}. ART: ${liq.cArt.toFixed(0)}.`,
+        createdAt:   Date.now() + 1,
+      };
+    }
+
+    await update(ref(db), batch);
+
+    // Marcar como registrado
+    const badge = document.getElementById('liq-registrado-badge');
+    const btn   = document.getElementById('btn-registrar-gasto');
+    if (badge) badge.style.display = 'block';
+    if (btn)   btn.disabled = true;
+
+    const msg = montoContrib > 0
+      ? `Registrados 2 movimientos: neto ${fmt(montoNeto)} + contribuciones ${fmt(montoContrib)}`
+      : `Registrado: ${fmt(montoNeto)}`;
+    toastOk(msg);
+  };
 
   window.openEmpleadoDetalle = function(id) {
     const e = empleados[id]; if (!e) return;
