@@ -1677,7 +1677,7 @@
 </div>
 <!-- ── LIQUIDACIÓN ── -->
 <div id="rrhh-liquidacion" style="display:none;">
-<div style="display:flex;align-items:center;gap:12px;margin-bottom:24px;flex-wrap:wrap;">
+<div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap;">
 <select id="liq-empleado" onchange="actualizarLiquidacion()" style="width:auto;padding:8px 14px;font-size:.82rem;min-width:200px;">
 <option value="">— Seleccioná un empleado —</option>
 </select>
@@ -1691,6 +1691,28 @@
 </select>
 <input id="liq-periodo" onchange="actualizarLiquidacion()" style="width:auto;padding:8px 14px;font-size:.82rem;" type="month">
 </input></div>
+
+<!-- Aviso + campos manuales de deducciones -->
+<div style="background:rgba(193,122,74,.07);border:1px solid rgba(193,122,74,.25);border-left:3px solid var(--accent2);padding:14px 16px;margin-bottom:16px;">
+  <div style="font-size:.72rem;font-weight:600;color:var(--accent2);margin-bottom:6px;">⚠️ Deducciones adicionales — ingreso manual</div>
+  <div style="font-size:.75rem;color:var(--ink2);line-height:1.6;margin-bottom:12px;">
+    Las siguientes retenciones <strong>no se calculan automáticamente</strong> porque dependen de la situación personal de cada empleado y son actualizadas periódicamente por AFIP/ARCA. Ingresá los montos que correspondan según la liquidación de tu contador.
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;">
+    <div class="field" style="margin:0;">
+      <label>Retención Ganancias 4ª ($)</label>
+      <input type="number" id="liq-ganancias" min="0" placeholder="0" oninput="actualizarLiquidacion()" style="font-size:.82rem;"/>
+    </div>
+    <div class="field" style="margin:0;">
+      <label>Embargo / Cuota alimentaria ($)</label>
+      <input type="number" id="liq-embargo" min="0" placeholder="0" oninput="actualizarLiquidacion()" style="font-size:.82rem;"/>
+    </div>
+    <div class="field" style="margin:0;">
+      <label>Otra deducción ($)</label>
+      <input type="number" id="liq-otra-deduccion" min="0" placeholder="0" oninput="actualizarLiquidacion()" style="font-size:.82rem;"/>
+    </div>
+  </div>
+</div>
 <!-- Recibo de sueldo -->
 <div id="liq-recibo-wrap" style="display:none;">
 <div style="display:flex;justify-content:flex-end;gap:8px;margin-bottom:12px;">
@@ -5393,7 +5415,11 @@
     const totalAportes = aJubilacion + aObraSocial + aPami + aSindical;
 
     // Neto del empleado
-    const neto = totalRemunerativo - totalAportes;
+    const retGanancias  = parseFloat(document.getElementById('liq-ganancias')?.value)       || 0;
+    const retEmbargo    = parseFloat(document.getElementById('liq-embargo')?.value)          || 0;
+    const retOtra       = parseFloat(document.getElementById('liq-otra-deduccion')?.value)   || 0;
+    const totalDeducAdicional = retGanancias + retEmbargo + retOtra;
+    const neto = totalRemunerativo - totalAportes - totalDeducAdicional;
 
     // Contribuciones patronales
     const cJubilacion  = totalRemunerativo * cfg.jubilacion_pat / 100;
@@ -5442,7 +5468,9 @@
 
     return {
       bruto, adicAntiguedad, adicPresentismo, totalRemunerativo,
-      aJubilacion, aObraSocial, aPami, aSindical, totalAportes, neto,
+      aJubilacion, aObraSocial, aPami, aSindical, totalAportes,
+      retGanancias, retEmbargo, retOtra, totalDeducAdicional,
+      neto,
       cJubilacion, cObraSocial, cPami, cAsigFam, cArt, cDesempleo, totalContrib, costoTotal,
       años, cfg, conceptosEspeciales, tipo, periodo
     };
@@ -5481,7 +5509,16 @@
       filas += `<tr><td>Obra social (${cfg.obra_social_emp}%)</td><td></td><td style="color:#b85050;">-${f(liq.aObraSocial)}</td></tr>`;
       filas += `<tr><td>PAMI (${cfg.pami_emp}%)</td><td></td><td style="color:#b85050;">-${f(liq.aPami)}</td></tr>`;
       if (liq.aSindical > 0) filas += `<tr><td>Aporte sindical (${cfg.sindical}%)</td><td></td><td style="color:#b85050;">-${f(liq.aSindical)}</td></tr>`;
-      filas += `<tr class="subtotal-row"><td colspan="2"><strong>Total descuentos</strong></td><td style="color:#b85050;"><strong>-${f(liq.totalAportes)}</strong></td></tr>`;
+      filas += `<tr class="subtotal-row"><td colspan="2"><strong>Total aportes</strong></td><td style="color:#b85050;"><strong>-${f(liq.totalAportes)}</strong></td></tr>`;
+
+      // Deducciones adicionales manuales
+      if (liq.totalDeducAdicional > 0) {
+        filas += '<tr class="section-row"><td colspan="3">OTRAS DEDUCCIONES (ingreso manual)</td></tr>';
+        if (liq.retGanancias > 0) filas += `<tr><td>Retención Imp. Ganancias 4ª Cat. <span style="font-size:.62rem;color:#888;">(manual)</span></td><td></td><td style="color:#b85050;">-${f(liq.retGanancias)}</td></tr>`;
+        if (liq.retEmbargo   > 0) filas += `<tr><td>Embargo / Cuota alimentaria <span style="font-size:.62rem;color:#888;">(manual)</span></td><td></td><td style="color:#b85050;">-${f(liq.retEmbargo)}</td></tr>`;
+        if (liq.retOtra      > 0) filas += `<tr><td>Otra deducción <span style="font-size:.62rem;color:#888;">(manual)</span></td><td></td><td style="color:#b85050;">-${f(liq.retOtra)}</td></tr>`;
+        filas += `<tr class="subtotal-row"><td colspan="2"><strong>Total otras deducciones</strong></td><td style="color:#b85050;"><strong>-${f(liq.totalDeducAdicional)}</strong></td></tr>`;
+      }
     }
 
     const netoFinal = esLiquidacion
