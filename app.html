@@ -1641,6 +1641,7 @@
 <button class="period-btn active" id="rrhh-tab-empleados" onclick="setRrhhTab('empleados',this)">👥 Empleados</button>
 <button class="period-btn" id="rrhh-tab-liquidacion" onclick="setRrhhTab('liquidacion',this)">💰 Liquidación</button>
 <button class="period-btn" id="rrhh-tab-licencias" onclick="setRrhhTab('licencias',this)">📅 Licencias</button>
+<button class="period-btn" id="rrhh-tab-capacitaciones" onclick="setRrhhTab('capacitaciones',this)">🎓 Capacitaciones</button>
 <button class="period-btn" id="rrhh-tab-config" onclick="setRrhhTab('config',this)">⚙️ Configuración</button>
 </div>
 <!-- ── EMPLEADOS ── -->
@@ -1826,6 +1827,144 @@
     <div class="modal-actions">
       <button class="btn-secondary" onclick="closeModal('nueva-licencia')" style="flex:1">Cancelar</button>
       <button class="btn-primary" onclick="guardarLicencia()" style="flex:2">Guardar licencia</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── CAPACITACIONES ── -->
+<div id="rrhh-capacitaciones" style="display:none;">
+
+  <!-- KPIs -->
+  <div class="cards-row" style="margin-bottom:20px;">
+    <div class="card" style="border-top:2px solid var(--accent);">
+      <div class="card-label">Cursos activos</div>
+      <div class="card-value accent" id="cap-kpi-activos">0</div>
+      <div class="card-sub">En curso o pendientes</div>
+    </div>
+    <div class="card" style="border-top:2px solid var(--green);">
+      <div class="card-label">Completados</div>
+      <div class="card-value positive" id="cap-kpi-completados">0</div>
+      <div class="card-sub">Este año</div>
+    </div>
+    <div class="card" style="border-top:2px solid var(--accent2);">
+      <div class="card-label">Inversión total</div>
+      <div class="card-value" style="color:var(--accent2);" id="cap-kpi-inversion">$0</div>
+      <div class="card-sub">Costo acumulado</div>
+    </div>
+    <div class="card">
+      <div class="card-label">Empleados capacitados</div>
+      <div class="card-value" id="cap-kpi-empleados">0</div>
+      <div class="card-sub">Con al menos 1 curso</div>
+    </div>
+  </div>
+
+  <!-- Acciones y filtros -->
+  <div class="section-header" style="margin-bottom:20px;">
+    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+      <select id="cap-filtro-estado" onchange="renderCapacitaciones()" style="padding:8px 14px;font-size:.82rem;">
+        <option value="">Todos los estados</option>
+        <option value="pendiente">Pendiente</option>
+        <option value="en_curso">En curso</option>
+        <option value="completado">Completado</option>
+        <option value="cancelado">Cancelado</option>
+      </select>
+      <select id="cap-filtro-emp" onchange="renderCapacitaciones()" style="padding:8px 14px;font-size:.82rem;min-width:180px;">
+        <option value="">Todos los empleados</option>
+      </select>
+    </div>
+    <button class="btn-primary" onclick="openModal('nueva-capacitacion')">+ Nueva capacitación</button>
+  </div>
+
+  <!-- Lista de capacitaciones -->
+  <div id="cap-lista"></div>
+
+</div>
+
+<!-- MODAL: NUEVA CAPACITACIÓN -->
+<div class="overlay" id="modal-nueva-capacitacion" onclick="closeModal('nueva-capacitacion')">
+  <div class="modal" onclick="event.stopPropagation()" style="max-width:560px;">
+    <div class="modal-title" id="cap-modal-title">Nueva capacitación</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+      <div class="field" style="grid-column:1/-1;">
+        <label>Nombre del curso / capacitación</label>
+        <input type="text" id="cap-nombre" placeholder="Ej: Seguridad e higiene industrial"/>
+      </div>
+      <div class="field">
+        <label>Tipo</label>
+        <select id="cap-tipo">
+          <option value="interno">Interno</option>
+          <option value="externo">Externo</option>
+          <option value="online">Online</option>
+          <option value="certificacion">Certificación profesional</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Modalidad</label>
+        <select id="cap-modalidad">
+          <option value="presencial">Presencial</option>
+          <option value="online">Online</option>
+          <option value="hibrida">Híbrida</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Estado</label>
+        <select id="cap-estado">
+          <option value="pendiente">Pendiente</option>
+          <option value="en_curso">En curso</option>
+          <option value="completado">Completado</option>
+          <option value="cancelado">Cancelado</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Costo ($)</label>
+        <input type="number" id="cap-costo" placeholder="0" min="0"/>
+      </div>
+      <div class="field">
+        <label>Fecha inicio</label>
+        <input type="date" id="cap-fecha-inicio"/>
+      </div>
+      <div class="field">
+        <label>Fecha fin</label>
+        <input type="date" id="cap-fecha-fin"/>
+      </div>
+      <div class="field">
+        <label>Horas totales</label>
+        <input type="number" id="cap-horas" placeholder="0" min="0"/>
+      </div>
+      <div class="field">
+        <label>¿Otorga certificado?</label>
+        <select id="cap-certificado">
+          <option value="no">No</option>
+          <option value="si">Sí</option>
+        </select>
+      </div>
+      <div class="field" style="grid-column:1/-1;">
+        <label>Empleados asignados</label>
+        <div id="cap-empleados-check" style="display:flex;flex-wrap:wrap;gap:8px;padding:10px;background:var(--surface);border:1px solid var(--border);border-radius:3px;max-height:140px;overflow-y:auto;"></div>
+      </div>
+      <div class="field" style="grid-column:1/-1;">
+        <label>Instructor / Proveedor (opcional)</label>
+        <input type="text" id="cap-instructor" placeholder="Ej: Instituto de Seguridad Industrial"/>
+      </div>
+      <div class="field" style="grid-column:1/-1;">
+        <label>Notas (opcional)</label>
+        <textarea id="cap-notas" rows="2" style="resize:vertical;" placeholder="Objetivos, contenidos, observaciones..."></textarea>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-secondary" onclick="closeModal('nueva-capacitacion')" style="flex:1">Cancelar</button>
+      <button class="btn-primary" onclick="guardarCapacitacion()" style="flex:2">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: DETALLE CAPACITACIÓN -->
+<div class="overlay" id="modal-cap-detalle" onclick="closeModal('cap-detalle')">
+  <div class="modal" onclick="event.stopPropagation()" style="max-width:500px;">
+    <div id="cap-detalle-content"></div>
+    <div class="modal-actions">
+      <button class="btn-secondary" onclick="closeModal('cap-detalle')" style="flex:1">Cerrar</button>
+      <button onclick="editarCapacitacion()" class="btn-primary" style="flex:1">Editar</button>
     </div>
   </div>
 </div>
@@ -2875,6 +3014,7 @@
     loadCRM();
     loadPresupuestos();
     loadLicencias();
+    loadCapacitaciones();
     setTimeout(actualizarTicker, 2000);
     setTimeout(checkOnboarding, 1500);
   }
@@ -3202,6 +3342,16 @@
       ocItemsEditor = [];
       renderOCItemsEditor();
       populateProveedorSelectOC();
+    }
+    if(name==='nueva-capacitacion'){
+      editingCapId=null;
+      document.getElementById('cap-modal-title').textContent='Nueva capacitación';
+      ['cap-nombre','cap-instructor','cap-notas'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+      ['cap-costo','cap-horas'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+      ['cap-fecha-inicio','cap-fecha-fin'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+      const et=document.getElementById('cap-estado');if(et)et.value='pendiente';
+      const cert=document.getElementById('cap-certificado');if(cert)cert.value='no';
+      populateCapEmpleadosCheck([]);
     }
     if(name==='nueva-licencia'){
       populateLicEmpModal();
@@ -5715,7 +5865,7 @@
   }
 
   window.setRrhhTab = function(tab, btn) {
-    ['empleados','liquidacion','licencias','config'].forEach(t => {
+    ['empleados','liquidacion','licencias','capacitaciones','config'].forEach(t => {
       const el = document.getElementById('rrhh-' + t);
       if (el) el.style.display = t === tab ? 'block' : 'none';
     });
@@ -5725,6 +5875,7 @@
     if (tab === 'liquidacion') { populateEmpleadoSelect(); const now = new Date(); document.getElementById('liq-periodo').value = now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0'); }
     if (tab === 'empleados') renderEmpleados();
     if (tab === 'licencias') { populateLicEmpModal(); renderLicencias(); }
+    if (tab === 'capacitaciones') renderCapacitaciones();
   };
 
   window.renderRRHH = function() {
@@ -6181,7 +6332,7 @@
     if (uid) localStorage.setItem(`finhub-last-empresa-${uid}`, empresaId);
 
     // Limpiar estado local
-    transactions = {}; contacts = {}; accounts = {}; empleados = {}; productos = {}; movStock = {}; ordenesCompra = {}; oportunidades = {}; presupuestos = {}; licencias = {};
+    transactions = {}; contacts = {}; accounts = {}; empleados = {}; productos = {}; movStock = {}; ordenesCompra = {}; oportunidades = {}; presupuestos = {}; licencias = {}; capacitaciones = {};
 
     // Actualizar nombre en el switcher
     onValue(ref(db, `empresas/${empresaId}/info`), snap => {
@@ -8796,6 +8947,192 @@
       const d2 = new Date(Math.min(new Date(l.hasta+'T12:00:00'), ultimoDia));
       return s + Math.round((d2-d1)/(1000*60*60*24)) + 1;
     }, 0);
+  };
+
+
+  // ══════════════════════════════════════════════════
+  // CAPACITACIONES
+  // ══════════════════════════════════════════════════
+  let capacitaciones = {};
+  let editingCapId   = null;
+
+  const CAP_ESTADO = {
+    pendiente:  { label:'Pendiente',  color:'var(--muted)',    bg:'var(--surface2)' },
+    en_curso:   { label:'En curso',   color:'var(--accent)',   bg:'rgba(30,77,140,.1)' },
+    completado: { label:'Completado', color:'var(--green)',    bg:'rgba(45,106,79,.1)' },
+    cancelado:  { label:'Cancelado',  color:'var(--red)',      bg:'rgba(155,48,48,.1)' },
+  };
+  const CAP_TIPO = {
+    interno:'Interno', externo:'Externo', online:'Online', certificacion:'Certificación'
+  };
+
+  function loadCapacitaciones() {
+    onValue(ref(db, `empresas/${empresaId}/capacitaciones`), snap => {
+      capacitaciones = snap.val() || {};
+      renderCapacitaciones();
+    });
+  }
+
+  function populateCapFiltroEmp() {
+    const sel = document.getElementById('cap-filtro-emp'); if (!sel) return;
+    const cur = sel.value;
+    sel.innerHTML = '<option value="">Todos los empleados</option>' +
+      Object.entries(empleados).map(([id,e])=>`<option value="${id}" ${id===cur?'selected':''}>${esc(e.nombre||'')}</option>`).join('');
+  }
+
+  function populateCapEmpleadosCheck(selected=[]) {
+    const wrap = document.getElementById('cap-empleados-check'); if (!wrap) return;
+    wrap.innerHTML = Object.entries(empleados).filter(([,e])=>e.estado==='activo').map(([id,e])=>`
+      <label style="display:flex;align-items:center;gap:6px;font-size:.78rem;cursor:pointer;padding:3px 6px;background:${selected.includes(id)?'rgba(30,77,140,.1)':'transparent'};border-radius:3px;">
+        <input type="checkbox" value="${id}" ${selected.includes(id)?'checked':''} style="accent-color:var(--accent);">
+        ${esc(e.nombre||'')}
+      </label>`).join('');
+  }
+
+  window.renderCapacitaciones = function() {
+    populateCapFiltroEmp();
+    const filtEstado = document.getElementById('cap-filtro-estado')?.value || '';
+    const filtEmp    = document.getElementById('cap-filtro-emp')?.value    || '';
+    const año = new Date().getFullYear();
+
+    const arr = Object.entries(capacitaciones).map(([id,c])=>({id,...c}));
+
+    // KPIs
+    const activos     = arr.filter(c=>['pendiente','en_curso'].includes(c.estado)).length;
+    const completados = arr.filter(c=>c.estado==='completado' && (c.fechaFin||'').startsWith(String(año))).length;
+    const inversion   = arr.reduce((s,c)=>s+(c.costo||0),0);
+    const empIds      = new Set(arr.flatMap(c=>c.empleados||[]));
+    const E = id => document.getElementById(id);
+    if(E('cap-kpi-activos'))    E('cap-kpi-activos').textContent    = activos;
+    if(E('cap-kpi-completados'))E('cap-kpi-completados').textContent = completados;
+    if(E('cap-kpi-inversion'))  E('cap-kpi-inversion').textContent  = fmt(inversion);
+    if(E('cap-kpi-empleados'))  E('cap-kpi-empleados').textContent  = empIds.size;
+
+    // Filtrar
+    const filtered = arr.filter(c => {
+      if (filtEstado && c.estado !== filtEstado) return false;
+      if (filtEmp    && !(c.empleados||[]).includes(filtEmp)) return false;
+      return true;
+    }).sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));
+
+    const lista = E('cap-lista'); if (!lista) return;
+    if (!filtered.length) {
+      lista.innerHTML = `<div class="empty-state"><div class="empty-state-icon">🎓</div><div class="empty-state-title">Sin capacitaciones</div><div class="empty-state-sub">Registrá cursos y capacitaciones para trackear el desarrollo de tu equipo.</div><button class="empty-state-btn" onclick="openModal('nueva-capacitacion')">+ Nueva capacitación</button></div>`;
+      return;
+    }
+
+    lista.innerHTML = filtered.map(c => {
+      const est   = CAP_ESTADO[c.estado] || CAP_ESTADO.pendiente;
+      const emps  = (c.empleados||[]).map(id=>empleados[id]?.nombre||'').filter(Boolean);
+      const cert  = c.certificado === 'si';
+      const dias  = c.fechaFin && c.fechaInicio
+        ? Math.ceil((new Date(c.fechaFin+'T12:00:00')-new Date(c.fechaInicio+'T12:00:00'))/(1000*60*60*24))+1
+        : null;
+      return `<div style="background:var(--surface);border:1px solid var(--border);padding:16px 18px;margin-bottom:8px;cursor:pointer;transition:border-color .15s;" onclick="verCapacitacion('${c.id}')" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;">
+          <div style="flex:1;min-width:0;">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;flex-wrap:wrap;">
+              <span style="font-size:.9rem;font-weight:600;color:var(--ink);">${esc(c.nombre||'Sin nombre')}</span>
+              ${cert?'<span style="font-size:.6rem;font-weight:700;padding:1px 7px;background:rgba(193,122,74,.12);color:var(--accent2);border-radius:10px;letter-spacing:.08em;">🏆 CERTIFICA</span>':''}
+            </div>
+            <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+              <span style="font-size:.7rem;color:var(--muted);">${CAP_TIPO[c.tipo]||c.tipo} · ${c.modalidad||''}</span>
+              ${c.instructor?`<span style="font-size:.7rem;color:var(--muted);">📍 ${esc(c.instructor)}</span>`:''}
+              ${dias?`<span style="font-size:.7rem;color:var(--muted);">📅 ${dias} días</span>`:''}
+              ${c.horas?`<span style="font-size:.7rem;color:var(--muted);">⏱ ${c.horas}h</span>`:''}
+            </div>
+            ${emps.length?`<div style="font-size:.7rem;color:var(--muted);margin-top:6px;">👥 ${emps.slice(0,3).map(n=>esc(n)).join(', ')}${emps.length>3?' +'+( emps.length-3)+' más':''}</div>`:''}
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex-shrink:0;">
+            <span style="font-size:.65rem;font-weight:700;padding:3px 10px;border-radius:10px;background:${est.bg};color:${est.color};letter-spacing:.08em;text-transform:uppercase;">${est.label}</span>
+            ${c.costo?`<span style="font-size:.82rem;font-weight:600;color:var(--accent);">${fmt(c.costo)}</span>`:''}
+          </div>
+        </div>
+        ${c.fechaInicio?`<div style="font-size:.68rem;color:var(--muted);margin-top:8px;padding-top:8px;border-top:1px solid var(--border);">${c.fechaInicio}${c.fechaFin?' → '+c.fechaFin:''}</div>`:''}
+      </div>`;
+    }).join('');
+  };
+
+  window.verCapacitacion = function(id) {
+    const c = capacitaciones[id]; if (!c) return;
+    editingCapId = id;
+    const est  = CAP_ESTADO[c.estado] || CAP_ESTADO.pendiente;
+    const emps = (c.empleados||[]).map(id=>empleados[id]?.nombre||'').filter(Boolean);
+    document.getElementById('cap-detalle-content').innerHTML = `
+      <div style="margin-bottom:16px;">
+        <div style="font-size:1.05rem;font-weight:700;color:var(--ink);margin-bottom:6px;">${esc(c.nombre||'')}</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+          <span style="font-size:.65rem;font-weight:700;padding:3px 10px;border-radius:10px;background:${est.bg};color:${est.color};text-transform:uppercase;letter-spacing:.08em;">${est.label}</span>
+          ${c.certificado==='si'?'<span style="font-size:.65rem;font-weight:700;padding:3px 10px;border-radius:10px;background:rgba(193,122,74,.12);color:var(--accent2);">🏆 Certifica</span>':''}
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;">
+        ${[
+          ['Tipo', CAP_TIPO[c.tipo]||c.tipo],
+          ['Modalidad', c.modalidad||'—'],
+          ['Inicio', c.fechaInicio||'—'],
+          ['Fin', c.fechaFin||'—'],
+          ['Horas', c.horas?c.horas+'h':'—'],
+          ['Costo', c.costo?fmt(c.costo):'Sin costo'],
+          ['Instructor', c.instructor||'—'],
+        ].map(([k,v])=>`<div style="background:var(--surface2);padding:10px 12px;border-radius:3px;">
+          <div style="font-size:.6rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:3px;">${k}</div>
+          <div style="font-size:.82rem;color:var(--ink);">${v}</div>
+        </div>`).join('')}
+      </div>
+      ${emps.length?`<div style="margin-bottom:12px;"><div style="font-size:.62rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;">Empleados</div><div style="display:flex;flex-wrap:wrap;gap:6px;">${emps.map(n=>`<span style="font-size:.72rem;padding:3px 10px;background:var(--surface2);border:1px solid var(--border);border-radius:10px;">${esc(n)}</span>`).join('')}</div></div>`:''}
+      ${c.notas?`<div style="background:var(--surface2);padding:12px 14px;border-radius:3px;font-size:.8rem;color:var(--ink2);line-height:1.6;">${esc(c.notas)}</div>`:''}`;
+    document.getElementById('modal-cap-detalle').classList.add('open');
+  };
+
+  window.editarCapacitacion = function() {
+    const c = capacitaciones[editingCapId]; if (!c) return;
+    closeModal('cap-detalle');
+    document.getElementById('cap-modal-title').textContent = 'Editar capacitación';
+    document.getElementById('cap-nombre').value      = c.nombre||'';
+    document.getElementById('cap-tipo').value        = c.tipo||'interno';
+    document.getElementById('cap-modalidad').value   = c.modalidad||'presencial';
+    document.getElementById('cap-estado').value      = c.estado||'pendiente';
+    document.getElementById('cap-costo').value       = c.costo||'';
+    document.getElementById('cap-fecha-inicio').value= c.fechaInicio||'';
+    document.getElementById('cap-fecha-fin').value   = c.fechaFin||'';
+    document.getElementById('cap-horas').value       = c.horas||'';
+    document.getElementById('cap-certificado').value = c.certificado||'no';
+    document.getElementById('cap-instructor').value  = c.instructor||'';
+    document.getElementById('cap-notas').value       = c.notas||'';
+    populateCapEmpleadosCheck(c.empleados||[]);
+    document.getElementById('modal-nueva-capacitacion').classList.add('open');
+  };
+
+  window.guardarCapacitacion = async function() {
+    const nombre = document.getElementById('cap-nombre')?.value.trim();
+    if (!nombre) { toastErr('Ingresá el nombre del curso.'); return; }
+    const empleadosSel = [...document.querySelectorAll('#cap-empleados-check input:checked')].map(el=>el.value);
+    const data = {
+      nombre,
+      tipo:        document.getElementById('cap-tipo')?.value,
+      modalidad:   document.getElementById('cap-modalidad')?.value,
+      estado:      document.getElementById('cap-estado')?.value,
+      costo:       parseFloat(document.getElementById('cap-costo')?.value)||0,
+      fechaInicio: document.getElementById('cap-fecha-inicio')?.value||null,
+      fechaFin:    document.getElementById('cap-fecha-fin')?.value||null,
+      horas:       parseFloat(document.getElementById('cap-horas')?.value)||0,
+      certificado: document.getElementById('cap-certificado')?.value,
+      instructor:  document.getElementById('cap-instructor')?.value.trim()||null,
+      notas:       document.getElementById('cap-notas')?.value.trim()||null,
+      empleados:   empleadosSel,
+      updatedAt:   Date.now(),
+    };
+    closeModal('nueva-capacitacion');
+    if (editingCapId) {
+      await update(ref(db, `empresas/${empresaId}/capacitaciones/${editingCapId}`), data);
+      toastOk('Capacitación actualizada');
+      editingCapId = null;
+    } else {
+      data.createdAt = Date.now();
+      await push(ref(db, `empresas/${empresaId}/capacitaciones`), data);
+      toastOk('Capacitación registrada');
+    }
   };
 
   // ── NAV ──
