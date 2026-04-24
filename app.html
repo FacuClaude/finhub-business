@@ -1963,8 +1963,7 @@
   <div class="modal" onclick="event.stopPropagation()" style="max-width:500px;">
     <div id="cap-detalle-content"></div>
     <div class="modal-actions">
-      <button class="btn-secondary" onclick="closeModal('cap-detalle')" style="flex:1">Cerrar</button>
-      <button onclick="editarCapacitacion()" class="btn-primary" style="flex:1">Editar</button>
+      <button class="btn-primary" onclick="closeModal('cap-detalle')" style="flex:1">Cerrar</button>
     </div>
   </div>
 </div>
@@ -9048,7 +9047,7 @@
 
     const lista = E('cap-lista'); if (!lista) return;
     if (!filtered.length) {
-      lista.innerHTML = `<div class="empty-state"><div class="empty-state-icon">🎓</div><div class="empty-state-title">Sin capacitaciones</div><div class="empty-state-sub">Registrá cursos y capacitaciones para trackear el desarrollo de tu equipo.</div><button class="empty-state-btn" onclick="openModal('nueva-capacitacion')">+ Nueva capacitación</button></div>`;
+      lista.innerHTML = `<div class="empty-state"><div class="empty-state-icon">🎓</div><div class="empty-state-title">Sin capacitaciones</div><div class="empty-state-sub">Registrá cursos y capacitaciones para trackear el desarrollo de tu equipo.</div></div>`;
       return;
     }
 
@@ -9079,7 +9078,13 @@
             ${c.costo?`<span style="font-size:.82rem;font-weight:600;color:var(--accent);">${fmt(c.costo)}</span>`:''}
           </div>
         </div>
-        ${c.fechaInicio?`<div style="font-size:.68rem;color:var(--muted);margin-top:8px;padding-top:8px;border-top:1px solid var(--border);">${c.fechaInicio}${c.fechaFin?' → '+c.fechaFin:''}</div>`:''}
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px;padding-top:8px;border-top:1px solid var(--border);">
+          <span style="font-size:.68rem;color:var(--muted);">${c.fechaInicio?c.fechaInicio+(c.fechaFin?' → '+c.fechaFin:''):''}</span>
+          <div style="display:flex;gap:6px;">
+            <button class="tx-btn-action edit" onclick="event.stopPropagation();editarCapacitacion('${c.id}')">Editar</button>
+            <button class="tx-btn-action del"  onclick="event.stopPropagation();eliminarCapacitacion('${c.id}')">Eliminar</button>
+          </div>
+        </div>
       </div>`;
     }).join('');
   };
@@ -9116,7 +9121,8 @@
     document.getElementById('modal-cap-detalle').classList.add('open');
   };
 
-  window.editarCapacitacion = function() {
+  window.editarCapacitacion = function(id) {
+    if (id) editingCapId = id;
     const c = capacitaciones[editingCapId]; if (!c) return;
     closeModal('cap-detalle');
     document.getElementById('cap-modal-title').textContent = 'Editar capacitación';
@@ -9133,6 +9139,12 @@
     document.getElementById('cap-notas').value       = c.notas||'';
     populateCapEmpleadosCheck(c.empleados||[]);
     document.getElementById('modal-nueva-capacitacion').classList.add('open');
+  };
+
+  window.eliminarCapacitacion = async function(id) {
+    if (!confirm('¿Eliminar esta capacitación?')) return;
+    await remove(ref(db, `empresas/${empresaId}/capacitaciones/${id}`));
+    toastOk('Capacitación eliminada');
   };
 
   window.guardarCapacitacion = async function() {
