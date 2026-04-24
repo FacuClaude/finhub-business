@@ -402,110 +402,96 @@
     .onboarding-actions { display:flex; gap:10px; }
 
 
-    /* ── BIENVENIDA ── */
-    #page-bienvenida {
-      background: linear-gradient(145deg, #1a3a6b 0%, #1e4d8c 45%, #2a5fa0 100%) !important;
-      height:calc(100dvh - 26px);
-      max-height:calc(100dvh - 26px);
-      padding:0 !important;
-      overflow:hidden;
+    /* ── OVERLAY BIENVENIDA ── */
+    #bienvenida-overlay {
+      position:fixed; inset:0; z-index:5000;
+      display:flex; align-items:center; justify-content:center;
+      padding:24px;
+      background:rgba(10,15,25,.55);
+      backdrop-filter:blur(8px);
+      -webkit-backdrop-filter:blur(8px);
+      animation:fadeIn .3s ease;
+      cursor:pointer;
     }
-    body.dark #page-bienvenida {
-      background: #141414 !important;
+    #bienvenida-overlay.closing {
+      animation:fadeOut .25s ease forwards;
     }
-    #page-bienvenida.active {
-      display:flex !important;
-      flex-direction:column;
-    }
-    /* Dark mode — sin cajas, estilo editorial naranja/blanco */
-    body.dark .wc-num-card {
-      background: transparent !important;
-      border: none !important;
-      border-left: 2px solid #e86c2a !important;
-      padding-left: 18px !important;
-      border-radius: 0 !important;
-    }
-    body.dark .wc-num-card:hover { background: rgba(255,255,255,.03) !important; }
-    body.dark .wc-num-label { color:rgba(255,255,255,.3) !important; }
-    body.dark .wc-num-val { color: white !important; }
-    body.dark .wc-num-val.positive { color: #e86c2a !important; }
-    body.dark .wc-num-val.negative { color: #e07878 !important; }
-    body.dark .wc-num-sub { color:rgba(255,255,255,.28) !important; }
-    body.dark .wc-numbers { gap: 32px !important; grid-template-columns: repeat(3,auto) !important; justify-content:start; }
-    body.dark .wc-alert-item {
-      background: transparent !important;
-      border: none !important;
-      border-bottom: 1px solid rgba(255,255,255,.06) !important;
-      padding-left: 0 !important;
-    }
-    body.dark .wc-alert-item:hover { background: rgba(255,255,255,.03) !important; }
-    body.dark .wc-alerts { gap: 0 !important; }
-    body.dark .wc-footer { border-top-color: rgba(255,255,255,.06) !important; }
-    body.dark .wc-footer-cta { color: rgba(255,255,255,.28) !important; }
+    @keyframes fadeOut { to { opacity:0; } }
 
-    .wc-wrap {
-      flex:1; display:flex; flex-direction:column;
-      justify-content:space-evenly;
-      padding:clamp(16px,3.5vh,48px) clamp(20px,4vw,64px) clamp(12px,2.5vh,32px);
-      max-width:860px; width:100%;
-      margin:0 auto;
-      min-height:0; overflow:hidden;
-      gap:clamp(10px,1.8vh,28px);
+    .bv-card {
+      background:var(--bg);
+      border:1px solid var(--border);
+      padding:40px 44px;
+      max-width:480px; width:100%;
+      cursor:default;
+      animation:slideUp .3s cubic-bezier(.16,1,.3,1);
+      position:relative;
     }
-    .wc-greeting {
+    body.dark .bv-card {
+      background:#1c1c1c;
+      border-color:#2a2a2a;
+    }
+    .bv-close {
+      position:absolute; top:16px; right:18px;
+      background:none; border:none; cursor:pointer;
+      font-size:1.1rem; color:var(--muted);
+      line-height:1; padding:4px;
+      transition:color .15s;
+    }
+    .bv-close:hover { color:var(--ink); }
+    .bv-saludo {
       font-family:'Plus Jakarta Sans',sans-serif;
-      font-size:clamp(1.5rem,3.2vh,2.6rem); font-weight:800;
-      color:white; line-height:1.1; letter-spacing:-.02em;
+      font-size:1.6rem; font-weight:800;
+      color:var(--ink); margin-bottom:3px;
+      letter-spacing:-.02em;
     }
-    .wc-date { font-size:.78rem; color:rgba(255,255,255,.5); font-weight:400; margin-top:3px; }
-    .wc-numbers { display:grid; grid-template-columns:1fr 1fr 1fr; gap:3px; }
-    .wc-num-card {
-      background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.1);
-      padding:clamp(12px,2vh,20px) clamp(12px,2vw,18px);
-      transition:background .15s; cursor:pointer;
+    .bv-fecha { font-size:.78rem; color:var(--muted); margin-bottom:28px; }
+    .bv-numbers {
+      display:grid; grid-template-columns:1fr 1fr 1fr;
+      gap:1px; background:var(--border);
+      border:1px solid var(--border);
+      margin-bottom:24px;
     }
-    .wc-num-card:hover { background:rgba(255,255,255,.11); }
-    .wc-num-label { font-size:.58rem; font-weight:600; letter-spacing:.18em; text-transform:uppercase; color:rgba(255,255,255,.45); margin-bottom:6px; }
-    .wc-num-val { font-family:'Plus Jakarta Sans',sans-serif; font-size:clamp(1.1rem,2.2vh,1.8rem); font-weight:800; line-height:1; color:white; margin-bottom:3px; }
-    .wc-num-val.positive { color:#7ecba1; }
-    .wc-num-val.negative { color:#e07878; }
-    .wc-num-sub { font-size:.62rem; color:rgba(255,255,255,.4); }
-    .wc-alerts { display:flex; flex-direction:column; gap:4px; }
-    .wc-alert-item {
-      display:flex; align-items:center; gap:10px;
-      background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.1);
-      padding:clamp(6px,1.1vh,9px) 14px; cursor:pointer; transition:background .15s;
+    .bv-num {
+      background:var(--bg); padding:16px 14px; cursor:pointer;
+      transition:background .15s;
     }
-    .wc-alert-item:hover { background:rgba(255,255,255,.1); }
-    .wc-alert-icon { font-size:.8rem; flex-shrink:0; }
-    .wc-alert-text { font-size:.73rem; color:rgba(255,255,255,.8); flex:1; }
-    .wc-alert-arrow { color:rgba(255,255,255,.3); font-size:.78rem; }
-    .wc-alert-item:hover .wc-alert-arrow { color:rgba(255,255,255,.7); }
-    .wc-empresa-btn {
-      display:inline-flex; align-items:center; gap:7px;
-      background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.2);
-      padding:4px 12px; border-radius:20px; cursor:pointer;
-      font-size:.68rem; color:rgba(255,255,255,.8);
-      font-family:'DM Sans',sans-serif; transition:background .15s;
+    body.dark .bv-num { background:#1c1c1c; }
+    .bv-num:hover { background:var(--surface); }
+    body.dark .bv-num:hover { background:#242424; }
+    .bv-num-label {
+      font-size:.58rem; font-weight:600; letter-spacing:.16em;
+      text-transform:uppercase; color:var(--muted); margin-bottom:6px;
     }
-    .wc-empresa-btn:hover { background:rgba(255,255,255,.16); }
-    .wc-empresa-dot { width:5px; height:5px; background:#7ecba1; border-radius:50%; flex-shrink:0; }
-    .wc-footer {
-      padding:clamp(8px,1.4vh,14px) clamp(20px,4vw,64px) clamp(10px,1.8vh,20px);
-      display:flex; justify-content:space-between; align-items:center;
-      border-top:1px solid rgba(255,255,255,.08); flex-shrink:0;
+    .bv-num-val {
+      font-family:'Plus Jakarta Sans',sans-serif;
+      font-size:1.15rem; font-weight:700;
+      color:var(--ink); line-height:1;
     }
-    .wc-footer-cta { font-family:'Plus Jakarta Sans',sans-serif; font-size:.7rem; font-weight:600; color:rgba(255,255,255,.4); }
-    .wc-footer-brand { display:flex; align-items:center; gap:6px; font-size:.66rem; color:rgba(255,255,255,.3); }
+    .bv-num-val.pos { color:var(--green); }
+    .bv-num-val.neg { color:var(--red); }
+    .bv-num-val.acc { color:var(--accent); }
+    .bv-num-sub { font-size:.62rem; color:var(--muted); margin-top:3px; }
+    .bv-btn {
+      width:100%; padding:11px;
+      background:var(--accent); color:white; border:none;
+      font-family:'DM Sans',sans-serif; font-size:.7rem;
+      font-weight:700; letter-spacing:.1em; text-transform:uppercase;
+      cursor:pointer; transition:opacity .15s;
+    }
+    .bv-btn:hover { opacity:.88; }
+    .bv-kippcode {
+      display:flex; align-items:center; justify-content:center;
+      gap:6px; margin-top:16px; opacity:.3;
+    }
+    .bv-kippcode span { font-size:.65rem; font-weight:600; letter-spacing:.06em; color:var(--muted); }
     @media(max-width:900px){
-      #page-bienvenida { height:100dvh !important; max-height:100dvh !important; }
-      .wc-numbers { grid-template-columns:1fr 1fr; }
-      body.dark .wc-numbers { gap:20px !important; grid-template-columns:repeat(3,1fr) !important; }
+      .bv-card { padding:28px 22px; }
+      .bv-saludo { font-size:1.35rem; }
+      .bv-numbers { grid-template-columns:1fr; gap:1px; }
+      .bv-num { padding:12px 14px; }
     }
-    @media(max-width:380px){
-      .wc-numbers { grid-template-columns:1fr 1fr; }
-      body.dark .wc-numbers { grid-template-columns:1fr 1fr !important; gap:16px !important; }
-    }
+
     /* ── INSTRUCTIVO ── */
     .inst-overlay { display:none; position:fixed; inset:0; background:rgba(26,26,20,.5); backdrop-filter:blur(6px); z-index:10000; }
     .inst-overlay.open { display:flex; align-items:center; justify-content:center; padding:20px; }
@@ -899,6 +885,42 @@
   </div>
 </div>
 
+<!-- OVERLAY BIENVENIDA -->
+<div id="bienvenida-overlay" style="display:none;" onclick="cerrarBienvenidaOverlay(event)">
+  <div class="bv-card" onclick="event.stopPropagation()">
+    <button class="bv-close" onclick="cerrarBienvenidaOverlay()">✕</button>
+    <div class="bv-saludo" id="bv-saludo">Buen día.</div>
+    <div class="bv-fecha" id="bv-fecha"></div>
+    <div class="bv-numbers">
+      <div class="bv-num" onclick="cerrarBienvenidaOverlay();goTo('movimientos')">
+        <div class="bv-num-label">Resultado del mes</div>
+        <div class="bv-num-val" id="bv-resultado">—</div>
+        <div class="bv-num-sub" id="bv-resultado-sub"></div>
+      </div>
+      <div class="bv-num" onclick="cerrarBienvenidaOverlay();goTo('cuentas')">
+        <div class="bv-num-label">Saldo total</div>
+        <div class="bv-num-val acc" id="bv-saldo">—</div>
+        <div class="bv-num-sub">Todas las cuentas</div>
+      </div>
+      <div class="bv-num" onclick="cerrarBienvenidaOverlay();goTo('crm')">
+        <div class="bv-num-label">Pipeline CRM</div>
+        <div class="bv-num-val acc" id="bv-pipeline">—</div>
+        <div class="bv-num-sub" id="bv-pipeline-sub"></div>
+      </div>
+    </div>
+    <button class="bv-btn" onclick="cerrarBienvenidaOverlay()">Ir al Dashboard →</button>
+    <div class="bv-kippcode">
+      <svg width="11" height="11" viewBox="0 0 100 100" fill="none">
+        <rect x="6" y="6" width="36" height="36" rx="7" stroke="currentColor" stroke-width="10" fill="none"/>
+        <rect x="58" y="6" width="36" height="36" rx="7" stroke="currentColor" stroke-width="10" fill="none"/>
+        <rect x="6" y="58" width="36" height="36" rx="7" stroke="currentColor" stroke-width="10" fill="none"/>
+        <circle cx="76" cy="76" r="15" fill="#e86c2a"/>
+      </svg>
+      <span>kippcode</span>
+    </div>
+  </div>
+</div>
+
 <div class="biz-ticker" id="biz-ticker">
   <div class="biz-ticker-label">
     <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
@@ -954,10 +976,6 @@
 </div>
 <nav>
 <div class="nav-section">Principal</div>
-<button class="nav-item" onclick="goTo('bienvenida')">
-  <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-  Inicio
-</button>
 <button class="nav-item" onclick="goTo('vistarapida')">
 <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.5" viewbox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
         Vista rápida
@@ -1131,49 +1149,7 @@
 <div class="page-sub" id="busqueda-sub">Resultados de la búsqueda</div>
 <div id="busqueda-resultados"></div>
 </div>
-<!-- BIENVENIDA -->
-<div class="page" id="page-bienvenida">
-  <div class="wc-wrap">
 
-    <div>
-      <div id="wc-empresa-selector" style="display:none;margin-bottom:10px;"></div>
-      <div class="wc-greeting" id="wc-greeting">Buen día.</div>
-      <div class="wc-date" id="wc-date"></div>
-    </div>
-
-    <div class="wc-numbers">
-      <div class="wc-num-card" onclick="goTo('movimientos')">
-        <div class="wc-num-label">Resultado del mes</div>
-        <div class="wc-num-val" id="wc-resultado">—</div>
-        <div class="wc-num-sub" id="wc-resultado-sub"></div>
-      </div>
-      <div class="wc-num-card" onclick="goTo('cuentas')">
-        <div class="wc-num-label">Saldo total</div>
-        <div class="wc-num-val" id="wc-saldo">—</div>
-        <div class="wc-num-sub">Todas las cuentas</div>
-      </div>
-      <div class="wc-num-card" onclick="goTo('crm')">
-        <div class="wc-num-label">Pipeline CRM</div>
-        <div class="wc-num-val" id="wc-pipeline">—</div>
-        <div class="wc-num-sub" id="wc-pipeline-sub"></div>
-      </div>
-    </div>
-
-  </div>
-
-  <div class="wc-footer">
-    <div class="wc-footer-cta" id="wc-footer-text">Seleccioná una sección para empezar</div>
-    <div class="wc-footer-brand">
-      <svg width="12" height="12" viewBox="0 0 100 100" fill="none">
-        <rect x="6" y="6" width="36" height="36" rx="7" stroke="rgba(255,255,255,.5)" stroke-width="9" fill="none"/>
-        <rect x="58" y="6" width="36" height="36" rx="7" stroke="rgba(255,255,255,.5)" stroke-width="9" fill="none"/>
-        <rect x="6" y="58" width="36" height="36" rx="7" stroke="rgba(255,255,255,.5)" stroke-width="9" fill="none"/>
-        <circle cx="76" cy="76" r="15" fill="#e86c2a"/>
-      </svg>
-      <span>kippcode</span>
-    </div>
-  </div>
-</div>
 
 <!-- DASHBOARD -->
 <!-- CRM -->
@@ -2693,6 +2669,7 @@
       empresasInfo[empresaId] = { nombre: 'Mi empresa' };
       appIniciada = true;
       iniciarApp(user);
+      setTimeout(mostrarBienvenidaOverlay, 1200);
 
     } else {
       // Guardar permisos y cargar info de empresas para la bienvenida
@@ -2721,7 +2698,7 @@
       iniciarApp(user);
       // Ir a bienvenida en lugar del dashboard
       // (iniciarApp no hace goTo, así que lo llamamos después)
-      setTimeout(() => goTo('bienvenida'), 100);
+      setTimeout(() => { goTo('dashboard'); setTimeout(mostrarBienvenidaOverlay, 600); }, 100);
     }
   });
 
@@ -2738,7 +2715,7 @@
     document.getElementById('main-content').style.opacity = '1';
     aplicarPermisosSinEmpresa();
     // Ir a bienvenida
-    goTo('bienvenida');
+    goTo('dashboard');
   }
 
   function aplicarPermisosSinEmpresa() {
@@ -8407,108 +8384,58 @@
   // ══════════════════════════════════════════════════
   // PÁGINA DE BIENVENIDA
   // ══════════════════════════════════════════════════
-  window.renderBienvenida = function() {
-    const hoy   = new Date();
-    const hora  = hoy.getHours();
+  // ── OVERLAY BIENVENIDA ──
+  window.mostrarBienvenidaOverlay = function() {
+    const overlay = document.getElementById('bienvenida-overlay');
+    if (!overlay) return;
+
+    // Saludo según hora
+    const hoy  = new Date();
+    const hora = hoy.getHours();
     const saludo = hora < 12 ? 'Buen día.' : hora < 19 ? 'Buenas tardes.' : 'Buenas noches.';
-    const diasSemana = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
-    const meses = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
-    const fechaStr = `${diasSemana[hoy.getDay()]}, ${hoy.getDate()} de ${meses[hoy.getMonth()]} de ${hoy.getFullYear()}`;
+    const dias   = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
+    const meses  = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+    const fecha  = `${dias[hoy.getDay()]}, ${hoy.getDate()} de ${meses[hoy.getMonth()]}`;
 
     const E = id => document.getElementById(id);
-    if (E('wc-greeting')) E('wc-greeting').textContent = saludo;
-    if (E('wc-date'))     E('wc-date').textContent     = fechaStr;
+    if (E('bv-saludo')) E('bv-saludo').textContent = saludo;
+    if (E('bv-fecha'))  E('bv-fecha').textContent  = fecha;
 
-    // Footer con nombre empresa
-    const nombreEmp = E('empresa-nombre')?.textContent || '';
-    if (E('wc-footer-text') && nombreEmp && nombreEmp !== 'Mi empresa') {
-      E('wc-footer-text').textContent = nombreEmp;
-    }
-
-    // ── Números grandes ──
+    // Calcular datos
     const mesActual = hoy.toISOString().slice(0,7);
-    const txArr = Object.values(transactions).filter(t => t.type !== 'transferencia');
-    const txMes = txArr.filter(t => (t.date||'').startsWith(mesActual));
+    const txMes = Object.values(transactions).filter(t => t.type!=='transferencia' && (t.date||'').startsWith(mesActual));
     const ing   = txMes.filter(t=>t.type==='income').reduce((s,t)=>s+t.amount,0);
     const gast  = txMes.filter(t=>t.type==='expense').reduce((s,t)=>s+t.amount,0);
     const res   = ing - gast;
     const saldo = Object.keys(accounts).reduce((s,id)=>s+calcSaldoCuenta(id),0);
-    const opActivas = Object.values(oportunidades).filter(o=>!['ganado','perdido'].includes(o.etapa));
-    const pipeline  = opActivas.reduce((s,o)=>s+(o.monto||0),0);
+    const opAct = Object.values(oportunidades).filter(o=>!['ganado','perdido'].includes(o.etapa));
+    const pipe  = opAct.reduce((s,o)=>s+(o.monto||0),0);
 
-    if (E('wc-resultado')) {
-      E('wc-resultado').textContent = fmt(res);
-      E('wc-resultado').className   = 'wc-num-val ' + (res>0?'positive':res<0?'negative':'');
-      if (E('wc-resultado-sub')) E('wc-resultado-sub').textContent =
-        `↑ ${fmt(ing)} ingresos`;
+    if (E('bv-resultado')) {
+      E('bv-resultado').textContent = fmt(res);
+      E('bv-resultado').className   = 'bv-num-val '+(res>0?'pos':res<0?'neg':'');
+      if (E('bv-resultado-sub')) E('bv-resultado-sub').textContent = `↑ ${fmt(ing)} ingresos`;
     }
-    if (E('wc-saldo')) {
-      E('wc-saldo').textContent = fmt(saldo);
-      E('wc-saldo').className   = 'wc-num-val ' + (saldo>=0?'positive':'negative');
-    }
-    if (E('wc-pipeline')) {
-      E('wc-pipeline').textContent = pipeline > 0 ? fmt(pipeline) : '—';
-      if (E('wc-pipeline-sub')) E('wc-pipeline-sub').textContent =
-        opActivas.length ? `${opActivas.length} oportunidad${opActivas.length!==1?'es':''}` : 'Sin oportunidades activas';
+    if (E('bv-saldo'))    E('bv-saldo').textContent    = fmt(saldo);
+    if (E('bv-pipeline')) {
+      E('bv-pipeline').textContent = pipe>0 ? fmt(pipe) : '—';
+      if (E('bv-pipeline-sub')) E('bv-pipeline-sub').textContent = opAct.length ? `${opAct.length} oportunidad${opAct.length!==1?'es':''}` : 'Sin oportunidades';
     }
 
-    // ── Alertas ──
-    const alertas = [];
-    const criticos = Object.entries(productos).filter(([id,p])=>p.estado==='activo'&&calcularStock(id)<=(p.stockMinimo||0));
-    if (criticos.length)
-      alertas.push({ icon:'📦', text:`${criticos.length} producto${criticos.length!==1?'s':''} con stock crítico`, go:'inventario', color:'#e07878' });
-    const ocVenc = Object.values(ordenesCompra).filter(o=>o.estado==='enviada'&&o.fechaEntrega&&o.fechaEntrega<hoy.toISOString().slice(0,10));
-    if (ocVenc.length)
-      alertas.push({ icon:'🛒', text:`${ocVenc.length} OC con entrega vencida`, go:'oc', color:'#e8b84b' });
-    const ocFact = Object.values(ordenesCompra).filter(o=>['recibida','parcial'].includes(o.estado));
-    if (ocFact.length)
-      alertas.push({ icon:'🧾', text:`${ocFact.length} OC esperando factura`, go:'oc', color:'#e8b84b' });
-    const ivaDeb = txMes.filter(t=>t.type==='income'&&t.ivaAlicuota).reduce((s,t)=>s+t.amount*(t.ivaAlicuota/100),0);
-    const ivaCre = txMes.filter(t=>t.type==='expense'&&t.ivaAlicuota).reduce((s,t)=>s+t.amount*(t.ivaAlicuota/100),0);
-    if (ivaDeb-ivaCre>0)
-      alertas.push({ icon:'📋', text:`IVA a pagar: ${fmt(ivaDeb-ivaCre)}`, go:'iva', color:'rgba(255,255,255,.5)' });
-    const ocProx = Object.values(oportunidades).filter(o=>!['ganado','perdido'].includes(o.etapa)&&o.fechaCierre);
-    const proxima = ocProx.sort((a,b)=>a.fechaCierre>b.fechaCierre?1:-1)[0];
-    if (proxima)
-      alertas.push({ icon:'🤝', text:`Próxima a cerrar: ${esc(proxima.nombre||'')} — ${fmt(proxima.monto||0)}`, go:'crm', color:'rgba(255,255,255,.5)' });
+    overlay.style.display = 'flex';
+  };
 
-    const alertsEl = E('wc-alerts');
-    if (alertsEl) {
-      if (!alertas.length && !Object.keys(transactions).length) {
-        alertsEl.innerHTML = `<div class="wc-alert-item" onclick="goTo('movimientos')" style="border-color:rgba(255,255,255,.15);">
-          <span class="wc-alert-icon">✨</span>
-          <span class="wc-alert-text">Empezá cargando tu primer movimiento</span>
-          <span class="wc-alert-arrow">→</span>
-        </div>`;
-      } else if (!alertas.length) {
-        alertsEl.innerHTML = `<div style="font-size:.8rem;color:rgba(255,255,255,.35);padding:4px 0;">✓ Sin alertas — todo en orden</div>`;
-      } else {
-        alertsEl.innerHTML = alertas.map(a=>
-          `<div class="wc-alert-item" onclick="goTo('${a.go}')">
-            <span class="wc-alert-icon">${a.icon}</span>
-            <span class="wc-alert-text" style="color:${a.color||'rgba(255,255,255,.8)'};">${a.text}</span>
-            <span class="wc-alert-arrow">→</span>
-          </div>`
-        ).join('');
-      }
+  window.cerrarBienvenidaOverlay = function(e) {
+    if (e && e.target !== document.getElementById('bienvenida-overlay') && e.type === 'click') {
+      // click en el backdrop
     }
-
-    // ── Selector empresa (solo si tiene 2+) ──
-    const selEl = E('wc-empresa-selector');
-    if (selEl) {
-      const misIds = Object.keys(misEmpresasPermisos||{});
-      if (misIds.length > 1 && empresaId) {
-        const nombreActual = empresasInfo[empresaId]?.nombre || 'Mi empresa';
-        selEl.style.display = 'block';
-        selEl.innerHTML = `<button class="wc-empresa-btn" onclick="toggleEmpresaSwitcher()">
-          <span class="wc-empresa-dot"></span>
-          ${esc(nombreActual)}
-          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
-        </button>`;
-      } else {
-        selEl.style.display = 'none';
-      }
-    }
+    const overlay = document.getElementById('bienvenida-overlay');
+    if (!overlay || overlay.style.display === 'none') return;
+    overlay.classList.add('closing');
+    setTimeout(() => {
+      overlay.style.display = 'none';
+      overlay.classList.remove('closing');
+    }, 250);
   };
 
     // Cache de info de empresas para la bienvenida
@@ -8559,7 +8486,7 @@
     }
 
     // Header mobile
-    const titleMap={bienvenida:'Inicio',vistarapida:'Vista rápida',dashboard:'Dashboard',movimientos:'Movimientos',cuentas:'Cuentas',contactos:'Contactos',iva:'IVA',reportes:'Reportes',inventario:'Inventario',oc:'Órdenes de compra',crm:'CRM',presupuestos:'Presupuestos vs Real',contador:'Contador IA',asesor:'Asesor Legal IA',rrhh:'RRHH',usuarios:'Usuarios',busqueda:'Búsqueda'};
+    const titleMap={vistarapida:'Vista rápida',dashboard:'Dashboard',movimientos:'Movimientos',cuentas:'Cuentas',contactos:'Contactos',iva:'IVA',reportes:'Reportes',inventario:'Inventario',oc:'Órdenes de compra',crm:'CRM',presupuestos:'Presupuestos vs Real',contador:'Contador IA',asesor:'Asesor Legal IA',rrhh:'RRHH',usuarios:'Usuarios',busqueda:'Búsqueda'};
     const mTitle=document.getElementById('mobile-header-title');
     if(mTitle) mTitle.textContent=titleMap[section]||section;
 
@@ -8588,7 +8515,6 @@
     if(section==='asesor')     renderAsesor();
     if(section==='rrhh')       renderRRHH();
     if(section==='inventario')  { renderInventario(); populateProveedorSelectInv(); }
-    if(section==='bienvenida')  renderBienvenida();
     if(section==='vistarapida') renderVistaRapida();
     if(section==='oc')          { renderOCPage(); }
     if(section==='crm')         { renderCRMPage(); }
