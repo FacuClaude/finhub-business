@@ -1740,8 +1740,12 @@
   <div style="display:flex;gap:8px;">
     <button class="btn-export" onclick="imprimirRecibo()">🖨️ Imprimir / PDF</button>
     <button class="btn-primary" onclick="registrarLiquidacionComoGasto()" id="btn-registrar-gasto">📋 Registrar en Movimientos</button>
+    <button class="btn-secondary" onclick="enviarReciboAFirmar()" id="btn-enviar-firma">✍️ Enviar a firmar</button>
   </div>
-  <div id="liq-registrado-badge" style="display:none;font-size:.72rem;color:var(--green);font-weight:600;background:rgba(45,106,79,.1);border:1px solid rgba(45,106,79,.2);padding:5px 12px;border-radius:3px;">✓ Registrado en Movimientos</div>
+  <div style="display:flex;gap:8px;">
+    <div id="liq-registrado-badge" style="display:none;font-size:.72rem;color:var(--green);font-weight:600;background:rgba(45,106,79,.1);border:1px solid rgba(45,106,79,.2);padding:5px 12px;border-radius:3px;">✓ Registrado</div>
+    <div id="liq-firmado-badge"    style="display:none;font-size:.72rem;color:var(--blue);font-weight:600;background:rgba(30,77,140,.1);border:1px solid rgba(30,77,140,.2);padding:5px 12px;border-radius:3px;">✍️ Enviado a firmar</div>
+  </div>
 </div>
 <div id="liq-recibo"></div>
 </div>
@@ -6062,11 +6066,15 @@
   };
 
   window.actualizarLiquidacion = function() {
-    // Resetear badge de registrado
-    const badge = document.getElementById('liq-registrado-badge');
-    const btn   = document.getElementById('btn-registrar-gasto');
-    if (badge) badge.style.display = 'none';
-    if (btn)   btn.disabled = false;
+    // Resetear badges
+    const badge  = document.getElementById('liq-registrado-badge');
+    const badge2 = document.getElementById('liq-firmado-badge');
+    const btn    = document.getElementById('btn-registrar-gasto');
+    const btn2   = document.getElementById('btn-enviar-firma');
+    if (badge)  badge.style.display  = 'none';
+    if (badge2) badge2.style.display = 'none';
+    if (btn)    btn.disabled  = false;
+    if (btn2)   btn2.disabled = false;
     const empId = document.getElementById('liq-empleado').value;
     const tipo  = document.getElementById('liq-tipo').value;
     const periodo = document.getElementById('liq-periodo').value;
@@ -6082,6 +6090,37 @@
   };
 
   window.imprimirRecibo = function() { window.print(); };
+
+  window.enviarReciboAFirmar = async function() {
+    const empId  = document.getElementById('liq-empleado')?.value;
+    const tipo   = document.getElementById('liq-tipo')?.value;
+    const periodo= document.getElementById('liq-periodo')?.value;
+    if (!empId || !periodo) { toastErr('Seleccioná empleado y período.'); return; }
+    const emp = empleados[empId]; if (!emp) return;
+    const liq = calcularLiquidacion(emp, tipo, periodo);
+    const tipoLabel = {
+      mensual:'Sueldo mensual', sac:'SAC (Aguinaldo)',
+      vacaciones:'Vacaciones', despido_sc:'Liquidación — Despido sin causa',
+      despido_cc:'Liquidación — Despido con causa', renuncia:'Liquidación — Renuncia',
+    };
+    const doc = {
+      tipo:      'recibo',
+      titulo:    `Recibo de sueldo — ${emp.nombre||''}`,
+      tipoLiq:   tipoLabel[tipo] || tipo,
+      periodo,
+      neto:      Math.round(liq.neto),
+      bruto:     Math.round(liq.totalRemunerativo),
+      estado:    'pendiente',
+      creadoPor: uid,
+      createdAt: Date.now(),
+    };
+    await push(ref(db, `empresas/${empresaId}/documentosEmpleado/${empId}`), doc);
+    const badge = document.getElementById('liq-firmado-badge');
+    const btn   = document.getElementById('btn-enviar-firma');
+    if (badge) badge.style.display = 'block';
+    if (btn)   btn.disabled = true;
+    toastOk(`Recibo enviado al portal de ${emp.nombre||'empleado'}`);
+  };
 
   window.registrarLiquidacionComoGasto = async function() {
     const empId  = document.getElementById('liq-empleado')?.value;
