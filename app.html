@@ -3141,6 +3141,10 @@
     if (miRol && typeof miRol === 'string') miRol = resolverRol(miRol);
     if (miRol && !miRol.tipoRol) miRol = resolverRol(miRol);
 
+    // DEBUG TEMPORAL — ver qué tiene miRol
+    console.log('[finHub] miRol:', JSON.stringify(miRol));
+    console.log('[finHub] verRRHH:', puedo('verRRHH'), '| gestionarUsuarios:', puedo('gestionarUsuarios'));
+
     const puedeEditar  = puedo('editarMovimientos');
     const puedeConfig  = puedo('configurar');
     const puedeUsuarios= puedo('gestionarUsuarios');
