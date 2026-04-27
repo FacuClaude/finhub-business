@@ -173,11 +173,11 @@
 
 </div>
 <script type="module">
-  import { initializeApp }       from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-  import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged }
-                                 from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword }
+    from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
-  const app  = initializeApp({
+  const app = initializeApp({
     apiKey:           "AIzaSyDEdKUEJighBOwemKjh0fMxr-TGN2U9Ulo",
     authDomain:       "finhub-business.firebaseapp.com",
     databaseURL:      "https://finhub-business-default-rtdb.firebaseio.com",
@@ -188,24 +188,24 @@
   });
   const auth = getAuth(app);
 
-  // Verificar sesión existente una sola vez al cargar
-  // Usar getIdToken en lugar de onAuthStateChanged para evitar loops
+  // Mostrar form — verificar sesión previa
   auth.authStateReady().then(() => {
-    const user = auth.currentUser;
-    if (user) {
+    if (auth.currentUser) {
       window.location.href = 'app.html';
     } else {
       document.getElementById('layout').style.opacity = '1';
     }
+  }).catch(() => {
+    document.getElementById('layout').style.opacity = '1';
   });
 
   let isRegister = false;
 
   window.toggleMode = () => {
     isRegister = !isRegister;
-    document.getElementById('form-title').textContent    = isRegister ? 'Crear cuenta'  : 'Bienvenido';
+    document.getElementById('form-title').textContent    = isRegister ? 'Crear cuenta' : 'Bienvenido';
     document.getElementById('form-subtitle').textContent = isRegister ? 'Completá tus datos para empezar' : 'Ingresá con tu cuenta empresarial';
-    document.getElementById('btn-submit').textContent    = isRegister ? 'Crear cuenta'  : 'Ingresar';
+    document.getElementById('btn-submit').textContent    = isRegister ? 'Crear cuenta' : 'Ingresar';
     document.getElementById('toggle-link').innerHTML     = isRegister
       ? '¿Ya tenés cuenta? <a onclick="toggleMode()">Iniciá sesión</a>'
       : '¿No tenés cuenta? <a onclick="toggleMode()">Registrate gratis</a>';
@@ -216,32 +216,47 @@
     const email    = document.getElementById('email').value.trim();
     const password = document.getElementById('password').value;
     const btn      = document.getElementById('btn-submit');
-    if (!email || !password) { setMsg('Completá todos los campos.', true); return; }
-    btn.disabled = true; setMsg('');
+
+    if (!email)    { setMsg('Ingresá tu email.', true); return; }
+    if (!password) { setMsg('Ingresá tu contraseña.', true); return; }
+
+    btn.disabled    = true;
+    btn.textContent = isRegister ? 'Creando cuenta...' : 'Ingresando...';
+    setMsg('');
+
     try {
-      isRegister
-        ? await createUserWithEmailAndPassword(auth, email, password)
-        : await signInWithEmailAndPassword(auth, email, password);
+      if (isRegister) {
+        await createUserWithEmailAndPassword(auth, email, password);
+      } else {
+        await signInWithEmailAndPassword(auth, email, password);
+      }
+      window.location.href = 'app.html';
     } catch(e) {
-      btn.disabled = false;
+      btn.disabled    = false;
+      btn.textContent = isRegister ? 'Crear cuenta' : 'Ingresar';
       const msgs = {
-        'auth/user-not-found':      'No encontramos esa cuenta.',
-        'auth/wrong-password':      'Contraseña incorrecta.',
-        'auth/email-already-in-use':'Ese email ya está registrado.',
-        'auth/weak-password':       'Mínimo 6 caracteres.',
-        'auth/invalid-email':       'Email inválido.',
-        'auth/invalid-credential':  'Credenciales inválidas.',
+        'auth/user-not-found':         'No encontramos esa cuenta.',
+        'auth/wrong-password':         'Contraseña incorrecta.',
+        'auth/email-already-in-use':   'Ese email ya está registrado.',
+        'auth/weak-password':          'La contraseña debe tener al menos 6 caracteres.',
+        'auth/invalid-email':          'El email no es válido.',
+        'auth/invalid-credential':     'Email o contraseña incorrectos.',
+        'auth/too-many-requests':      'Demasiados intentos fallidos. Esperá unos minutos.',
+        'auth/network-request-failed': 'Error de red. Verificá tu conexión.',
+        'auth/user-disabled':          'Esta cuenta fue deshabilitada.',
       };
-      setMsg(msgs[e.code] || e.message, true);
+      setMsg(msgs[e.code] || ('Error: ' + (e.message || e.code)), true);
     }
   };
 
-  window.setMsg = (t, err=false) => {
+  window.setMsg = (txt, isErr=false) => {
     const el = document.getElementById('msg');
-    el.textContent = t; el.className = 'msg '+(err?'error':'ok');
+    if (!el) return;
+    el.textContent = txt;
+    el.className   = 'msg ' + (isErr ? 'error' : 'ok');
   };
 
-  document.getElementById('password').addEventListener('keydown', e => {
+  document.addEventListener('keydown', e => {
     if (e.key === 'Enter') window.handleLogin();
   });
 </script>
