@@ -2988,13 +2988,27 @@
   };
 
   function resolverRol(rolData) {
-    // Normalizar: puede ser string "admin" o un objeto {tipoRol:'admin', ...}
-    const tipoRol = typeof rolData === 'string' ? rolData : (rolData?.tipoRol || 'visualizador');
-    const base    = PERMISOS_DEFAULT[tipoRol] || PERMISOS_DEFAULT.visualizador;
-    // Fusionar con datos de Firebase (permite overrides por usuario)
-    return typeof rolData === 'object'
-      ? { ...base, ...rolData, tipoRol }
-      : { ...base, tipoRol };
+    if (!rolData) return { ...PERMISOS_DEFAULT.visualizador, tipoRol:'visualizador' };
+
+    // Si es string directo: "admin", "contador", etc.
+    if (typeof rolData === 'string') {
+      const base = PERMISOS_DEFAULT[rolData] || PERMISOS_DEFAULT.visualizador;
+      return { ...base, tipoRol: rolData };
+    }
+
+    // Si es objeto, determinar tipoRol
+    let tipoRol = rolData.tipoRol;
+    if (!tipoRol) {
+      // Inferir por permisos — si tiene gestionarUsuarios es admin
+      if (rolData.gestionarUsuarios === true || rolData.configurar === true) tipoRol = 'admin';
+      else if (rolData.verReportes === true && rolData.exportar === true) tipoRol = 'contador';
+      else if (rolData.editarMovimientos === true) tipoRol = 'operador';
+      else tipoRol = 'visualizador';
+    }
+
+    const base = PERMISOS_DEFAULT[tipoRol] || PERMISOS_DEFAULT.visualizador;
+    // Base primero, luego override con lo que venga de Firebase
+    return { ...base, ...rolData, tipoRol };
   }
 
   function puedo(permiso) {
@@ -3123,24 +3137,28 @@
   }
 
   function aplicarPermisos() {
-    // Ocultar elementos de edición según rol
-    const puedeEditar = puedo('editarMovimientos');
+    // Garantizar que miRol esté resuelto correctamente
+    if (miRol && typeof miRol === 'string') miRol = resolverRol(miRol);
+    if (miRol && !miRol.tipoRol) miRol = resolverRol(miRol);
+
+    const puedeEditar  = puedo('editarMovimientos');
     const puedeConfig  = puedo('configurar');
     const puedeUsuarios= puedo('gestionarUsuarios');
     const puedeRRHH    = puedo('verRRHH');
 
     // Botón + Movimiento
-    document.querySelectorAll('[onclick*="openModal(\'tx\')"]').forEach(el => { if(!puedeEditar) el.style.display='none'; });
+    document.querySelectorAll('[onclick*="openModal(\'tx\')"]').forEach(el => { el.style.display = puedeEditar ? '' : 'none'; });
     // Importar
-    document.querySelectorAll('[onclick*="openModal(\'import\')"]').forEach(el => { if(!puedeEditar) el.style.display='none'; });
-    // Botones editar/eliminar en listas — se aplica al renderizar con puedo()
-    // Nav RRHH
-    if (!puedeRRHH) {
-      document.querySelectorAll('[onclick*="goTo(\'rrhh\')"]').forEach(el => el.style.display='none');
-    }
-    // Nav Usuarios (siempre visible para admin)
+    document.querySelectorAll('[onclick*="openModal(\'import\')"]').forEach(el => { el.style.display = puedeEditar ? '' : 'none'; });
+
+    // Nav RRHH — mostrar u ocultar explícitamente
+    document.querySelectorAll('[onclick*="goTo(\'rrhh\')"]').forEach(el => {
+      el.style.display = puedeRRHH ? '' : 'none';
+    });
+
+    // Nav Usuarios
     const navUsuarios = document.getElementById('nav-usuarios');
-    if (navUsuarios) navUsuarios.style.display = puedeUsuarios ? 'flex' : 'none';
+    if (navUsuarios) navUsuarios.style.display = puedeUsuarios ? '' : 'none';
   }
 
   window.logout = async () => { await signOut(auth); window.location.href = 'index.html'; };
