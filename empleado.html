@@ -424,10 +424,24 @@
   };
 
   // ── VERIFICAR SESIÓN ──
-  auth.authStateReady().then(() => {
-    if (auth.currentUser) {
-      iniciarPortal(auth.currentUser);
+  auth.authStateReady().then(async () => {
+    const user = auth.currentUser;
+    if (!user) return; // Sin sesión — mostrar login normalmente
+    // Verificar que tiene legajo antes de entrar automáticamente
+    const userSnap = await get(ref(db, `usuarios/${user.uid}/empresas`));
+    const userEmpresas = userSnap.val() || {};
+    let tieneLeajo = false;
+    for (const eid of Object.keys(userEmpresas)) {
+      const empSnap = await get(ref(db, `empresas/${eid}/empleados`));
+      const emps = empSnap.val() || {};
+      if (Object.values(emps).find(e => (e.email||'').toLowerCase() === user.email.toLowerCase())) {
+        tieneLeajo = true; break;
+      }
     }
+    if (tieneLeajo) {
+      await iniciarPortal(user);
+    }
+    // Si no tiene legajo, simplemente no hace nada — muestra el login
   });
 
   // ── LOGIN ──
