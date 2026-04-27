@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>finHub Business · Portal del Empleado</title>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
+    html, body { height:100%; }
+    body { font-family:'DM Sans',sans-serif; background:#f5f3f0; color:#1a1a18; }
+
+    :root {
+      --blue:    #1e4d8c;
+      --blue-lt: #d6e4f5;
+      --terra:   #c17a4a;
+      --bg:      #f5f3f0;
+      --surface: #eeece8;
+      --border:  #dddad5;
+      --ink:     #1a1a18;
+      --ink2:    #3a3a38;
+      --muted:   #7a7a72;
+      --green:   #2d6a4f;
+      --red:     #9b3030;
+      --white:   #ffffff;
+    }
+
+    /* ── LOGIN ── */
+    .login-wrap {
+      min-height:100vh; display:flex; align-items:center; justify-content:center;
+      padding:24px; background:var(--bg);
+    }
+    .login-card {
+      background:var(--white); border:1px solid var(--border);
+      padding:40px 36px; width:100%; max-width:380px;
+    }
+    .login-logo {
+      display:flex; align-items:center; gap:10px; margin-bottom:28px;
+    }
+    .login-logo-text {
+      font-family:'Plus Jakarta Sans',sans-serif;
+      font-size:1.2rem; font-weight:700; letter-spacing:-.02em;
+    }
+    .login-logo-text .fin { color:var(--muted); }
+    .login-logo-text .hub { color:var(--blue); }
+    .login-badge {
+      font-size:.55rem; font-weight:700; letter-spacing:.14em;
+      text-transform:uppercase; color:var(--terra);
+      border:1px solid var(--terra); padding:2px 8px; border-radius:10px;
+    }
+    .login-title { font-family:'Plus Jakarta Sans',sans-serif; font-size:1.4rem; font-weight:700; color:var(--ink); margin-bottom:4px; }
+    .login-sub   { font-size:.82rem; color:var(--muted); margin-bottom:28px; }
+    .field-label { display:block; font-size:.62rem; font-weight:700; letter-spacing:.14em; text-transform:uppercase; color:var(--ink2); margin-bottom:7px; }
+    input[type=email], input[type=password] {
+      width:100%; padding:11px 14px; border:1px solid var(--border);
+      background:var(--white); font-family:'DM Sans',sans-serif;
+      font-size:.88rem; color:var(--ink); outline:none;
+      transition:border-color .2s; margin-bottom:16px; border-radius:3px;
+    }
+    input:focus { border-color:var(--blue); }
+    .btn-login {
+      width:100%; padding:12px; background:var(--blue); color:var(--white);
+      border:none; border-radius:3px; font-family:'DM Sans',sans-serif;
+      font-size:.7rem; font-weight:700; letter-spacing:.12em; text-transform:uppercase;
+      cursor:pointer; transition:background .2s;
+    }
+    .btn-login:hover { background:#2a5fa0; }
+    .btn-login:disabled { opacity:.6; cursor:not-allowed; }
+    .login-msg { font-size:.75rem; min-height:18px; margin-top:10px; text-align:center; }
+    .login-msg.error { color:var(--red); }
+    .login-kippcode {
+      display:flex; align-items:center; justify-content:center;
+      gap:6px; margin-top:24px; opacity:.3;
+      font-size:.65rem; color:var(--muted); font-weight:600; letter-spacing:.06em;
+    }
+
+    /* ── PORTAL ── */
+    #portal { display:none; }
+
+    .portal-header {
+      background:var(--blue); height:52px;
+      display:flex; align-items:center; justify-content:space-between;
+      padding:0 28px; position:fixed; top:0; left:0; right:0; z-index:100;
+    }
+    .portal-header-logo {
+      font-family:'Plus Jakarta Sans',sans-serif; font-size:13px; font-weight:700;
+      color:var(--white); display:flex; align-items:center; gap:8px;
+    }
+    .portal-header-logo::before { content:''; width:5px; height:5px; background:var(--terra); border-radius:50%; }
+    .portal-header-right { display:flex; align-items:center; gap:14px; }
+    .portal-emp-name { font-size:.78rem; color:rgba(255,255,255,.7); }
+    .btn-logout-portal {
+      font-size:.65rem; font-weight:600; letter-spacing:.1em; text-transform:uppercase;
+      color:rgba(255,255,255,.55); background:none; border:1px solid rgba(255,255,255,.2);
+      padding:5px 12px; cursor:pointer; transition:all .2s; border-radius:3px;
+    }
+    .btn-logout-portal:hover { color:white; border-color:rgba(255,255,255,.5); }
+
+    .portal-nav {
+      position:fixed; top:52px; left:0; bottom:0; width:200px;
+      background:var(--white); border-right:1px solid var(--border);
+      display:flex; flex-direction:column; padding:20px 0;
+      overflow-y:auto;
+    }
+    .portal-nav-item {
+      display:flex; align-items:center; gap:10px;
+      padding:10px 20px; font-size:.82rem; color:var(--ink2);
+      cursor:pointer; transition:all .15s; border:none; background:none;
+      text-align:left; width:100%; font-family:'DM Sans',sans-serif;
+      border-left:3px solid transparent;
+    }
+    .portal-nav-item:hover { background:var(--surface); color:var(--ink); }
+    .portal-nav-item.active { background:var(--blue-lt); color:var(--blue); border-left-color:var(--blue); font-weight:600; }
+    .portal-nav-icon { font-size:1rem; flex-shrink:0; }
+
+    .portal-main {
+      margin-left:200px; margin-top:52px;
+      padding:36px 40px; min-height:calc(100vh - 52px);
+    }
+
+    .page-title { font-family:'Plus Jakarta Sans',sans-serif; font-size:1.6rem; font-weight:700; color:var(--ink); margin-bottom:4px; }
+    .page-sub   { font-size:.8rem; color:var(--muted); margin-bottom:28px; }
+
+    /* ── CARDS ── */
+    .portal-cards { display:grid; grid-template-columns:repeat(auto-fill,minmax(180px,1fr)); gap:3px; margin-bottom:28px; }
+    .portal-card { background:var(--white); border:1px solid var(--border); padding:18px 16px; }
+    .portal-card-label { font-size:.58rem; font-weight:700; letter-spacing:.14em; text-transform:uppercase; color:var(--muted); margin-bottom:6px; }
+    .portal-card-val { font-family:'Plus Jakarta Sans',sans-serif; font-size:1.4rem; font-weight:700; color:var(--ink); }
+    .portal-card-sub { font-size:.7rem; color:var(--muted); margin-top:3px; }
+
+    /* ── TABLA ── */
+    .portal-table { width:100%; border-collapse:collapse; font-size:.82rem; }
+    .portal-table th { text-align:left; font-size:.6rem; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:var(--muted); padding:8px 14px; border-bottom:2px solid var(--border); background:var(--surface); }
+    .portal-table td { padding:12px 14px; border-bottom:1px solid var(--border); color:var(--ink2); vertical-align:middle; }
+    .portal-table tr:last-child td { border-bottom:none; }
+    .portal-table tbody tr:hover { background:var(--surface); }
+
+    /* ── BADGES ── */
+    .badge { font-size:.6rem; font-weight:700; letter-spacing:.08em; text-transform:uppercase; padding:3px 9px; border-radius:10px; }
+    .badge-pend { background:rgba(193,122,74,.1); color:var(--terra); }
+    .badge-firm { background:rgba(45,106,79,.1); color:var(--green); }
+    .badge-ok   { background:rgba(30,77,140,.1); color:var(--blue); }
+
+    /* ── FIRMA ── */
+    .firma-overlay {
+      position:fixed; inset:0; background:rgba(10,15,25,.55);
+      backdrop-filter:blur(6px); z-index:500;
+      display:flex; align-items:center; justify-content:center; padding:20px;
+    }
+    .firma-modal {
+      background:var(--white); border:1px solid var(--border);
+      padding:32px 36px; max-width:500px; width:100%;
+      animation:slideUp .3s cubic-bezier(.16,1,.3,1);
+    }
+    .firma-title { font-family:'Plus Jakarta Sans',sans-serif; font-size:1.1rem; font-weight:700; color:var(--ink); margin-bottom:8px; }
+    .firma-sub   { font-size:.78rem; color:var(--muted); line-height:1.6; margin-bottom:20px; }
+    .firma-aviso {
+      background:rgba(45,106,79,.06); border:1px solid rgba(45,106,79,.2);
+      border-left:3px solid var(--green); padding:10px 14px;
+      font-size:.73rem; color:var(--ink2); line-height:1.6; margin-bottom:20px;
+    }
+    .firma-checkbox-wrap {
+      display:flex; align-items:flex-start; gap:10px;
+      background:var(--surface); border:1px solid var(--border);
+      padding:14px 16px; margin-bottom:20px; cursor:pointer;
+    }
+    .firma-checkbox-wrap input { margin-top:2px; accent-color:var(--blue); flex-shrink:0; }
+    .firma-checkbox-label { font-size:.8rem; color:var(--ink2); line-height:1.55; }
+    .firma-actions { display:flex; gap:10px; }
+    .btn-cancelar { flex:1; padding:10px; border:1px solid var(--border); background:none; font-family:'DM Sans',sans-serif; font-size:.7rem; font-weight:600; letter-spacing:.1em; text-transform:uppercase; cursor:pointer; color:var(--ink2); transition:all .15s; border-radius:3px; }
+    .btn-cancelar:hover { background:var(--surface); }
+    .btn-firmar { flex:2; padding:10px; background:var(--blue); color:var(--white); border:none; font-family:'DM Sans',sans-serif; font-size:.7rem; font-weight:700; letter-spacing:.1em; text-transform:uppercase; cursor:pointer; transition:opacity .15s; border-radius:3px; }
+    .btn-firmar:hover { opacity:.88; }
+    .btn-firmar:disabled { opacity:.5; cursor:not-allowed; }
+
+    /* ── SOLICITAR LICENCIA ── */
+    .portal-form { background:var(--white); border:1px solid var(--border); padding:24px 28px; max-width:560px; }
+    .portal-form .field { margin-bottom:14px; }
+    .portal-form .field label { display:block; font-size:.62rem; font-weight:700; letter-spacing:.14em; text-transform:uppercase; color:var(--ink2); margin-bottom:6px; }
+    .portal-form .field input,
+    .portal-form .field select,
+    .portal-form .field textarea {
+      width:100%; padding:10px 13px; border:1px solid var(--border);
+      background:var(--white); font-family:'DM Sans',sans-serif;
+      font-size:.85rem; color:var(--ink); outline:none; border-radius:3px;
+      transition:border-color .2s;
+    }
+    .portal-form .field input:focus,
+    .portal-form .field select:focus,
+    .portal-form .field textarea:focus { border-color:var(--blue); }
+    .btn-primary-portal {
+      padding:10px 24px; background:var(--blue); color:var(--white);
+      border:none; border-radius:3px; font-family:'DM Sans',sans-serif;
+      font-size:.7rem; font-weight:700; letter-spacing:.1em; text-transform:uppercase;
+      cursor:pointer; transition:opacity .15s;
+    }
+    .btn-primary-portal:hover { opacity:.88; }
+
+    /* ── MOBILE ── */
+    @media(max-width:700px) {
+      .portal-nav { display:none; }
+      .portal-main { margin-left:0; padding:20px 16px 80px; }
+      .portal-bottom-nav {
+        display:flex !important; position:fixed; bottom:0; left:0; right:0;
+        background:var(--white); border-top:1px solid var(--border);
+        z-index:100; height:60px;
+      }
+      .portal-bottom-nav-item {
+        flex:1; display:flex; flex-direction:column; align-items:center;
+        justify-content:center; gap:2px; font-size:.55rem; font-weight:600;
+        letter-spacing:.08em; text-transform:uppercase; color:var(--muted);
+        cursor:pointer; border:none; background:none; transition:color .15s;
+      }
+      .portal-bottom-nav-item.active { color:var(--blue); }
+      .portal-bottom-nav-item span:first-child { font-size:1.1rem; }
+      .portal-cards { grid-template-columns:1fr 1fr; }
+      .firma-modal { padding:24px 20px; }
+    }
+    @media(min-width:701px) {
+      .portal-bottom-nav { display:none; }
+    }
+
+    @keyframes slideUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+    @keyframes fadeIn  { from{opacity:0} to{opacity:1} }
+  </style>
+</head>
+<body>
+
+<!-- ══ LOGIN ══ -->
+<div id="login-wrap" class="login-wrap">
+  <div class="login-card">
+    <div class="login-logo">
+      <svg width="24" height="20" viewBox="0 0 96 80" fill="none">
+        <rect x="0" y="52" width="20" height="28" rx="3" fill="var(--blue)" opacity=".35"/>
+        <rect x="25" y="34" width="20" height="46" rx="3" fill="var(--blue)" opacity=".6"/>
+        <rect x="50" y="8" width="20" height="72" rx="3" fill="var(--blue)"/>
+      </svg>
+      <div class="login-logo-text"><span class="fin">fin</span><span class="hub">Hub.</span></div>
+      <div class="login-badge">Portal Empleado</div>
+    </div>
+    <div class="login-title">Bienvenido</div>
+    <div class="login-sub">Ingresá con tu cuenta de empleado</div>
+    <label class="field-label" for="emp-email">Email</label>
+    <input type="email" id="emp-email" placeholder="tu@email.com" autocomplete="email"/>
+    <label class="field-label" for="emp-pass">Contraseña</label>
+    <input type="password" id="emp-pass" placeholder="••••••••" autocomplete="current-password"/>
+    <button class="btn-login" id="btn-emp-login" onclick="loginEmpleado()">Ingresar</button>
+    <div class="login-msg" id="emp-msg"></div>
+    <div class="login-kippcode">
+      <svg width="11" height="11" viewBox="0 0 100 100" fill="none">
+        <rect x="6" y="6" width="36" height="36" rx="7" stroke="currentColor" stroke-width="10" fill="none"/>
+        <rect x="58" y="6" width="36" height="36" rx="7" stroke="currentColor" stroke-width="10" fill="none"/>
+        <rect x="6" y="58" width="36" height="36" rx="7" stroke="currentColor" stroke-width="10" fill="none"/>
+        <circle cx="76" cy="76" r="15" fill="#e86c2a"/>
+      </svg>
+      kippcode
+    </div>
+  </div>
+</div>
+
+<!-- ══ PORTAL ══ -->
+<div id="portal">
+
+  <!-- Header -->
+  <div class="portal-header">
+    <div class="portal-header-logo">finHub Business · Portal del Empleado</div>
+    <div class="portal-header-right">
+      <span class="portal-emp-name" id="portal-emp-name"></span>
+      <button class="btn-logout-portal" onclick="logoutEmpleado()">Salir</button>
+    </div>
+  </div>
+
+  <!-- Nav sidebar desktop -->
+  <nav class="portal-nav">
+    <button class="portal-nav-item active" onclick="portalGoTo('inicio', this)"><span class="portal-nav-icon">🏠</span> Inicio</button>
+    <button class="portal-nav-item" onclick="portalGoTo('recibos', this)"><span class="portal-nav-icon">💰</span> Mis recibos</button>
+    <button class="portal-nav-item" onclick="portalGoTo('licencias', this)"><span class="portal-nav-icon">📅</span> Mis licencias</button>
+    <button class="portal-nav-item" onclick="portalGoTo('capacitaciones', this)"><span class="portal-nav-icon">🎓</span> Capacitaciones</button>
+    <button class="portal-nav-item" onclick="portalGoTo('documentos', this)"><span class="portal-nav-icon">✍️</span> Documentos</button>
+  </nav>
+
+  <!-- Nav bottom mobile -->
+  <div class="portal-bottom-nav" style="display:none;">
+    <button class="portal-bottom-nav-item active" onclick="portalGoTo('inicio', this)"><span>🏠</span><span>Inicio</span></button>
+    <button class="portal-bottom-nav-item" onclick="portalGoTo('recibos', this)"><span>💰</span><span>Recibos</span></button>
+    <button class="portal-bottom-nav-item" onclick="portalGoTo('licencias', this)"><span>📅</span><span>Licencias</span></button>
+    <button class="portal-bottom-nav-item" onclick="portalGoTo('capacitaciones', this)"><span>🎓</span><span>Cursos</span></button>
+    <button class="portal-bottom-nav-item" onclick="portalGoTo('documentos', this)"><span>✍️</span><span>Docs</span></button>
+  </div>
+
+  <!-- Main content -->
+  <main class="portal-main">
+
+    <!-- INICIO -->
+    <div id="portal-inicio">
+      <div class="page-title" id="p-saludo">Buen día.</div>
+      <div class="page-sub" id="p-empresa"></div>
+      <div class="portal-cards" id="p-cards"></div>
+      <div id="p-pendientes-firma"></div>
+    </div>
+
+    <!-- RECIBOS -->
+    <div id="portal-recibos" style="display:none;">
+      <div class="page-title">Mis recibos</div>
+      <div class="page-sub">Historial de liquidaciones y recibos de sueldo</div>
+      <div id="p-recibos-tabla-wrap">
+        <table class="portal-table">
+          <thead><tr><th>Período</th><th>Tipo</th><th>Neto</th><th>Estado</th><th></th></tr></thead>
+          <tbody id="p-recibos-body"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- LICENCIAS -->
+    <div id="portal-licencias" style="display:none;">
+      <div class="page-title">Mis licencias</div>
+      <div class="page-sub">Saldos disponibles y solicitudes</div>
+      <div id="p-lic-cupos" style="margin-bottom:24px;"></div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+        <div style="font-size:.65rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);">Historial</div>
+        <button class="btn-primary-portal" onclick="mostrarSolicitudLicencia()">+ Solicitar licencia</button>
+      </div>
+      <div id="p-lic-historial"></div>
+      <!-- Formulario solicitud -->
+      <div id="p-lic-form" style="display:none;margin-top:20px;">
+        <div class="portal-form">
+          <div style="font-family:'Plus Jakarta Sans',sans-serif;font-size:1rem;font-weight:700;color:var(--ink);margin-bottom:16px;">Solicitar licencia</div>
+          <div class="field"><label>Tipo de licencia</label>
+            <select id="p-lic-tipo">
+              <option value="enfermedad">Enfermedad / accidente</option>
+              <option value="maternidad">Maternidad</option>
+              <option value="paternidad">Paternidad</option>
+              <option value="matrimonio">Matrimonio</option>
+              <option value="fallecimiento">Fallecimiento familiar</option>
+              <option value="examen">Examen / estudio</option>
+              <option value="vacaciones_extra">Vacaciones adicionales</option>
+              <option value="otra">Otra</option>
+            </select>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+            <div class="field"><label>Desde</label><input type="date" id="p-lic-desde" oninput="calcDiasPortal()"/></div>
+            <div class="field"><label>Hasta</label><input type="date" id="p-lic-hasta" oninput="calcDiasPortal()"/></div>
+          </div>
+          <div class="field"><label>Días</label><input type="number" id="p-lic-dias" readonly style="background:var(--surface);"/></div>
+          <div class="field"><label>Notas (opcional)</label><textarea id="p-lic-notas" rows="2" placeholder="Motivo, certificado adjunto, etc."></textarea></div>
+          <div style="display:flex;gap:10px;margin-top:4px;">
+            <button style="flex:1;padding:10px;border:1px solid var(--border);background:none;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:.7rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--ink2);border-radius:3px;" onclick="document.getElementById('p-lic-form').style.display='none'">Cancelar</button>
+            <button class="btn-primary-portal" style="flex:2;" onclick="enviarSolicitudLicencia()">Enviar solicitud</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CAPACITACIONES -->
+    <div id="portal-capacitaciones" style="display:none;">
+      <div class="page-title">Mis capacitaciones</div>
+      <div class="page-sub">Cursos asignados y certificados</div>
+      <div id="p-cap-lista"></div>
+    </div>
+
+    <!-- DOCUMENTOS -->
+    <div id="portal-documentos" style="display:none;">
+      <div class="page-title">Documentos para firmar</div>
+      <div class="page-sub">Recibos y comunicados pendientes de tu firma</div>
+      <div id="p-docs-lista"></div>
+    </div>
+
+  </main>
+</div>
+
+<!-- MODAL FIRMA -->
+<div id="firma-overlay" class="firma-overlay" style="display:none;">
+  <div class="firma-modal">
+    <div class="firma-title" id="firma-doc-titulo">Confirmar firma</div>
+    <div class="firma-sub" id="firma-doc-desc"></div>
+    <div class="firma-aviso">
+      ✓ Al firmar este documento confirmás haber leído y recibido el contenido. La firma queda registrada con tu usuario, la fecha y hora exacta, y no puede ser modificada.
+    </div>
+    <label class="firma-checkbox-wrap">
+      <input type="checkbox" id="firma-check" onchange="document.getElementById('btn-confirmar-firma').disabled=!this.checked"/>
+      <span class="firma-checkbox-label">Declaro haber leído y comprendido el contenido de este documento y presto conformidad con mi firma electrónica.</span>
+    </label>
+    <div class="firma-actions">
+      <button class="btn-cancelar" onclick="cerrarFirma()">Cancelar</button>
+      <button class="btn-firmar" id="btn-confirmar-firma" disabled onclick="confirmarFirma()">✍️ Firmar documento</button>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+  import { initializeApp }   from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getAuth, signInWithEmailAndPassword, signOut }
+                             from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+  import { getDatabase, ref, get, push, update, onValue }
+                             from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+  const app = initializeApp({
+    apiKey:           "AIzaSyDEdKUEJighBOwemKjh0fMxr-TGN2U9Ulo",
+    authDomain:       "finhub-business.firebaseapp.com",
+    databaseURL:      "https://finhub-business-default-rtdb.firebaseio.com",
+    projectId:        "finhub-business",
+    storageBucket:    "finhub-business.appspot.com",
+    messagingSenderId:"946602595680",
+    appId:            "1:946602595680:web:0ebeacaa6c499b21f0fa05"
+  });
+  const auth = getAuth(app);
+  const db   = getDatabase(app);
+
+  let currentUser = null;
+  let empData     = null;
+  let empId       = null;
+  let empresaId   = null;
+  let docFirmando = null;
+
+  // Helpers
+  const E = id => document.getElementById(id);
+  const fmt = n => '$' + Math.round(n||0).toLocaleString('es-AR');
+  const esc = s => String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+
+  const LIC_TIPOS = {
+    enfermedad:'Enfermedad', maternidad:'Maternidad', paternidad:'Paternidad',
+    matrimonio:'Matrimonio', fallecimiento:'Fallecimiento', examen:'Examen',
+    vacaciones_extra:'Vacaciones adicionales', injustificada:'Injustificada', otra:'Otra'
+  };
+
+  // ── VERIFICAR SESIÓN ──
+  auth.authStateReady().then(() => {
+    if (auth.currentUser) {
+      iniciarPortal(auth.currentUser);
+    }
+  });
+
+  // ── LOGIN ──
+  window.loginEmpleado = async () => {
+    const email = E('emp-email').value.trim();
+    const pass  = E('emp-pass').value;
+    const btn   = E('btn-emp-login');
+    if (!email || !pass) { setLoginMsg('Completá todos los campos.', true); return; }
+    btn.disabled    = true;
+    btn.textContent = 'Ingresando...';
+    try {
+      const cred = await signInWithEmailAndPassword(auth, email, pass);
+      await iniciarPortal(cred.user);
+    } catch(e) {
+      btn.disabled    = false;
+      btn.textContent = 'Ingresar';
+      const msgs = {
+        'auth/invalid-credential': 'Email o contraseña incorrectos.',
+        'auth/too-many-requests':  'Demasiados intentos. Esperá unos minutos.',
+        'auth/user-disabled':      'Esta cuenta fue deshabilitada.',
+      };
+      setLoginMsg(msgs[e.code] || 'Error al ingresar.', true);
+    }
+  };
+
+  function setLoginMsg(t, err=false) {
+    const el = E('emp-msg'); if (!el) return;
+    el.textContent = t; el.className = 'login-msg ' + (err?'error':'');
+  }
+
+  // ── INICIAR PORTAL ──
+  async function iniciarPortal(user) {
+    currentUser = user;
+
+    // Buscar el empleado en todas las empresas del usuario
+    const userSnap = await get(ref(db, `usuarios/${user.uid}/empresas`));
+    const userEmpresas = userSnap.val() || {};
+    const empIds = Object.keys(userEmpresas);
+    if (!empIds.length) { setLoginMsg('No tenés acceso a ninguna empresa.', true); return; }
+
+    // Tomar la primera empresa (o la que tenga datos de empleado)
+    for (const eid of empIds) {
+      const empSnap = await get(ref(db, `empresas/${eid}/empleados`));
+      const empleados = empSnap.val() || {};
+      // Buscar empleado por email
+      const found = Object.entries(empleados).find(([,e]) =>
+        (e.email||'').toLowerCase() === user.email.toLowerCase()
+      );
+      if (found) {
+        empresaId = eid;
+        empId     = found[0];
+        empData   = found[1];
+        break;
+      }
+    }
+
+    // Mostrar portal
+    E('login-wrap').style.display  = 'none';
+    E('portal').style.display      = 'block';
+
+    // Saludo
+    const hora = new Date().getHours();
+    const saludo = hora < 12 ? 'Buen día' : hora < 19 ? 'Buenas tardes' : 'Buenas noches';
+    const nombre = empData?.nombre || user.email.split('@')[0];
+    if(E('p-saludo'))     E('p-saludo').textContent     = `${saludo}, ${nombre}.`;
+    if(E('portal-emp-name')) E('portal-emp-name').textContent = nombre;
+
+    // Empresa
+    if (empresaId) {
+      const infoSnap = await get(ref(db, `empresas/${empresaId}/info`));
+      const info = infoSnap.val() || {};
+      if(E('p-empresa')) E('p-empresa').textContent = info.nombre || '';
+    }
+
+    renderInicio();
+    document.addEventListener('keydown', e => { if(e.key==='Enter') window.loginEmpleado(); });
+  }
+
+  // ── LOGOUT ──
+  window.logoutEmpleado = async () => {
+    await signOut(auth);
+    E('portal').style.display     = 'none';
+    E('login-wrap').style.display = 'flex';
+    empData = null; empId = null; empresaId = null;
+  };
+
+  // ── NAVEGACIÓN ──
+  window.portalGoTo = function(section, btn) {
+    ['inicio','recibos','licencias','capacitaciones','documentos'].forEach(s => {
+      const el = E('portal-'+s); if(el) el.style.display = s===section?'block':'none';
+    });
+    // Nav desktop
+    document.querySelectorAll('.portal-nav-item').forEach(b => b.classList.remove('active'));
+    // Nav mobile
+    document.querySelectorAll('.portal-bottom-nav-item').forEach(b => b.classList.remove('active'));
+    // Marcar activo
+    document.querySelectorAll(`[onclick*="portalGoTo('${section}"]`).forEach(b => b.classList.add('active'));
+
+    const renders = {
+      inicio: renderInicio, recibos: renderRecibos,
+      licencias: renderLicencias, capacitaciones: renderCapacitaciones,
+      documentos: renderDocumentos
+    };
+    if (renders[section]) renders[section]();
+  };
+
+  // ── RENDER INICIO ──
+  async function renderInicio() {
+    if (!empresaId || !empId) {
+      if(E('p-cards')) E('p-cards').innerHTML = '<div style="color:var(--muted);font-size:.82rem;">No se encontró tu legajo. Contactá a RRHH.</div>';
+      return;
+    }
+    const [licSnap, capSnap, docSnap] = await Promise.all([
+      get(ref(db, `empresas/${empresaId}/licencias`)),
+      get(ref(db, `empresas/${empresaId}/capacitaciones`)),
+      get(ref(db, `empresas/${empresaId}/documentosEmpleado/${empId}`)),
+    ]);
+    const lics = Object.values(licSnap.val()||{}).filter(l=>l.empId===empId);
+    const caps = Object.values(capSnap.val()||{}).filter(c=>(c.empleados||[]).includes(empId));
+    const docs = Object.values(docSnap.val()||{});
+
+    // Calcular vacaciones disponibles
+    const años = empData?.ingreso
+      ? Math.floor((Date.now()-new Date(empData.ingreso+'T00:00:00'))/(1000*60*60*24*365))
+      : 0;
+    const diasVac = años < 5 ? 14 : años < 10 ? 21 : años < 20 ? 28 : 35;
+    const docsPend = docs.filter(d=>d.estado==='pendiente').length;
+
+    if(E('p-cards')) E('p-cards').innerHTML = [
+      { label:'Antigüedad', val: años===0?'Menos de 1 año':`${años} año${años!==1?'s':''}`, sub: empData?.cargo||'' },
+      { label:'Vacaciones disponibles', val:`${diasVac} días`, sub:`Según LCT (${años} años)` },
+      { label:'Cursos activos', val: caps.filter(c=>['pendiente','en_curso'].includes(c.estado)).length, sub:'Asignados' },
+      { label:'Docs pendientes', val: docsPend, sub:'Por firmar' },
+    ].map(c=>`<div class="portal-card">
+      <div class="portal-card-label">${c.label}</div>
+      <div class="portal-card-val">${c.val}</div>
+      <div class="portal-card-sub">${c.sub}</div>
+    </div>`).join('');
+
+    // Documentos pendientes de firma en inicio
+    if(E('p-pendientes-firma')) {
+      if (docsPend > 0) {
+        E('p-pendientes-firma').innerHTML = `
+          <div style="background:rgba(193,122,74,.07);border:1px solid rgba(193,122,74,.25);border-left:3px solid var(--terra);padding:14px 18px;margin-top:4px;">
+            <div style="font-size:.78rem;font-weight:600;color:var(--terra);margin-bottom:4px;">⚠️ Tenés ${docsPend} documento${docsPend!==1?'s':''} pendiente${docsPend!==1?'s':''} de firma</div>
+            <div style="font-size:.75rem;color:var(--ink2);">
+              <a onclick="portalGoTo('documentos')" style="color:var(--blue);cursor:pointer;font-weight:600;">Ver documentos →</a>
+            </div>
+          </div>`;
+      } else {
+        E('p-pendientes-firma').innerHTML = '';
+      }
+    }
+  }
+
+  // ── RENDER RECIBOS ──
+  async function renderRecibos() {
+    if (!empresaId || !empId) return;
+    const snap = await get(ref(db, `empresas/${empresaId}/documentosEmpleado/${empId}`));
+    const docs = Object.entries(snap.val()||{});
+    const body = E('p-recibos-body'); if(!body) return;
+    if (!docs.length) {
+      body.innerHTML = `<tr><td colspan="5" style="text-align:center;color:var(--muted);padding:32px;">Sin recibos disponibles todavía.</td></tr>`;
+      return;
+    }
+    const recibos = docs.filter(([,d])=>d.tipo==='recibo').sort(([,a],[,b])=>(b.createdAt||0)-(a.createdAt||0));
+    body.innerHTML = recibos.map(([id,d])=>`
+      <tr>
+        <td>${d.periodo||'—'}</td>
+        <td>${d.tipoLiq||'Sueldo mensual'}</td>
+        <td style="font-weight:600;color:var(--ink);">${d.neto?fmt(d.neto):'—'}</td>
+        <td><span class="badge ${d.estado==='firmado'?'badge-firm':'badge-pend'}">${d.estado==='firmado'?'Firmado':'Pendiente'}</span></td>
+        <td>
+          ${d.estado!=='firmado'?`<button onclick="abrirFirma('${id}')" style="font-size:.65rem;padding:4px 12px;background:var(--blue);color:white;border:none;border-radius:3px;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:600;">✍️ Firmar</button>`:''}
+          ${d.estado==='firmado'?`<span style="font-size:.65rem;color:var(--muted);">Firmado ${d.firmadoAt?new Date(d.firmadoAt).toLocaleDateString('es-AR'):''}</span>`:''}
+        </td>
+      </tr>`).join('');
+  }
+
+  // ── RENDER LICENCIAS ──
+  async function renderLicencias() {
+    if (!empresaId || !empId) return;
+    const snap = await get(ref(db, `empresas/${empresaId}/licencias`));
+    const todas = Object.values(snap.val()||{}).filter(l=>l.empId===empId);
+    const años  = empData?.ingreso
+      ? Math.floor((Date.now()-new Date(empData.ingreso+'T00:00:00'))/(1000*60*60*24*365))
+      : 0;
+
+    // Cupos
+    const cupos = [
+      { tipo:'enfermedad',  label:'Enfermedad',  cupo: años<5?90:180 },
+      { tipo:'maternidad',  label:'Maternidad',  cupo:90 },
+      { tipo:'paternidad',  label:'Paternidad',  cupo:2 },
+      { tipo:'matrimonio',  label:'Matrimonio',  cupo:10 },
+      { tipo:'examen',      label:'Exámenes',    cupo:10 },
+    ];
+    const usados = tipo => todas.filter(l=>l.tipo===tipo).reduce((s,l)=>s+(l.dias||0),0);
+
+    if(E('p-lic-cupos')) E('p-lic-cupos').innerHTML = `
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:3px;">
+        ${cupos.map(c=>{
+          const u=usados(c.tipo), pct=Math.min(Math.round(u/c.cupo*100),100);
+          const color=pct>=100?'var(--red)':pct>=80?'var(--terra)':'var(--green)';
+          return `<div class="portal-card">
+            <div class="portal-card-label">${c.label}</div>
+            <div class="portal-card-val" style="font-size:1rem;color:${color};">${u}/${c.cupo} días</div>
+            <div style="height:4px;background:var(--border);border-radius:2px;margin-top:8px;">
+              <div style="height:100%;width:${pct}%;background:${color};border-radius:2px;"></div>
+            </div>
+          </div>`;
+        }).join('')}
+      </div>`;
+
+    // Historial
+    if(E('p-lic-historial')) {
+      if (!todas.length) {
+        E('p-lic-historial').innerHTML = '<div style="color:var(--muted);font-size:.82rem;padding:20px 0;">Sin licencias registradas.</div>';
+      } else {
+        E('p-lic-historial').innerHTML = `<table class="portal-table">
+          <thead><tr><th>Tipo</th><th>Desde</th><th>Hasta</th><th>Días</th><th>Estado</th></tr></thead>
+          <tbody>${todas.sort((a,b)=>(b.desde||'')>(a.desde||'')?1:-1).map(l=>`
+            <tr>
+              <td>${LIC_TIPOS[l.tipo]||l.tipo}</td>
+              <td>${l.desde||'—'}</td>
+              <td>${l.hasta||'—'}</td>
+              <td>${l.dias||'—'}</td>
+              <td><span class="badge ${l.paga==='si'?'badge-ok':'badge-pend'}">${l.paga==='si'?'Paga':'No paga'}</span></td>
+            </tr>`).join('')}
+          </tbody>
+        </table>`;
+      }
+    }
+  }
+
+  // ── RENDER CAPACITACIONES ──
+  async function renderCapacitaciones() {
+    if (!empresaId || !empId) return;
+    const snap = await get(ref(db, `empresas/${empresaId}/capacitaciones`));
+    const caps = Object.values(snap.val()||{}).filter(c=>(c.empleados||[]).includes(empId));
+    const lista = E('p-cap-lista'); if(!lista) return;
+    if (!caps.length) {
+      lista.innerHTML = '<div style="color:var(--muted);font-size:.82rem;padding:20px 0;">Sin capacitaciones asignadas.</div>';
+      return;
+    }
+    const ESTADO = { pendiente:'Pendiente', en_curso:'En curso', completado:'Completado', cancelado:'Cancelado' };
+    const ESTADO_COLOR = { pendiente:'var(--muted)', en_curso:'var(--blue)', completado:'var(--green)', cancelado:'var(--red)' };
+    lista.innerHTML = caps.map(c=>`
+      <div style="background:var(--white);border:1px solid var(--border);padding:16px 18px;margin-bottom:8px;">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;">
+          <div>
+            <div style="font-weight:600;color:var(--ink);margin-bottom:4px;">${esc(c.nombre||'')}</div>
+            <div style="font-size:.73rem;color:var(--muted);">${c.tipo||''} · ${c.modalidad||''} ${c.horas?'· '+c.horas+'h':''}</div>
+            ${c.fechaInicio?`<div style="font-size:.7rem;color:var(--muted);margin-top:4px;">${c.fechaInicio}${c.fechaFin?' → '+c.fechaFin:''}</div>`:''}
+          </div>
+          <div style="text-align:right;">
+            <span class="badge" style="background:rgba(0,0,0,.05);color:${ESTADO_COLOR[c.estado]||'var(--muted)'};">${ESTADO[c.estado]||c.estado}</span>
+            ${c.certificado==='si'?'<div style="font-size:.62rem;color:var(--terra);margin-top:4px;">🏆 Certifica</div>':''}
+          </div>
+        </div>
+        ${c.notas?`<div style="font-size:.73rem;color:var(--muted);margin-top:8px;padding-top:8px;border-top:1px solid var(--border);">${esc(c.notas)}</div>`:''}
+      </div>`).join('');
+  }
+
+  // ── RENDER DOCUMENTOS ──
+  async function renderDocumentos() {
+    if (!empresaId || !empId) return;
+    const snap = await get(ref(db, `empresas/${empresaId}/documentosEmpleado/${empId}`));
+    const docs = Object.entries(snap.val()||{}).sort(([,a],[,b])=>(b.createdAt||0)-(a.createdAt||0));
+    const lista = E('p-docs-lista'); if(!lista) return;
+    if (!docs.length) {
+      lista.innerHTML = '<div style="color:var(--muted);font-size:.82rem;padding:20px 0;">Sin documentos disponibles.</div>';
+      return;
+    }
+    lista.innerHTML = docs.map(([id,d])=>`
+      <div style="background:var(--white);border:1px solid var(--border);border-left:3px solid ${d.estado==='firmado'?'var(--green)':'var(--terra)'};padding:16px 18px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;">
+        <div>
+          <div style="font-weight:600;color:var(--ink);margin-bottom:4px;">${esc(d.titulo||'Documento')}</div>
+          <div style="font-size:.73rem;color:var(--muted);">${d.periodo||''} ${d.tipoLiq?'· '+d.tipoLiq:''}</div>
+          ${d.estado==='firmado'?`<div style="font-size:.7rem;color:var(--green);margin-top:4px;">✓ Firmado el ${new Date(d.firmadoAt||0).toLocaleDateString('es-AR')}</div>`:'<div style="font-size:.7rem;color:var(--terra);margin-top:4px;">⏳ Pendiente de firma</div>'}
+        </div>
+        <div style="display:flex;gap:8px;align-items:center;flex-shrink:0;">
+          <span class="badge ${d.estado==='firmado'?'badge-firm':'badge-pend'}">${d.estado==='firmado'?'Firmado':'Pendiente'}</span>
+          ${d.estado!=='firmado'?`<button onclick="abrirFirma('${id}')" style="font-size:.65rem;padding:6px 14px;background:var(--blue);color:white;border:none;border-radius:3px;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:600;letter-spacing:.06em;">✍️ Firmar</button>`:''}
+        </div>
+      </div>`).join('');
+  }
+
+  // ── FIRMA ──
+  window.abrirFirma = function(docId) {
+    if (!empresaId || !empId) return;
+    get(ref(db, `empresas/${empresaId}/documentosEmpleado/${empId}/${docId}`)).then(snap => {
+      const doc = snap.val(); if(!doc) return;
+      docFirmando = docId;
+      if(E('firma-doc-titulo')) E('firma-doc-titulo').textContent = doc.titulo || 'Documento';
+      if(E('firma-doc-desc'))   E('firma-doc-desc').textContent  =
+        `${doc.tipoLiq||'Recibo'} · Período: ${doc.periodo||'—'} · Monto neto: ${doc.neto?fmt(doc.neto):'—'}`;
+      const chk = E('firma-check'); if(chk) chk.checked = false;
+      const btn = E('btn-confirmar-firma'); if(btn) btn.disabled = true;
+      E('firma-overlay').style.display = 'flex';
+    });
+  };
+
+  window.cerrarFirma = () => {
+    E('firma-overlay').style.display = 'none';
+    docFirmando = null;
+  };
+
+  window.confirmarFirma = async () => {
+    if (!docFirmando || !empresaId || !empId) return;
+    const btn = E('btn-confirmar-firma');
+    if(btn) { btn.disabled=true; btn.textContent='Firmando...'; }
+    const firma = {
+      estado:      'firmado',
+      firmadoAt:   Date.now(),
+      firmadoPor:  currentUser.uid,
+      firmadoEmail:currentUser.email,
+    };
+    await update(ref(db, `empresas/${empresaId}/documentosEmpleado/${empId}/${docFirmando}`), firma);
+    cerrarFirma();
+    // Refrescar
+    renderDocumentos();
+    renderRecibos();
+    renderInicio();
+    // Toast simple
+    const t = document.createElement('div');
+    t.style.cssText = 'position:fixed;bottom:24px;right:24px;background:#2d6a4f;color:white;padding:12px 18px;font-size:.8rem;font-weight:600;z-index:9999;border-radius:4px;animation:fadeIn .3s ease;';
+    t.textContent = '✓ Documento firmado correctamente';
+    document.body.appendChild(t);
+    setTimeout(()=>t.remove(), 3500);
+  };
+
+  // ── LICENCIA ──
+  window.mostrarSolicitudLicencia = () => {
+    const f = E('p-lic-form');
+    if(f) f.style.display = f.style.display==='none'?'block':'none';
+  };
+
+  window.calcDiasPortal = () => {
+    const desde = E('p-lic-desde')?.value;
+    const hasta = E('p-lic-hasta')?.value;
+    if(!desde||!hasta) return;
+    const d1=new Date(desde+'T12:00:00'), d2=new Date(hasta+'T12:00:00');
+    if(d2<d1){if(E('p-lic-dias'))E('p-lic-dias').value='';return;}
+    const diff=Math.round((d2-d1)/(1000*60*60*24))+1;
+    if(E('p-lic-dias'))E('p-lic-dias').value=diff;
+  };
+
+  window.enviarSolicitudLicencia = async () => {
+    if(!empresaId||!empId) return;
+    const tipo  = E('p-lic-tipo')?.value;
+    const desde = E('p-lic-desde')?.value;
+    const hasta = E('p-lic-hasta')?.value;
+    const dias  = parseInt(E('p-lic-dias')?.value)||0;
+    const notas = E('p-lic-notas')?.value?.trim()||'';
+    if(!desde||!hasta||dias<1){
+      alert('Completá las fechas.'); return;
+    }
+    await push(ref(db, `empresas/${empresaId}/licencias`), {
+      empId, tipo, desde, hasta, dias, paga:'si',
+      notas: notas || 'Solicitud desde portal del empleado',
+      solicitadoPor: currentUser.uid,
+      estado: 'pendiente_aprobacion',
+      createdAt: Date.now()
+    });
+    E('p-lic-form').style.display = 'none';
+    ['p-lic-desde','p-lic-hasta','p-lic-notas'].forEach(id=>{const el=E(id);if(el)el.value='';});
+    if(E('p-lic-dias'))E('p-lic-dias').value='';
+    renderLicencias();
+    const t=document.createElement('div');
+    t.style.cssText='position:fixed;bottom:24px;right:24px;background:#2d6a4f;color:white;padding:12px 18px;font-size:.8rem;font-weight:600;z-index:9999;border-radius:4px;';
+    t.textContent='✓ Solicitud enviada — RRHH la revisará';
+    document.body.appendChild(t);
+    setTimeout(()=>t.remove(),3500);
+  };
+
+  document.addEventListener('keydown', e => {
+    if(e.key==='Enter' && E('login-wrap').style.display!=='none') window.loginEmpleado();
+  });
+</script>
+</body>
+</html>
